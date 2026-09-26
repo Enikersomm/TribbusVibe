@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Conectando pessoas de verdade</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <style>
+        /* 🎨 Nova Paleta Oficial de Alto Contraste - Cyberpunk / Synthwave */
+        :root {
+            --preto-profundo: #0B0C10;   /* Fundo geral (Preto azulado) */
+            --cinza-card: #121214;       /* Fundo das caixas e formulários (Grafite) */
+            --cinza-input: #1E1E24;      /* Fundo das caixas de digitação */
+            --branco: #FFFFFF;
+            --texto-suave: #9AA0A6;
+            
+            /* ⚡ Os Neons da nossa Logo Definitiva */
+            --ciano-neon: #00F0FF;
+            --pink-magenta: #FF007F;
+            
+            /* 🌈 O Degradê Supremo Unificado */
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+            --gradient-hover: linear-gradient(135deg, #D1107A 0%, #7A00B3 50%, #00C2CC 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--preto-profundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* CONTAINER DA LOGO CENTRALIZADA COM LUZ CIRCULANDO */
+        .header-container {
+            text-align: center;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-aura-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            perspective: 800px;
+        }
+
+        /* Feixe de luz circulando suavemente no degradê supremo */
+        .light-orbit-beam {
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                var(--pink-magenta) 60deg,
+                var(--roxo-neon) 140deg,
+                var(--ciano-neon) 220deg,
+                transparent 300deg,
+                transparent 360deg
+            );
+            animation: girarLuzDegrade 3.8s linear infinite;
+            filter: blur(8px);
+            opacity: 0.9;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Anel fino nítido orbitando */
+        .light-orbit-ring {
+            position: absolute;
+            inset: -2px;
+            border-radius: 9999px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                var(--pink-magenta) 70deg,
+                var(--roxo-neon) 150deg,
+                var(--ciano-neon) 240deg,
+                transparent 320deg,
+                transparent 360deg
+            );
+            animation: girarLuzDegrade 3.8s linear infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Glow de fundo pulsante */
+        .logo-aura-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background: radial-gradient(ellipse at center, rgba(148, 0, 211, 0.3) 0%, rgba(0, 240, 255, 0.2) 50%, transparent 75%);
+            filter: blur(18px);
+            animation: respirarAura 3s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .logo-img-wrapper {
+            position: relative;
+            z-index: 3;
+            background: rgba(10, 10, 15, 0.85);
+            padding: 8px 24px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes girarLuzDegrade {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes respirarAura {
+            0% { transform: scale(0.92); opacity: 0.6; }
+            100% { transform: scale(1.08); opacity: 1; }
+        }
+
+        .logo-oficial-img {
+            max-width: 360px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 5px;
+            image-rendering: high-quality;
+            /* Cria um brilho neon azul/pink por trás da logo */
+            filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.25)) drop-shadow(0 0 10px rgba(255, 0, 127, 0.2));
+        }
+
+        /* CONTAINER DOS FORMULÁRIOS COM BORDA DE SUPREMO NEON */
+        .main-container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            gap: 40px;
+            background: var(--cinza-card);
+            padding: 45px;
+            border-radius: 28px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Borda fina e brilhante com o degradê da logo */
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: var(--gradient-supremo);
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0.6; /* Brilho marcante na entrada */
+        }
+
+        /* COLUNA ESQUERDA: SLOGAN */
+        .info-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 20px;
+        }
+
+        .info-column h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            /* Título brilha com o degradê supremo */
+            background: var(--gradient-supremo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .info-column p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: var(--texto-suave);
+        }
+
+        /* BOX DE MEMBROS ONLINE ESTILO CONTRASTE */
+        .counter-box {
+            background-color: rgba(0, 240, 255, 0.05);
+            padding: 15px;
+            border-radius: 14px;
+            border-left: 5px solid var(--ciano-neon);
+            font-weight: bold;
+            color: var(--branco);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+
+        .counter-box span {
+            color: var(--pink-magenta);
+            font-weight: 900;
+        }
+
+        /* COLUNA DIREITA: FORMULÁRIOS */
+        .auth-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-box {
+            background: rgba(255, 255, 255, 0.01);
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .form-box h2 {
+            color: var(--branco);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 0, 127, 0.3); /* Linha divisória pink */
+            padding-bottom: 6px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: var(--cinza-input);
+            color: var(--branco);
+            transition: all 0.3s ease;
+        }
+
+        /* Quando clica para digitar, a caixa brilha em Ciano Neon */
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--ciano-neon);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
+        }
+
+        /* Botão Arredondado com o Degradê Supremo */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: var(--gradient-supremo);
+            color: var(--branco);
+            border: none;
+            border-radius: 50px; 
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3); /* Sombra pink de destaque */
+        }
+
+        .btn-submit:hover {
+            background: var(--gradient-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 240, 255, 0.45); /* Troca para brilho ciano no mouse hover */
+        }
+
+        .alert-box {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .alert-error {
+            background: rgba(255, 0, 80, 0.15);
+            border: 1px solid #FF007F;
+            color: #FFB3D1;
+        }
+        .alert-success {
+            background: rgba(0, 255, 128, 0.15);
+            border: 1px solid #00FF80;
+            color: #A3FFD1;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 25px;
+                gap: 25px;
+            }
+            .info-column {
+                padding-right: 0;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .info-column h1 { font-size: 2rem; }
+            .logo-oficial-img { max-width: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Topo Centralizado com a Logo Oficial Tribbu'sVibe e Feixe de Luz Circulando -->
+    <div class="header-container">
+        <div class="logo-aura-container">
+            <div class="logo-aura-glow"></div>
+            <div class="light-orbit-beam"></div>
+            <div class="light-orbit-ring"></div>
+            <div class="logo-img-wrapper">
+                <img class="logo-oficial-img" src="/logo.png" onerror="this.onerror=null; this.src='/logo.png';" alt="Tribbu'sVibe Logo Oficial">
+            </div>
+        </div>
+    </div>
+
+    <!-- Container do Layout -->
+    <main class="main-container">
+        
+        <!-- Slogan com efeito de degradê supremo -->
+        <section class="info-column">
+            <h1>Seu novo ponto de encontro.</h1>
+            <p>Encontre suas comunidades de verdade, faça novos amigos e compartilhe sua rotina sem a pressão de algoritmos viciantes. Tudo na sua própria vibe.</p>
+            <div class="counter-box">
+                Membros no Tribbu'sVibe hoje: <span>1</span> (Você é o Fundador! 👑)
+            </div>
+        </section>
+
+        <!-- Formulários de Alto Impacto -->
+        <section class="auth-column">
+            
+            <div class="form-box">
+                <h2>Que bom te ver de volta!</h2>
+                <div id="login-alert" class="alert-box alert-error"></div>
+                <form id="form-login" action="#" method="POST">
+                    <div class="input-group">
+                        <input type="email" id="login-email" placeholder="Seu e-mail" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="login-senha" placeholder="Sua senha" required>
+                    </div>
+                    <button type="submit" id="btn-entrar" class="btn-submit">Entrar no Tribbu'sVibe</button>
+                </form>
+            </div>
+
+            <div class="form-box">
+                <h2>Faça parte da nossa comu</h2>
+                <div id="cadastro-alert-erro" class="alert-box alert-error"></div>
+                <div id="cadastro-alert-ok" class="alert-box alert-success"></div>
+                <form id="form-cadastro" action="#" method="POST">
+                    <div class="input-group">
+                        <input type="text" id="cad-nome" placeholder="Nome Completo" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="cad-email" placeholder="E-mail" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="cad-senha" placeholder="Crie uma Senha (mínimo 6 dígitos)" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="date" id="cad-nascimento" title="Data de Nascimento" required>
+                    </div>
+                    <button type="submit" id="btn-cadastrar" class="btn-submit">Começar Minha Jornada</button>
+                </form>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        &copy; 2026 Tribbu'sVibe Inc. — Conectando pessoas, ideias, e novas histórias! 🪐
+    </footer>
+
+    <!-- Encanamento Firebase Auth em tempo real -->
+    <script type="module">
+        import { realizarLogin, realizarCadastro } from "./src/services/firebase-auth-login.js";
+
+        // Login
+        const formLogin = document.getElementById("form-login");
+        const loginAlert = document.getElementById("login-alert");
+        const btnEntrar = document.getElementById("btn-entrar");
+
+        if (formLogin) {
+            formLogin.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                loginAlert.style.display = "none";
+                const email = document.getElementById("login-email").value;
+                const senha = document.getElementById("login-senha").value;
+
+                btnEntrar.disabled = true;
+                btnEntrar.textContent = "Entrando na vibe...";
+
+                const res = await realizarLogin(email, senha);
+                btnEntrar.disabled = false;
+                btnEntrar.textContent = "Entrar no Tribbu'sVibe";
+
+                if (res.sucesso) {
+                    window.location.href = "feed.html";
+                } else {
+                    loginAlert.textContent = res.erro || "Falha ao autenticar.";
+                    loginAlert.style.display = "block";
+                }
+            });
+        }
+
+        // Cadastro
+        const formCad = document.getElementById("form-cadastro");
+        const cadAlertErro = document.getElementById("cadastro-alert-erro");
+        const cadAlertOk = document.getElementById("cadastro-alert-ok");
+        const btnCadastrar = document.getElementById("btn-cadastrar");
+
+        if (formCad) {
+            formCad.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                cadAlertErro.style.display = "none";
+                cadAlertOk.style.display = "none";
+
+                const nome = document.getElementById("cad-nome").value;
+                const email = document.getElementById("cad-email").value;
+                const senha = document.getElementById("cad-senha").value;
+                const nascimento = document.getElementById("cad-nascimento").value;
+
+                btnCadastrar.disabled = true;
+                btnCadastrar.textContent = "Criando sua conta...";
+
+                const res = await realizarCadastro(nome, email, senha, nascimento);
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = "Começar Minha Jornada";
+
+                if (res.sucesso) {
+                    cadAlertOk.textContent = "Cadastro realizado com sucesso! Redirecionando...";
+                    cadAlertOk.style.display = "block";
+                    setTimeout(() => {
+                        window.location.href = "feed.html";
+                    }, 1000);
+                } else {
+                    cadAlertErro.textContent = res.erro || "Erro ao realizar cadastro.";
+                    cadAlertErro.style.display = "block";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

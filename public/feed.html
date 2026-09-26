@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Feed</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --preto-profundo: #0B0C10;   
+            --cinza-card: #121214;       
+            --cinza-input: #1E1E24;      
+            --branco: #FFFFFF;
+            --texto-suave: #9AA0A6;
+            --ciano-neon: #00F0FF;
+            --pink-magenta: #FF007F;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--preto-profundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-supremo) 1;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo-img { height: 45px; width: auto; }
+        .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; }
+        .nav-links a:hover, .nav-links a.active { color: var(--pink-magenta); }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            max-width: 1200px;
+            width: 100%;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 0 20px;
+        }
+
+        .card-vibe {
+            background: var(--cinza-card);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* PALHETA DE STORIES COLETIVOS (TOP) */
+        .stories-container {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+        .circle-story { width: 60px; height: 60px; border-radius: 50%; border: 2px dashed var(--ciano-neon); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; background: var(--cinza-input); cursor: pointer; }
+
+        /* PERFIL LATERAL REAIS */
+        .perfil-avatar { width: 90px; height: 90px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; border: 2px solid var(--ciano-neon); }
+        .termometros-mini { width: 100%; display: flex; flex-direction: column; gap: 8px; text-align: left; font-size: 0.8rem; color: var(--texto-suave); }
+        .barra-mini { width: 100%; height: 6px; background: var(--cinza-input); border-radius: 10px; overflow: hidden; margin-top: 2px; }
+        .barra-preenchida { height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; }
+
+        /* CAIXA DE POSTAGEM */
+        .card-postar textarea { width: 100%; height: 70px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; resize: none; background: var(--cinza-input); color: var(--branco); }
+        .card-postar textarea:focus { outline: none; border-color: var(--ciano-neon); }
+        .postar-acoes { display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn-primario { background: var(--gradient-supremo); color: var(--branco); border: none; padding: 8px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        .btn-primario:hover { background: var(--gradient-hover); }
+
+        /* LISTA DO FEED CRONOLÓGICO */
+        .feed-lista { display: flex; flex-direction: column; gap: 20px; }
+        .card-feed { background: var(--cinza-card); border: 1px solid rgba(255, 255, 255, 0.03); }
+        .usuario-info { display: flex; gap: 10px; align-items: center; }
+        .avatar-m { width: 40px; height: 40px; border-radius: 50%; background: var(--cinza-input); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .feed-conteudo p { font-size: 0.95rem; line-height: 1.5; color: var(--branco); margin: 12px 0; }
+        .feed-footer { display: flex; gap: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 10px; }
+        .acao-feed { background: none; border: none; color: var(--texto-suave); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } .coluna-lateral { display: none; } }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR LIMPA E PROFISSIONAL -->
+    <header class="navbar">
+        <a href="feed.html" class="nav-logo-container" title="Tribbu'sVibe" style="text-decoration: none;">
+            <img class="nav-brand-banner-img" src="/tribbusvibe.png" onerror="this.onerror=null; this.src='/tribbusvibe.png';" alt="Tribbu'sVibe" style="height: 42px; width: auto; object-fit: contain;">
+        </a>
+        <nav class="nav-links">
+            <a href="feed.html" class="active">Feed</a>
+            <a href="tribos.html">Tribos</a>
+            <a href="chat.html">Messenger</a>
+            <a href="perfil.html">Meu Perfil</a>
+            <a href="config.html">Configurações</a>
+            <a href="login.html" style="color: var(--pink-magenta);"><i class="fas fa-sign-out-alt"></i> Sair</a>
+        </nav>
+    </header>
+
+    <div class="main-layout">
+        
+        <!-- 🪐 COMPONENTE ATUALIZADO: MURAL DE VIBES FLEXÍVEL (STORIES DAS TRIBOS) -->
+        <div class="mural-vibes-secao" style="grid-column: 1 / -1; background: var(--cinza-card); padding: 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.03); margin-bottom: 10px;">
+            
+            <!-- 1. BARRA HORIZONTAL DE BOLINHAS DINÂMICAS -->
+            <div class="stories-container" id="container-stories-realtime" style="display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: center;">
+                
+                <!-- Botão Principal de Adicionar (Abre o seletor híbrido abaixo) -->
+                <div class="circle-story btn-abrir-seletor" title="Compartilhar uma Vibe de 24h" style="width: 56px; height: 56px; border-radius: 50%; border: 2px dashed var(--ciano-neon); display: flex; justify-content: center; align-items: center; font-size: 1.3rem; background: var(--cinza-input); cursor: pointer; color: var(--ciano-neon); transition: all 0.2s ease; filter: drop-shadow(0 0 4px rgba(0, 240, 255, 0.25)); flex-shrink: 0;">
+                    <i class="fas fa-plus"></i>
+                </div>
+
+                <!-- O JavaScript do Firebase vai limpar e injetar as bolinhas reais dos usuários aqui -->
+                <!-- Exemplo de estado neutro vazio quando não há posts: -->
+                <span id="txt-sem-vibes" style="font-size: 0.82rem; color: var(--texto-suave); font-style: italic; margin-left: 6px;">Nenhuma vibe na comu hoje...</span>
+            </div>
+
+            <!-- 2. PAINEL DE CONTROLE DE POSTAGEM (FLEXÍVEL: FOTO, TEXTO OU TRILHA) -->
+            <div class="painel-criar-vibe" id="painel-vibe-abas" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px;">
+                <p style="font-size: 0.85rem; font-weight: bold; color: var(--texto-suave);">Escolha como expressar sua vibe de hoje:</p>
+                
+                <!-- Abas Seletoras de Mídia -->
+                <div class="abas-botoes" style="display: flex; gap: 10px;">
+                    <button type="button" class="btn-aba-tipo" data-tipo="foto" style="background: var(--cinza-input); color: var(--branco); border: 1px solid rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;"><i class="fas fa-camera" style="color: var(--ciano-neon);"></i> Câmera/Galeria</button>
+                    <button type="button" class="btn-aba-tipo" data-tipo="texto" style="background: var(--cinza-input); color: var(--branco); border: 1px solid rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;"><i class="fas fa-font" style="color: var(--pink-magenta);"></i> Texto Neon</button>
+                    <button type="button" class="btn-aba-tipo" data-tipo="musica" style="background: var(--cinza-input); color: var(--branco); border: 1px solid rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px;"><i class="fas fa-music" style="color: #FFD700;"></i> Trilha Sonora</button>
+                </div>
+
+                <!-- Input Dinâmico de Captura (Controlado via JS) -->
+                <div class="container-input-dinamico">
+                    <!-- Opções de Foto: Galeria (Celular / PC) e Câmera / Selfie -->
+                    <input type="file" id="file-vibe-galeria" accept="image/*" style="display: none;">
+                    <input type="file" id="file-vibe-camera" accept="image/*" capture="user" style="display: none;">
+                    <input type="file" id="file-vibe-upload" accept="image/*" style="display: none;">
+
+                    <!-- Botões de escolha: Galeria do Celular/PC ou Câmera/Selfie -->
+                    <div id="container-seletor-foto" style="display: none; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <button type="button" id="btn-abrir-galeria" style="background: rgba(0, 240, 255, 0.1); color: var(--branco); border: 1px solid var(--ciano-neon); padding: 10px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.15s;">
+                            <i class="fas fa-images" style="color: var(--ciano-neon);"></i> Galeria (Celular / PC)
+                        </button>
+                        <button type="button" id="btn-abrir-camera" style="background: rgba(255, 0, 127, 0.1); color: var(--branco); border: 1px solid var(--pink-magenta); padding: 10px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.15s;">
+                            <i class="fas fa-camera" style="color: var(--pink-magenta);"></i> Tirar Foto / Selfie (Câmera)
+                        </button>
+                    </div>
+
+                    <!-- Pré-visualização da Foto/Selfie Capturada -->
+                    <div id="container-preview-foto" style="display: none; position: relative; width: 110px; height: 110px; border-radius: 14px; overflow: hidden; border: 2px solid var(--ciano-neon); margin-bottom: 10px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);">
+                        <img id="img-preview-foto" src="" alt="Preview da Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                        <button type="button" id="btn-remover-foto" title="Remover foto" style="position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); color: #FFF; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+                    </div>
+                    
+                    <!-- Caso Texto ou Música: Caixa de Digitação Sutil -->
+                    <input type="text" id="input-vibe-dado" class="input-config" placeholder="Selecione uma opção acima..." style="width: 100%; padding: 12px; background: var(--cinza-input); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; color: var(--branco); font-size: 0.9rem;" disabled>
+
+                    <!-- Caso Trilha Sonora / Gravação de Áudio de 15 segundos -->
+                    <div id="container-gravador-audio" style="display: none; margin-top: 10px; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.3); padding: 14px; border-radius: 14px; border: 1px dashed rgba(255, 215, 0, 0.35);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.85rem; color: #FFD700; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-microphone"></i> Capturar Áudio da Trilha (15s)
+                            </span>
+                            <span id="audio-timer" style="font-size: 0.85rem; font-weight: bold; color: var(--branco); font-family: monospace;">00:15</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <button type="button" id="btn-gravar-audio" style="background: #e11d48; color: white; border: none; padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: transform 0.15s;">
+                                <i class="fas fa-circle" id="icon-gravar-audio"></i> <span id="label-gravar-audio">Gravar Áudio</span>
+                            </button>
+                            <button type="button" id="btn-stop-audio" style="display: none; background: #FF007F; color: white; border: none; padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; align-items: center; gap: 6px;">
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                            <button type="button" id="btn-ouvir-audio" style="display: none; background: #FFD700; color: #121214; border: none; padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; align-items: center; gap: 6px;">
+                                <i class="fas fa-play" id="icon-ouvir-audio"></i> <span id="label-ouvir-audio">Ouvir Prévia</span>
+                            </button>
+                            <button type="button" id="btn-descartar-audio" style="display: none; background: transparent; color: var(--texto-suave); border: 1px solid rgba(255,255,255,0.1); padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; cursor: pointer;">
+                                <i class="fas fa-trash"></i> Descartar
+                            </button>
+                            <span id="audio-gravado-status" style="font-size: 0.8rem; color: var(--texto-suave); font-style: italic;"></span>
+                        </div>
+                        <div style="width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden;">
+                            <div id="audio-progress-bar" style="width: 0%; height: 100%; background: #FFD700; transition: width 0.1s linear;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-primario" id="btn-disparar-vibe" style="align-self: flex-end; padding: 8px 24px;">Lançar no Mural</button>
+            </div>
+        </div>
+
+        <!-- COLUNA ESQUERDA: APENAS DADOS DO USUÁRIO QUE LOGAR (Sem nomes fakes fixos) -->
+        <aside class="coluna-lateral">
+            <div class="card-vibe" style="align-items: center; text-align: center;">
+                <!-- O JavaScript vai injetar o emoji e o nome real vindo do login -->
+                <div class="perfil-avatar" id="lbl-avatar-logado">👤</div>
+                <h2 id="lbl-nome-logado" style="font-size: 1.1rem; margin-top: 5px;">Carregando...</h2>
+                <p id="lbl-status-logado" style="font-size: 0.8rem; color: var(--texto-suave); font-style: italic;"></p>
+                
+                <div class="termometros-mini">
+                    <div>🧊 Confiável <div class="barra-mini"><div class="barra-preenchida id-barra-confiavel"></div></div></div>
+                    <div>❤️ Legal <div class="barra-mini"><div class="barra-preenchida id-barra-legal"></div></div></div>
+                    <div>🌟 Vibe <div class="barra-mini"><div class="barra-preenchida id-barra-vibe"></div></div></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- COLUNA CENTRAL: O FEED CRONOLÓGICO REAL -->
+        <main style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="card-vibe card-postar">
+                <textarea placeholder="Qual é o seu micro-vibe de hoje? ✨" id="input-vibe"></textarea>
+                <div class="postar-acoes">
+                    <button class="btn-primario" id="btn-postar">Postar</button>
+                </div>
+            </div>
+
+            <!-- O JavaScript limpa este container e puxa as postagens do banco reais -->
+            <div class="feed-lista" id="feed-dinamico-container">
+                <p style="text-align: center; color: var(--texto-suave); font-size: 0.9rem; margin-top: 20px;">Nenhum micro-vibe compartilhado ainda. Seja o primeiro! 🪐</p>
+            </div>
+        </main>
+
+        <!-- COLUNA DIREITA: EM BRANCO PARA O FIREBASE CARREGAR ROLÊS REAIS -->
+        <aside class="coluna-lateral">
+            <div class="card-vibe">
+                <h3><i class="fas fa-calendar-alt" style="color: var(--ciano-neon);"></i> Próximos Rolês</h3>
+                <div id="lista-eventos-realtime" style="display: flex; flex-direction: column; gap: 10px;">
+                    <p style="font-size: 0.8rem; color: var(--texto-suave); font-style: italic;">Nenhum rolê marcado na sua comu por enquanto.</p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Encanamento Firebase em Tempo Real -->
+    <script type="module" src="./src/services/app-feed-page.js"></script>
+</body>
+</html>

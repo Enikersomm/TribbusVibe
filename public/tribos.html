@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Fórum da Tribo</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --preto-fundo: #0B0911;   
+            --cinza-card: #151221;    
+            --cinza-input: #1F1C33;   
+            --branco: #FFFFFF;
+            --texto-suave: #A5A2B8;
+            --rosa-choque: #FF1493;
+            --ciano-neon: #00BFFF;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+            --gradient-neon: linear-gradient(135deg, #FF1493 0%, #9400D3 25%, #00BFFF 50%, #00FF00 75%, #FFD700 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--preto-fundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-neon) 1;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .nav-logo-img { height: 45px; width: auto; object-fit: contain; }
+        .nav-brand-text { font-size: 1.3rem; font-weight: 900; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .nav-links { display: flex; align-items: center; gap: 5px; }
+        .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--rosa-choque); }
+
+        .btn-criar-nav:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 6px 18px rgba(0, 240, 255, 0.4), 0 0 12px rgba(255, 0, 127, 0.5) !important;
+            filter: brightness(1.1);
+        }
+        .btn-criar-nav:active {
+            transform: scale(0.98);
+        }
+
+        .btn-nav-sair {
+            background: rgba(255, 20, 147, 0.15);
+            border: 1px solid rgba(255, 20, 147, 0.3);
+            color: #FF69B4;
+            padding: 6px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-nav-sair:hover {
+            background: var(--rosa-choque);
+            color: #fff;
+        }
+
+        /* HEADER DA COMUNIDADE ESPECÍFICA */
+        .tribo-header-card {
+            max-width: 1160px;
+            width: 100%;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--cinza-card);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .tribo-info-principal { display: flex; align-items: center; gap: 20px; }
+        .tribo-emblema { width: 70px; height: 70px; background: var(--cinza-input); border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; border: 1px solid rgba(0,191,255,0.2); }
+        .tribo-titulos h1 { font-size: 1.6rem; }
+        .tribo-titulos p { font-size: 0.85rem; color: var(--texto-suave); margin-top: 4px; }
+        
+        .btn-participar { background: var(--gradient-neon); color: var(--branco); border: none; padding: 10px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-participar:hover { opacity: 0.95; transform: scale(1.02); }
+
+        /* LAYOUT DUAS COLUNAS DO FÓRUM */
+        .forum-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            max-width: 1160px;
+            width: 100%;
+            gap: 25px;
+            margin-top: 25px;
+            padding: 0 20px;
+        }
+
+        .card-vibe {
+            background: var(--cinza-card);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 📸 STORIES TEMPORÁRIOS DA TRIBO */
+        .stories-tribo-mural {
+            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .circle-story { width: 55px; height: 55px; border-radius: 50%; border: 2px dashed #00BFFF; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.3rem; background: var(--cinza-input); transition: all 0.2s; }
+        .circle-story:hover { transform: scale(1.08); border-color: var(--rosa-choque); }
+
+        /* ✍️ ABERTURA DE TÓPICOS */
+        .criar-topico-box { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; background: rgba(0,0,0,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); }
+        .criar-topico-box input, .criar-topico-box textarea { width: 100%; padding: 12px; background: var(--cinza-input); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; color: var(--branco); font-size: 0.95rem; }
+        .criar-topico-box input:focus, .criar-topico-box textarea:focus { outline: none; border-color: #00BFFF; }
+        .criar-topico-box textarea { height: 65px; resize: none; }
+        .btn-criar-topico { align-self: flex-end; background: #00BFFF; color: var(--branco); border: none; padding: 10px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-criar-topico:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* LISTA DE DISCUSSÕES DO FÓRUM (ESTILO O.G.) */
+        .topicos-lista { display: flex; flex-direction: column; gap: 12px; }
+        .topico-linha { display: flex; justify-content: space-between; align-items: center; background: var(--cinza-input); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.01); cursor: pointer; transition: all 0.2s; }
+        .topico-linha:hover { border-color: var(--rosa-choque); transform: translateX(3px); background: #26223d; }
+        .topico-info h4 { font-size: 1rem; color: var(--branco); margin-bottom: 4px; }
+        .topico-info span { font-size: 0.8rem; color: var(--texto-suave); }
+        .topico-stats { text-align: right; font-size: 0.8rem; color: #00FF00; font-weight: bold; white-space: nowrap; margin-left: 10px; }
+
+        /* COLUNA DIREITA: MEMBROS ATIVOS */
+        .membros-grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+        .membro-avatar-mini { width: 50px; height: 50px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; border: 1px solid rgba(255,255,255,0.05); }
+
+        @media (max-width: 900px) { 
+            .forum-layout { grid-template-columns: 1fr; } 
+            .coluna-membros { display: none; } 
+            .tribo-header-card { flex-direction: column; align-items: flex-start; gap: 15px; margin: 20px 20px 0 20px; width: calc(100% - 40px); }
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🪐 NAVBAR UNIFICADA ATUALIZADA COM O BOTÃO SUPREMO DE CRIAR TRIBU -->
+<header class="navbar" style="background-color: var(--cinza-card); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo) 1; position: sticky; top: 0; z-index: 100; height: 65px;">
+    
+    <!-- Lado Esquerdo: Nossa Logo Definitiva -->
+    <div class="nav-logo-container">
+        <a href="/">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));" onerror="this.onerror=null; this.src='/logo.png';">
+        </a>
+    </div>
+
+    <!-- Lado Direito: Links de Navegação + O Botão de Criar Tribu -->
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
+            <a href="/" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Feed</a>
+            <a href="/tribos.html" style="text-decoration: none; color: var(--rosa-choque); font-weight: 600; font-size: 0.95rem;">Tribos</a>
+            <a href="/" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Messenger</a>
+            <a href="/perfil.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
+        </nav>
+
+        <!-- 🚀 O BOTÃO SUPREMO DE CRIAR NOVA TRIBU -->
+        <button onclick="window.location.href='/tribos.html#formulario-criar'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: var(--branco); border: none; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-plus-circle"></i> Fundar Tribu
+        </button>
+    </div>
+</header>
+
+    <!-- HEADER DA TRIBO ATIVA -->
+    <div class="tribo-header-card">
+        <div class="tribo-info-principal">
+            <div class="tribo-emblema">🎮</div>
+            <div class="tribo-titulos">
+                <h1 id="lbl-nome-tribo">Tocadores de PS2</h1>
+                <p id="lbl-desc-tribo">Bomba Patch atualizado, Guitar Hero e memórias do melhor console de todos os tempos.</p>
+            </div>
+        </div>
+        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribo</button>
+    </div>
+
+    <div class="forum-layout">
+        <!-- COLUNA ESQUERDA: FÓRUM E DISCUSSÕES -->
+        <main class="card-vibe">
+            
+            <!-- Mural de Vibes Rápidas (Stories da Comu) -->
+            <div class="stories-tribo-mural" id="mural-stories-tribo">
+                <div class="circle-story" title="Postar uma Vibe rápida de 24h">➕</div>
+                <div class="circle-story" title="Vibe PS2">📸</div>
+                <div class="circle-story" title="Trilha Sonora">🎧</div>
+                <div class="circle-story" title="Skatistas PS2">🛹</div>
+            </div>
+
+            <h2 style="font-size: 1.3rem; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-comments" style="color: #00BFFF;"></i> Fórum de Discussões
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 20px;">Tópicos criados pelos membros de forma estritamente cronológica.</p>
+
+            <!-- Caixa de Criar Tópico -->
+            <div class="criar-topico-box">
+                <input type="text" placeholder="Título do Tópico (Ex: Quem joga Guitar Hero ainda?)" id="txt-titulo-topico">
+                <textarea placeholder="Escreva o argumento inicial da sua discussão... ✍️" id="txt-corpo-topico"></textarea>
+                <button class="btn-criar-topico" id="btn-lançar-topico">Lançar Tópico</button>
+            </div>
+
+            <!-- Lista de Tópicos -->
+            <div class="topicos-lista" id="container-topicos-forum">
+                <div class="topico-linha">
+                    <div class="topico-info">
+                        <h4>Qual o melhor patch do Bomba Patch de todos?</h4>
+                        <span>Criado por @lucas_skate • há 2 horas</span>
+                    </div>
+                    <div class="topico-stats">14 respostas</div>
+                </div>
+                <div class="topico-linha">
+                    <div class="topico-info">
+                        <h4>Memory Card corrompido: tem salvação?</h4>
+                        <span>Criado por @marina_retro • há 1 dia</span>
+                    </div>
+                    <div class="topico-stats">8 respostas</div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- COLUNA DIREITA: MEMBROS DA TRIBO -->
+        <aside class="card-vibe coluna-membros">
+            <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Membros (2.1k)</h3>
+            <div class="membros-grade">
+                <div class="membro-avatar-mini" title="Membro">🤠</div>
+                <div class="membro-avatar-mini" title="Lucas">🛹</div>
+                <div class="membro-avatar-mini" title="Marina">🎧</div>
+                <div class="membro-avatar-mini" title="Beatriz">👩‍🎨</div>
+                <div class="membro-avatar-mini" title="Gamer">🎮</div>
+                <div class="membro-avatar-mini" title="Pet Vibe">🐱</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MODAL DE DISCUSSÃO DO TÓPICO -->
+    <div id="modal-discussao-topico" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; justify-content:center; align-items:center; padding:20px;">
+        <div class="card-vibe" style="max-width:700px; width:100%; max-height:90vh; display:flex; flex-direction:column; position:relative; border:1px solid #FF1493; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+            <button id="btn-fechar-modal-discussao" style="position:absolute; top:15px; right:20px; background:none; border:none; color:var(--texto-suave); font-size:1.5rem; cursor:pointer;">✕</button>
+            <div id="modal-topico-cabecalho" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 15px;">
+                <h3 id="modal-topico-titulo" style="font-size: 1.3rem; margin-bottom: 6px; color:#FFFFFF;">Título do Tópico</h3>
+                <div id="modal-topico-autor" style="font-size: 0.85rem; color:var(--texto-suave);">Por @autor • há momentos</div>
+                <p id="modal-topico-conteudo" style="font-size: 0.95rem; margin-top: 10px; color:#E0E0E0; line-height: 1.5; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px;"></p>
+            </div>
+            <!-- Lista de Respostas (Scrollable) -->
+            <div id="modal-respostas-lista" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:15px; padding-right:5px; min-height:120px; max-height:300px;">
+                <div style="color:var(--texto-suave); font-size:0.85rem; text-align:center; padding:20px;">Nenhuma resposta ainda. Seja o primeiro a comentar! 💬</div>
+            </div>
+            <!-- Formulário para Comentar -->
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="txt-nova-resposta" placeholder="Digite sua resposta ou opinião... 💬" style="flex:1; padding:12px; background:var(--cinza-input); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:var(--branco); font-size:0.95rem;">
+                <button id="btn-enviar-resposta" style="background:#00BFFF; color:#fff; border:none; padding:10px 20px; border-radius:10px; font-weight:bold; cursor:pointer; white-space:nowrap;">Comentar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Encanamento em Tempo Real do Fórum & Mural de Vibes -->
+    <script type="module" src="./src/services/app-forum.js"></script>
+    <script type="module" src="./src/services/app-forum-actions.js"></script>
+    <script type="module" src="./src/services/app-mural-vibes.js"></script>
+    <script type="module">
+        import { realizarLogout } from "./src/services/firebase-auth-login.js";
+
+        const btnSair = document.getElementById("btn-sair-forum");
+        if (btnSair) {
+            btnSair.addEventListener("click", async () => {
+                const confirmar = confirm("Deseja desconectar da sua Tribo por hoje e descansar a mente? ☕");
+                if (confirmar) {
+                    console.log("Encerrando sessão com segurança...");
+                    await realizarLogout();
+                    window.location.href = "/";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1799 @@
+@import "tailwindcss";
+
+:root {
+  --rosa-fundo: #FFF0F5; /* Fundo rosa clarinho do OrkuVibe */
+  --rosa-choque: #FF1493;
+  --rosa-medio: #FF69B4;
+  --azul-vibe: #00BFFF;
+  --texto-escuro: #4A4A4A;
+  --branco: #FFFFFF;
+
+  /* 🪐 Variáveis Cyber & Mural de Vibes */
+  --preto-fundo: #0B0911;
+  --cinza-card: #151221;
+  --cinza-input: #1F1C33;
+  --texto-suave: #A5A2B8;
+  --ciano-neon: #00F0FF;
+  --pink-magenta: #FF007F;
+
+  /* 🪐 Gradiente Supremo (Rosa -> Roxo -> Ciano Neon) */
+  --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+  --gradient-logo: linear-gradient(135deg, #FF1493 0%, #9400D3 50%, #00BFFF 100%);
+  --gradient-suave: linear-gradient(135deg, rgba(255, 20, 147, 0.05) 0%, rgba(0, 191, 255, 0.05) 100%);
+
+  /* 🌈 O NOVO DEGRADÊ NEON DA LOGO (Rosa -> Roxo -> Azul -> Verde -> Amarelo) */
+  --gradient-neon: linear-gradient(135deg, #FF1493 0%, #9400D3 25%, #00BFFF 50%, #00FF00 75%, #FFD700 100%);
+  --gradient-botao-hover: linear-gradient(135deg, #D1107A 0%, #7A00B3 25%, #009ACD 50%, #00CD00 75%, #E6C200 100%);
+}
+
+/* 🪐 O PALCO ORBITAL (A logo oficial no centro com órbita e poeira cósmica) */
+.orbit-universe-stage {
+  position: relative;
+  width: 460px;
+  max-width: 95vw;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  overflow: visible;
+}
+
+/* 🌍 A LOGO OFICIAL (Flutuando suavemente no centro com o efeito 3D preservado) */
+.orkuvibe-planet-core {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: flutuacaoPlaneta 5s ease-in-out infinite;
+}
+
+/* Anéis de órbita elíptica atrás e ao redor da logo */
+.cosmic-orbit-backdrop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.cosmic-orbit-foreground {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Halo estelar difuso atrás da logo */
+.cosmic-glow-halo {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 20, 147, 0.18) 0%, rgba(0, 191, 255, 0.14) 45%, rgba(255, 215, 0, 0.08) 65%, transparent 75%);
+  filter: blur(28px);
+  animation: pulsarHalo 6s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Anel principal de poeira cósmica */
+.orbit-path-ring-main {
+  position: absolute;
+  width: 430px;
+  height: 140px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 105, 180, 0.45);
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.35), inset 0 0 25px rgba(255, 20, 147, 0.25);
+  transform: rotateX(68deg) rotateY(-12deg) rotateZ(0deg);
+  animation: orbitaGiro1 20s linear infinite;
+  pointer-events: none;
+}
+
+/* Segundo anel cruzado com gradiente cósmico */
+.orbit-path-ring-secondary {
+  position: absolute;
+  width: 390px;
+  height: 125px;
+  border-radius: 50%;
+  border: 1px dotted rgba(0, 191, 255, 0.5);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.25), inset 0 0 20px rgba(0, 255, 150, 0.2);
+  transform: rotateX(65deg) rotateY(18deg) rotateZ(35deg);
+  animation: orbitaGiro2 26s linear infinite reverse;
+  pointer-events: none;
+}
+
+/* Terceiro anel sutil e inclinado */
+.orbit-path-ring-outer {
+  position: absolute;
+  width: 470px;
+  height: 155px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  box-shadow: 0 0 30px rgba(255, 20, 147, 0.2);
+  transform: rotateX(72deg) rotateY(-5deg) rotateZ(-20deg);
+  animation: orbitaGiro3 32s linear infinite;
+  pointer-events: none;
+}
+
+/* Anéis com partículas de poeira cósmica orbitando em 3D */
+.cosmic-dust-stream-1 {
+  position: absolute;
+  width: 430px;
+  height: 140px;
+  border-radius: 50%;
+  transform: rotateX(68deg) rotateY(-12deg);
+  animation: orbitaGiro1 12s linear infinite;
+  pointer-events: none;
+}
+
+.cosmic-dust-stream-2 {
+  position: absolute;
+  width: 390px;
+  height: 125px;
+  border-radius: 50%;
+  transform: rotateX(65deg) rotateY(18deg) rotateZ(35deg);
+  animation: orbitaGiro2 16s linear infinite reverse;
+  pointer-events: none;
+}
+
+.cosmic-dust-stream-3 {
+  position: absolute;
+  width: 470px;
+  height: 155px;
+  border-radius: 50%;
+  transform: rotateX(72deg) rotateY(-5deg) rotateZ(-20deg);
+  animation: orbitaGiro3 22s linear infinite;
+  pointer-events: none;
+}
+
+/* Partícula de poeira individual posicionada na elipse */
+.dust-mote {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 8px currentColor, 0 0 14px currentColor;
+  animation: cintilarPoeira 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes cintilarPoeira {
+  0% {
+    transform: scale(0.65);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+}
+
+@keyframes pulsarHalo {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.65;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes orbitaGiro1 {
+  0% {
+    transform: rotateX(68deg) rotateY(-12deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(68deg) rotateY(-12deg) rotateZ(360deg);
+  }
+}
+
+@keyframes orbitaGiro2 {
+  0% {
+    transform: rotateX(65deg) rotateY(18deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(65deg) rotateY(18deg) rotateZ(360deg);
+  }
+}
+
+@keyframes orbitaGiro3 {
+  0% {
+    transform: rotateX(72deg) rotateY(-5deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(72deg) rotateY(-5deg) rotateZ(360deg);
+  }
+}
+
+/* 🪐 Ajuste de Alta Qualidade para a Logo no Celular e Computador */
+.logo-placeholder, .logo-3d-image, .orkuvibe-logo-img, .logo-oficial-img {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  margin-bottom: 5px;
+  
+  /* Renderização com máxima nitidez e suavidade óptica */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: auto;
+  
+  /* Suaviza as bordas tridimensionais */
+  backface-visibility: hidden;
+  transform: translateZ(0);
+
+  /* Sombra luminosa holográfica sem fundo */
+  filter: drop-shadow(0 14px 28px rgba(255, 20, 147, 0.22)) drop-shadow(0 0 20px rgba(0, 191, 255, 0.18));
+  transition: transform 0.3s ease;
+}
+
+/* 🏷️ Logo Compacta Oficial da Barra Superior (Header Navbar) */
+.nav-logo-img {
+  height: 42px !important;
+  max-height: 42px !important;
+  width: auto !important;
+  max-width: 180px !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin-bottom: 0 !important;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.25));
+  transition: transform 0.2s ease;
+}
+
+.orbit-universe-stage:hover .orkuvibe-logo-img {
+  transform: scale(1.03) translateZ(0);
+}
+
+/* Garante que em telas bem pequenas o celular não "esmague" a logo */
+@media (max-width: 480px) {
+  .orbit-universe-stage {
+    height: 280px;
+    width: 330px;
+  }
+  .logo-placeholder, .logo-3d-image, .orkuvibe-logo-img, .logo-oficial-img {
+    max-width: 250px;
+  }
+  .orbit-path-ring-main, .cosmic-dust-stream-1 {
+    width: 320px;
+    height: 110px;
+  }
+  .orbit-path-ring-secondary, .cosmic-dust-stream-2 {
+    width: 290px;
+    height: 95px;
+  }
+  .orbit-path-ring-outer, .cosmic-dust-stream-3 {
+    width: 340px;
+    height: 120px;
+  }
+}
+
+/* 💫 A LINHA DA ÓRBITA ELÍPTICA 3D (O anel orbital de poeira estelar) */
+.orbit-path-ring {
+  position: absolute;
+  width: 390px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 20, 147, 0.35);
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.3), inset 0 0 20px rgba(255, 105, 180, 0.25);
+  transform: rotateX(72deg) rotateY(-8deg);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Partículas de Poeira Cósmica Flutuantes ao Redor da Logo */
+.cosmic-dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: pulsarPoeira 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulsarPoeira {
+  0% {
+    transform: scale(0.6) translateY(0px);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2) translateY(-4px);
+    opacity: 0.9;
+    box-shadow: 0 0 8px currentColor;
+  }
+  100% {
+    transform: scale(0.8) translateY(2px);
+    opacity: 0.4;
+  }
+}
+
+/* 👨‍🚀👨‍🚀👨‍🚀 O ANEL QUE GIRA OS 3 ASTRONAUTAS AO REDOR DA TERRA / ORKUVIBE */
+.astronaut-orbit-ring {
+  position: absolute;
+  width: 390px;
+  height: 120px;
+  border-radius: 50%;
+  transform: rotateX(72deg) rotateY(-8deg);
+  transform-style: preserve-3d;
+  pointer-events: none;
+  /* Órbita espacial contínua de 360 graus */
+  animation: orbitaEspacial 7s linear infinite;
+}
+
+/* Posições dos 3 astronautas distribuídos na órbita */
+.astronaut-carrier {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.astronaut-1 {
+  /* Astronauta Rosa Principal */
+  transform: rotate(0deg) translate(195px, 0) rotate(0deg);
+}
+
+.astronaut-2 {
+  /* Astronauta Azul Neon */
+  transform: rotate(120deg) translate(195px, 0) rotate(-120deg);
+}
+
+.astronaut-3 {
+  /* Astronauta Rosa Claro / Magenta */
+  transform: rotate(240deg) translate(195px, 0) rotate(-240deg);
+}
+
+/* O Boneco Astronauta que compensa a rotação para ficar sempre de pé virado para a frente */
+.astronaut-figure {
+  width: 38px;
+  height: 38px;
+  margin-left: -19px;
+  margin-top: -19px;
+  animation: contraRotacao 7s linear infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* Efeito de brilho de propulsor / rastro de foguete dos astronautas */
+.jetpack-trail {
+  position: absolute;
+  bottom: -4px;
+  width: 8px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF 0%, #00BFFF 60%, transparent 100%);
+  animation: rastroFogo 0.4s ease-in-out infinite alternate;
+}
+
+/* ✨ FEIXE DE BRILHO SUTIL AO PASSAR - REMOVIDO / OCULTO */
+.orbit-universe-stage::after {
+  display: none !important;
+}
+
+/* 🚀 KEYFRAMES DAS ANIMAÇÕES ESPACIAIS */
+
+/* 1. Rotação orbital em volta do nome (como satélites ou astronautas em torno da Terra) */
+@keyframes orbitaEspacial {
+  0% {
+    transform: rotateX(72deg) rotateY(-8deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(72deg) rotateY(-8deg) rotateZ(360deg);
+  }
+}
+
+/* 2. Contra-rotação nos astronautas para mantê-los sempre visíveis e tridimensionais */
+@keyframes contraRotacao {
+  0% {
+    transform: rotateZ(0deg) rotateX(-72deg) scale(1);
+    z-index: 20;
+  }
+  25% {
+    transform: rotateZ(-90deg) rotateX(-72deg) scale(1.15);
+    z-index: 25;
+  }
+  50% {
+    transform: rotateZ(-180deg) rotateX(-72deg) scale(0.85);
+    z-index: 4; /* Passa por trás da logo */
+  }
+  75% {
+    transform: rotateZ(-270deg) rotateX(-72deg) scale(0.9);
+    z-index: 4; /* Passa por trás da logo */
+  }
+  100% {
+    transform: rotateZ(-360deg) rotateX(-72deg) scale(1);
+    z-index: 20;
+  }
+}
+
+/* 3. Flutuação suave do Planeta OrkuVibe no espaço */
+@keyframes flutuacaoPlaneta {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 4. Rastro de propulsão dos astronautas */
+@keyframes rastroFogo {
+  0% {
+    opacity: 0.6;
+    transform: scaleY(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1.3);
+  }
+}
+
+/* 5. Feixe de luz cósmico */
+@keyframes feixeDeLuz {
+  0% {
+    left: -150%;
+  }
+  35% {
+    left: 150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BLOCO CENTRAL DO PERFIL (LARA CROFT / ANTIALGORITMO / ORKUVIBE)
+   ══════════════════════════════════════════════════════════════════════ */
+.bloco-central-perfil {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  background: #FFFFFF;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(255, 20, 147, 0.05);
+  border: 1px solid rgba(255, 105, 180, 0.15);
+}
+
+/* Cabeçalho */
+.perfil-header {
+  border-bottom: 2px solid #FFF0F5;
+  padding-bottom: 20px;
+}
+.user-name {
+  color: #4A4A4A;
+  font-size: 1.8rem;
+  margin-bottom: 5px;
+  font-weight: 800;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.user-status {
+  font-size: 1rem;
+  color: #FF1493;
+  font-weight: normal;
+}
+.user-slogan {
+  font-size: 0.95rem;
+  color: #777;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* Sorte do Dia */
+.sorte-do-dia-box {
+  background-color: #FFF0F5;
+  padding: 12px 15px;
+  border-radius: 12px;
+  margin-top: 15px;
+  border-left: 4px solid #00BFFF;
+}
+.sorte-titulo {
+  font-weight: bold;
+  color: #FF1493;
+  font-size: 0.9rem;
+}
+.sorte-texto {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* Seções Gerais */
+.bloco-central-perfil h3 {
+  color: #FF1493;
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #FFF0F5;
+  padding-bottom: 5px;
+}
+
+/* Medidores */
+.medidores-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.medidor-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAFAFA;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.medidor-icone { font-size: 1.2rem; width: 25px; text-align: center; }
+.medidor-label { font-size: 0.9rem; font-weight: 600; width: 80px; color: #555; }
+.barra-progresso {
+  flex: 1;
+  height: 12px;
+  background: #EAEAEA;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progresso-preenchido { height: 100%; border-radius: 10px; transition: width 0.5s ease-out; }
+.progresso-preenchido.azul { background: #00BFFF; }
+.progresso-preenchido.rosa { background: #FF69B4; }
+.progresso-preenchido.roxo { background: #9400D3; }
+.medidor-porcentagem { font-size: 0.85rem; font-weight: bold; width: 40px; text-align: right; color: #666; }
+
+/* Bio */
+.bio-conteudo p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* Scraps */
+.scraps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #FFF0F5;
+  margin-bottom: 15px;
+}
+.scraps-header h3 { border: none; margin-bottom: 0; padding-bottom: 0; }
+.ver-todos-link { font-size: 0.85rem; color: #00BFFF; text-decoration: none; font-weight: bold; cursor: pointer; }
+.ver-todos-link:hover { text-decoration: underline; }
+
+.scraps-list { display: flex; flex-direction: column; gap: 10px; }
+.scrap-card {
+  background: #FAFAFA;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #EAEAEA;
+}
+.scrap-autor {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #4A4A4A;
+  margin-bottom: 5px;
+}
+.scrap-data { color: #999; font-size: 0.75rem; }
+.scrap-texto { font-size: 0.9rem; color: #555; line-height: 1.4; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   ESTILOS GERAIS DAS COLUNAS LATERAIS (ESQUERDA E DIREITA)
+   ══════════════════════════════════════════════════════════════════════ */
+.coluna-esquerda-vibe, .coluna-direita-vibe {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+    .coluna-esquerda-vibe, .coluna-direita-vibe {
+        width: 100%;
+    }
+}
+
+/* --- ESTILOS DA ESQUERDA --- */
+.menu-perfil {
+    background: #FFFFFF;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.04);
+}
+.menu-item {
+    display: block;
+    padding: 10px 12px;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+    font-weight: 500;
+}
+.menu-item:hover, .menu-item.active {
+    background-color: #FFF0F5;
+    color: #FF1493;
+    font-weight: bold;
+}
+
+/* 🎨 CONTAINER INTEGRADO PARA O PERFIL DO TRIBBUSVIBE (COMPONENTES COM DEGRADÊ) */
+.container-demonstracao {
+    display: flex;
+    max-width: 100%;
+    width: 100%;
+    gap: 20px;
+    background: var(--branco);
+    padding: 25px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(255, 20, 147, 0.08);
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    margin-bottom: 25px;
+}
+
+/* 👤 COMPONENTE 1: MEDIDORES DE VIBE */
+.secao-medidores {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.secao-medidores h3 {
+    color: var(--texto-escuro);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.medidor-linha {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: #FAFAFA;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #F0F0F0;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.medidor-linha:hover {
+    border-color: rgba(255, 20, 147, 0.3);
+    transform: translateX(2px);
+}
+
+.medidor-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.barra-base {
+    width: 100%;
+    height: 10px;
+    background: #EAEAEA;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Aplicação do Degradê nas Barras de Progresso */
+.barra-preenchimento {
+    height: 100%;
+    background: var(--gradient-logo); /* O degradê cobre a barra toda */
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 🎵 COMPONENTE 2: TOCADOR DE MÚSICA */
+.secao-player {
+    width: 240px;
+    background: linear-gradient(135deg, #111111 0%, #222222 100%);
+    color: var(--branco);
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    position: relative;
+    justify-content: space-between;
+}
+
+/* Borda Neon Fina usando o Degradê */
+.secao-player::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: var(--gradient-logo);
+    border-radius: 22px;
+    z-index: -1;
+}
+
+.player-topo {
+    font-size: 0.7rem;
+    color: #00BFFF;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-conteudo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.disco-vinil {
+    font-size: 1.4rem;
+    background: #333;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #FF1493;
+    /* Animação para o disco ficar girando suavemente */
+    animation: rodarDisco 4s linear infinite;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+}
+
+.disco-vinil:hover {
+    transform: scale(1.08);
+}
+
+.disco-vinil.pausado {
+    animation-play-state: paused;
+    filter: grayscale(0.4);
+}
+
+.musica-detalhes {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.musica-nome {
+    font-size: 0.85rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.musica-artista {
+    font-size: 0.75rem;
+    color: #AAA;
+}
+
+/* Barra de progresso do player também com o degradê */
+.player-progresso-base {
+    width: 100%;
+    height: 4px;
+    background: #444;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.player-progresso-atual {
+    height: 100%;
+    background: var(--gradient-logo);
+    transition: width 0.3s ease;
+}
+
+/* Animação CSS para rodar o disco de música */
+@keyframes rodarDisco {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+    .container-demonstracao {
+        flex-direction: column;
+        align-items: center;
+    }
+    .secao-player { width: 100%; }
+}
+
+/* Player de Música da Barra Lateral */
+.player-musica-vibe {
+    background: linear-gradient(135deg, #111, #222);
+    color: #FFF;
+    padding: 15px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
+}
+.player-musica-vibe::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: var(--gradient-logo);
+    border-radius: 22px;
+    z-index: -1;
+}
+.player-header { 
+    font-size: 0.75rem; 
+    color: #00BFFF; 
+    font-weight: bold; 
+    margin-bottom: 8px; 
+    text-transform: uppercase; 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.player-body { display: flex; align-items: center; gap: 10px; }
+.disco-animado { 
+    font-size: 1.4rem; 
+    background: #333; 
+    padding: 5px; 
+    border-radius: 50%; 
+    border: 2px dashed #FF1493;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    animation: rodarDisco 4s linear infinite;
+}
+.disco-animado:not(.girando) {
+    animation-play-state: paused;
+}
+.musica-info { display: flex; flex-direction: column; overflow: hidden; }
+.musica-titulo { font-size: 0.85rem; font-weight: bold; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.musica-artista { font-size: 0.75rem; color: #AAA; }
+.player-progress-bar { width: 100%; height: 4px; background: #444; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.player-progress-current { height: 100%; background: var(--gradient-logo); transition: width 0.3s ease; }
+
+/* --- ESTILOS DA DIREITA --- */
+.box-conexoes {
+    background: #FFFFFF;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.04);
+}
+.box-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #FFF0F5;
+    padding-bottom: 5px;
+}
+.box-header h3 { font-size: 0.95rem; color: #4A4A4A; font-weight: 700; margin: 0; }
+.ver-mais { font-size: 0.75rem; color: #00BFFF; text-decoration: none; cursor: pointer; font-weight: bold; }
+.ver-mais:hover { text-decoration: underline; }
+
+/* Grade do Top 6 */
+.grade-conexoes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.conexao-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+}
+.avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    background: #FFF0F5;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+    border: 1px solid rgba(255, 105, 180, 0.1);
+    transition: transform 0.2s, border-color 0.2s;
+}
+.conexao-card:hover .avatar-placeholder { transform: scale(1.05); border-color: #FF1493; }
+.conexao-nome { font-size: 0.75rem; margin-top: 4px; color: #666; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Lista de Comunidades */
+.lista-comus { display: flex; flex-direction: column; gap: 8px; }
+.comu-item-linha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.comu-item-linha:hover { background: #FFF0F5; }
+.comu-icone { font-size: 1.1rem; }
+.comu-nome { font-size: 0.85rem; color: #555; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   HOME FEED / LIQUIDIFICADOR (STORIES, FEED X/TWITTER, EVENTOS)
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Container Principal do Liquidificador */
+.main-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 280px;
+    max-width: 1200px;
+    width: 100%;
+    gap: 20px;
+    margin-top: 20px;
+    padding: 0 16px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 📸 Topo Central: Stories das Comunidades (Instagram) */
+.stories-comus-container {
+    grid-column: 1 / -1;
+    background: #FFFFFF;
+    padding: 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.04);
+}
+
+.story-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    min-width: 75px;
+}
+
+.story-ring {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #FF1493; /* Anel vibrante */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    background: #FFF0F5;
+    transition: transform 0.2s;
+}
+
+.story-card:hover .story-ring {
+    transform: scale(1.05) rotate(5deg);
+}
+
+.story-name {
+    font-size: 0.75rem;
+    margin-top: 5px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    font-weight: 600;
+    color: #4A4A4A;
+}
+
+/* Estilos de Caixa Box Vibe */
+.box-vibe {
+    background: #FFFFFF;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.04);
+}
+
+.box-vibe h3 {
+    color: #FF1493;
+    font-size: 1rem;
+    border-bottom: 1px solid #FFF0F5;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Perfil Resumo Card */
+.perfil-resumo-card {
+    align-items: center;
+    text-align: center;
+}
+
+.perfil-avatar {
+    width: 90px;
+    height: 90px;
+    background: #FFF0F5;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.8rem;
+    border: 3px solid #FF1493;
+    overflow: hidden;
+}
+
+.perfil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.termometros-mini {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    margin-top: 5px;
+}
+
+.barra-mini {
+    width: 100%;
+    height: 8px;
+    background: #EAEAEA;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 3px;
+}
+
+.barra-preenchida { height: 100%; border-radius: 10px; background: var(--gradient-logo); transition: width 0.4s ease; }
+.barra-preenchida.azul { background: var(--gradient-logo); }
+.barra-preenchida.rosa { background: var(--gradient-logo); }
+.barra-preenchida.roxo { background: var(--gradient-logo); }
+
+/* 💬 Coluna Central: Feed e Micro-Scraps (X / Twitter) */
+.coluna-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+/* Cards Gerais */
+.card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 105, 180, 0.15);
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.04);
+}
+
+/* Card Postar */
+.card-postar {
+    padding: 16px;
+}
+
+.postar-topo {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.avatar-p {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #FF69B4;
+    flex-shrink: 0;
+}
+
+.card-postar textarea {
+    width: 100%;
+    min-height: 65px;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    padding: 10px 12px;
+    resize: none;
+    font-size: 0.95rem;
+    outline: none;
+    color: #4A4A4A;
+    background: #FAFAFA;
+    transition: border-color 0.2s;
+}
+
+.card-postar textarea:focus {
+    border-color: #FF69B4;
+    background: #FFFFFF;
+}
+
+.postar-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid #FFF0F5;
+}
+
+.botoes-midia {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-midia {
+    background: #FFF0F5;
+    color: #FF1493;
+    border: 1px solid rgba(255, 105, 180, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.btn-midia:hover {
+    background: #FFE4E1;
+}
+
+.btn-primario {
+    background: #FF1493;
+    color: #FFFFFF;
+    border: none;
+    padding: 7px 22px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.25);
+    transition: transform 0.1s, background 0.2s;
+}
+
+.btn-primario:hover {
+    background: #D1107A;
+    transform: scale(1.02);
+}
+
+/* Lista de Cards do Feed */
+.feed-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.card-feed {
+    padding: 18px;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.usuario-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar-m {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #FF69B4;
+    flex-shrink: 0;
+}
+
+.usuario-info h4 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #4A4A4A;
+    margin: 0;
+}
+
+.usuario-info span {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.btn-opcoes {
+    background: none;
+    border: none;
+    color: #AAA;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 1rem;
+    border-radius: 6px;
+}
+
+.btn-opcoes:hover {
+    color: #FF1493;
+    background: #FFF0F5;
+}
+
+.feed-conteudo p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4A4A4A;
+    margin-bottom: 12px;
+}
+
+.feed-midia {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    max-height: 380px;
+    background: #000;
+}
+
+.feed-midia img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.feed-footer {
+    display: flex;
+    gap: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #FFF0F5;
+}
+
+.acao-feed {
+    background: none;
+    border: none;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.acao-feed:hover {
+    color: #FF1493;
+    background: #FFF0F5;
+}
+
+.acao-feed.curtido {
+    color: #FF1493;
+}
+
+/* Card Vibe e Interações de Curtida */
+.card-vibe {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-vibe:hover {
+    box-shadow: 0 8px 24px rgba(255, 20, 147, 0.08);
+}
+
+.btn-curtir {
+    transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-curtir:hover {
+    color: #FF1493 !important;
+    transform: scale(1.08);
+}
+
+.btn-curtir:active {
+    transform: scale(0.92);
+}
+
+div.avatar-m {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: #FFF0F5;
+}
+
+/* Coluna Direita: Eventos e Sugestões */
+.coluna-direita {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.card-eventos, .card-sugestoes {
+    padding: 16px;
+}
+
+.eventos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #FFF0F5;
+    padding-bottom: 6px;
+}
+
+.eventos-header h3, .card-sugestoes h3 {
+    font-size: 0.95rem;
+    color: #FF1493;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.link-ver-todos {
+    font-size: 0.75rem;
+    color: #00BFFF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-ver-todos:hover {
+    text-decoration: underline;
+}
+
+.eventos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.evento-item {
+    background: #FFF0F5;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border-left: 4px solid #00BFFF;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.evento-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #FFFFFF;
+    padding: 4px 8px;
+    border-radius: 8px;
+    min-width: 44px;
+    border: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.evento-data .mes {
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #FF1493;
+}
+
+.evento-data .dia {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #4A4A4A;
+    line-height: 1;
+}
+
+.evento-detalhes h4 {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #4A4A4A;
+    margin: 0 0 2px 0;
+}
+
+.evento-detalhes p {
+    font-size: 0.75rem;
+    color: #777;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.evento-detalhes .confirmados {
+    font-size: 0.7rem;
+    color: #FF1493;
+    font-weight: bold;
+    display: block;
+    margin-top: 2px;
+}
+
+.sugestoes-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.sugestao-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: #FAFAFA;
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+.avatar-s {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #FF69B4;
+    flex-shrink: 0;
+}
+
+.sugestao-info h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4A4A4A;
+    margin: 0;
+}
+
+.sugestao-info span {
+    font-size: 0.7rem;
+    color: #999;
+}
+
+.btn-adicionar {
+    background: #FFF0F5;
+    color: #FF1493;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.btn-adicionar:hover {
+    background: #FF1493;
+    color: #FFFFFF;
+    transform: scale(1.05);
+}
+
+/* Responsividade do Liquidificador */
+@media (max-width: 960px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+    .main-layout .coluna-direita,
+    .main-layout .coluna-esquerda-vibe {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   CONFIGURAÇÕES DA MINHA VIBE (Perfil & Identidade Visual)
+   ========================================================================== */
+.navbar-neon-border {
+  border-bottom: 3px solid transparent;
+  border-image: var(--gradient-neon) 1;
+}
+
+.text-gradient-neon {
+  background: var(--gradient-neon);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-neon {
+  background: var(--gradient-neon);
+}
+
+.bg-gradient-neon:hover {
+  background: var(--gradient-botao-hover);
+}
+
+.btn-salvar-config {
+  width: 100%;
+  padding: 14px;
+  background: var(--gradient-neon);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-salvar-config:hover {
+  background: var(--gradient-botao-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.25);
+}
+
+/* ==========================================================================
+   MENSAGENS PRIVADAS & BATE-PAPO RETRÔ (WHATSAPP + MSN TREMEDEIRA)
+   ========================================================================== */
+@keyframes tremerBalao {
+  0% { transform: translate(2px, 1px) rotate(0deg); }
+  20% { transform: translate(-2px, -2px) rotate(-1deg); }
+  40% { transform: translate(-3px, 0px) rotate(1deg); }
+  60% { transform: translate(3px, 2px) rotate(0deg); }
+  80% { transform: translate(1px, -1px) rotate(1deg); }
+  100% { transform: translate(-1px, 2px) rotate(-1deg); }
+}
+
+@keyframes tremerTelaGeral {
+  0% { transform: translate(4px, 3px) rotate(0deg); }
+  15% { transform: translate(-5px, -4px) rotate(-0.5deg); }
+  30% { transform: translate(-4px, 2px) rotate(0.5deg); }
+  45% { transform: translate(5px, -3px) rotate(0deg); }
+  60% { transform: translate(-3px, 4px) rotate(0.5deg); }
+  75% { transform: translate(4px, -2px) rotate(-0.5deg); }
+  90% { transform: translate(-2px, 3px) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.anim-tremer-tela {
+  animation: tremerTelaGeral 0.5s ease-in-out;
+}
+
+.anim-tremer-balao {
+  animation: tremerBalao 0.25s ease infinite;
+}
+
+@keyframes tremerBalaão {
+  0% { transform: translate(3px, 2px) rotate(0deg); }
+  20% { transform: translate(-3px, -3px) rotate(-1deg); }
+  40% { transform: translate(-4px, 1px) rotate(1deg); }
+  60% { transform: translate(4px, 3px) rotate(0deg); }
+  80% { transform: translate(2px, -2px) rotate(1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Classes de balões do Chat Privado (Direct Vibe) */
+.balao {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: break-word;
+  transition: all 0.2s ease;
+}
+
+.balao.enviado {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #FF1493 0%, #D1107A 100%);
+  color: #FFFFFF;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 8px rgba(255, 20, 147, 0.25);
+}
+
+.balao.recebido {
+  align-self: flex-start;
+  background: #1E1E24;
+  color: #F0F0F0;
+  border-bottom-left-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.balao.atencao-msg {
+  align-self: center;
+  margin: 8px auto;
+  background: linear-gradient(90deg, #2D0036 0%, #4A0E4E 50%, #2D0036 100%);
+  color: #00BFFF;
+  border: 1.5px solid #FF1493;
+  font-weight: 800;
+  text-align: center;
+  font-size: 13px;
+  box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
+  animation: tremerBalao 0.3s ease infinite;
+}
+
+/* Animação da barra de Stories (5 segundos) */
+@keyframes progressoStory {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* 🪐 TRIBBU'S VIBE - MEU PERFIL (TEMA DARK RETRO-CYBER) */
+:root {
+  --preto-fundo: #0B0911;   
+  --cinza-card: #151221;    
+  --cinza-input: #1F1C33;   
+  --texto-suave: #A5A2B8;
+}
+
+.perfil-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  max-width: 1000px;
+  width: 100%;
+  gap: 25px;
+  margin-top: 30px;
+  padding: 0 20px;
+}
+
+.card-vibe {
+  background: var(--cinza-card);
+  padding: 25px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* COLUNA ESQUERDA - CARTÃO DE VISITA */
+.perfil-esquerda { align-items: center; text-align: center; }
+.avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 4rem; border: 3px solid #00BFFF; }
+
+.termometros-container { width: 100%; text-align: left; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; }
+.barra-base { width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+.barra-preenchida { height: 100%; background: var(--gradient-neon); border-radius: 10px; }
+
+/* COLUNA DIREITA - CONTEÚDO, BIO E SCRAPS */
+.perfil-direita { gap: 25px; }
+.perfil-header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+.status-tag { color: var(--rosa-choque); font-size: 0.9rem; font-style: italic; }
+
+.bio-box { color: var(--texto-suave); line-height: 1.6; font-size: 0.95rem; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); }
+
+/* MURAL DE SCRAPS (DOSE RETRÔ) */
+.scraps-box h3 { font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+
+.caixa-escrever-scrap { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.caixa-escrever-scrap textarea { width: 100%; height: 60px; background: var(--cinza-input); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; color: var(--branco); resize: none; }
+.caixa-escrever-scrap textarea:focus { outline: none; border-color: #00BFFF; }
+
+.btn-enviar-scrap { align-self: flex-end; background: var(--gradient-neon); color: var(--branco); border: none; padding: 8px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; transition: transform 0.15s; }
+.btn-enviar-scrap:hover { transform: scale(1.03); }
+
+.scraps-lista { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+.scrap-item { background: var(--cinza-input); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); }
+.scrap-topo { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 6px; }
+.scrap-texto { font-size: 0.95rem; line-height: 1.4; color: #f0f0f5; }
+
+@media (max-width: 768px) { .perfil-layout { grid-template-columns: 1fr; } }
+
+/* 🪐 MURAL DE VIBES FLEXÍVEL & ESTILOS GERAIS */
+.btn-primario {
+  background: var(--gradient-neon);
+  color: var(--branco);
+  border: none;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 4px 15px rgba(255, 20, 147, 0.25);
+  font-size: 0.9rem;
+}
+
+.btn-primario:hover {
+  transform: translateY(-1px) scale(1.02);
+  filter: brightness(1.1);
+}
+
+.btn-primario:active {
+  transform: scale(0.98);
+}
+
+.btn-primario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-aba-tipo {
+  transition: all 0.2s ease;
+}
+
+.btn-aba-tipo:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+.btn-aba-tipo.ativo {
+  border-color: var(--ciano-neon) !important;
+  background: rgba(0, 240, 255, 0.12) !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+}
+
+.circle-story.btn-abrir-seletor:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.45)) !important;
+}
+
+/* 🚀 Botão Supremo de Criar Tribu */
+.btn-criar-nav {
+  background: var(--gradient-supremo);
+  color: var(--branco);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-criar-nav:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 18px rgba(0, 240, 255, 0.4), 0 0 12px rgba(255, 0, 127, 0.5);
+  filter: brightness(1.1);
+}
+
+.btn-criar-nav:active {
+  transform: scale(0.98);
+}
+
+
+
+
+
+
+
+
+

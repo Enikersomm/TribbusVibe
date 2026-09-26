@@ -1,0 +1,9 @@
+/feed          /feed.html          200
+/login         /login.html         200
+/tribos        /tribos.html        200
+/perfil        /perfil.html        200
+/forum         /forum.html         200
+/configuracoes /configuracoes.html 200
+/privacidade   /privacidade.html   200
+/splash        /splash.html        200
+/*             /index.html         200

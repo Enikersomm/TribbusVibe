@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --preto-profundo: #0B0C10;   
+            --cinza-card: #121214;       
+            --cinza-input: #1E1E24;      
+            --branco: #FFFFFF;
+            --texto-suave: #9AA0A6;
+            --ciano-neon: #00F0FF;
+            --pink-magenta: #FF007F;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--preto-profundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-supremo) 1;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo-img { height: 45px; width: auto; }
+        .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; }
+        .nav-links a:hover, .nav-links a.active { color: var(--pink-magenta); }
+
+        .btn-criar-nav:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 6px 18px rgba(0, 240, 255, 0.4), 0 0 12px rgba(255, 0, 127, 0.5) !important;
+            filter: brightness(1.1);
+        }
+        .btn-criar-nav:active {
+            transform: scale(0.98);
+        }
+
+        .perfil-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            max-width: 1100px;
+            width: 100%;
+            gap: 25px;
+            margin-top: 30px;
+            padding: 0 20px;
+        }
+
+        .card-vibe {
+            background: var(--cinza-card);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* BANDEIRA ESQUERDA - DADOS REAIS */
+        .perfil-esquerda { align-items: center; text-align: center; }
+        .avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 4rem; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        
+        .termometros-container { width: 100%; text-align: left; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .barra-base { width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+        .barra-preenchida { height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; }
+
+        /* DIREITA - BIO E MURAL DE VIBES DE HOJE */
+        .perfil-direita { gap: 25px; }
+        .perfil-header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .status-tag { color: var(--pink-magenta); font-size: 0.9rem; font-style: italic; }
+        
+        .bio-box { color: var(--texto-suave); line-height: 1.6; font-size: 0.95rem; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); }
+
+        /* MURAL ATUALIZADO (NOSSA MARCA AUTORAL) */
+        .vibes-box h3 { font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .vibes-box h3 i { color: var(--ciano-neon); }
+        
+        .caixa-enviar-vibe { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .caixa-enviar-vibe textarea { width: 100%; height: 65px; background: var(--cinza-input); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; color: var(--branco); resize: none; font-size: 0.95rem; }
+        .caixa-enviar-vibe textarea:focus { outline: none; border-color: var(--ciano-neon); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+        
+        .btn-enviar-vibe { align-self: flex-end; background: var(--gradient-supremo); color: var(--branco); border: none; padding: 9px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.25); }
+        .btn-enviar-vibe:hover { filter: brightness(1.1); }
+
+        .vibes-lista { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .vibe-item { background: var(--cinza-input); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); border-left: 3px solid var(--ciano-neon); }
+        .vibe-topo { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 6px; }
+        .vibe-texto { font-size: 0.95rem; line-height: 1.4; color: var(--branco); }
+
+        /* GRADE LATERAL DE FAVORITOS ILIMITADOS */
+        .membros-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        .membro-avatar-mini { width: 100%; aspect-ratio: 1; background: var(--cinza-input); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.05); padding: 5px; }
+
+        @media (max-width: 768px) { .perfil-layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<!-- 🪐 NAVBAR UNIFICADA ATUALIZADA COM O BOTÃO SUPREMO DE CRIAR TRIBU -->
+<header class="navbar" style="background-color: var(--cinza-card); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo) 1; position: sticky; top: 0; z-index: 100; height: 65px;">
+    
+    <!-- Lado Esquerdo: Nossa Logo Definitiva -->
+    <div class="nav-logo-container">
+        <a href="/">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));" onerror="this.onerror=null; this.src='/logo.png';">
+        </a>
+    </div>
+
+    <!-- Lado Direito: Links de Navegação + O Botão de Criar Tribu -->
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
+            <a href="/" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Feed</a>
+            <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Tribos</a>
+            <a href="/" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Messenger</a>
+            <a href="perfil.html" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
+        </nav>
+
+        <!-- 🚀 O BOTÃO SUPREMO DE CRIAR NOVA TRIBU -->
+        <button onclick="window.location.href='tribos.html#formulario-criar'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: var(--branco); border: none; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-plus-circle"></i> Fundar Tribu
+        </button>
+    </div>
+</header>
+
+    <div class="perfil-layout">
+        <!-- ESQUERDA: AVATAR, STATUS E FAVORITOS ILIMITADOS -->
+        <aside style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="card-vibe perfil-esquerda">
+                <div class="avatar-g" id="lbl-perfil-avatar">👤</div>
+                <h2 id="lbl-perfil-nome" style="margin-top: 10px; font-size: 1.3rem;">Carregando...</h2>
+                <span class="status-tag" id="lbl-perfil-status"></span>
+                
+                <div class="termometros-container">
+                    <div>🧊 Confiável <div class="barra-base"><div class="barra-preenchida id-barra-confiavel"></div></div></div>
+                    <div>❤️ Legal <div class="barra-base"><div class="barra-preenchida id-barra-legal"></div></div></div>
+                    <div>🌟 Vibe <div class="barra-base"><div class="barra-preenchida id-barra-vibe"></div></div></div>
+                </div>
+            </div>
+
+            <!-- VITRINE DE FAVORITOS ILIMITADOS DO FUNDADOR -->
+            <div class="card-vibe">
+                <h3 style="font-size:0.95rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; justify-content: space-between;">
+                    <span>⭐ Favoritos</span> <span id="lbl-total-favoritos" style="color: var(--pink-magenta); font-weight: bold;">(0)</span>
+                </h3>
+                <div class="membros-grade" id="grade-favoritos-lateral">
+                    <!-- Preenchido automaticamente via Firebase -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- DIREITA: DADOS DO PERFIL E O NOVO MURAL DE VIBES DE HOJE -->
+        <main class="card-vibe perfil-direita">
+            <div class="perfil-header">
+                <h1>Quem sou eu</h1>
+            </div>
+
+            <div class="bio-box">
+                <p id="lbl-perfil-bio">Buscando informações da órbita do usuário...</p>
+            </div>
+
+            <!-- MURAL ATUALIZADO: "QUAL É A SUA VIBE DE HOJE?" -->
+            <div class="vibes-box">
+                <h3><i class="fas fa-bolt"></i> Qual é a sua vibe de hoje?</h3>
+                
+                <div class="caixa-enviar-vibe">
+                    <textarea placeholder="Deixe um recado na vibe de hoje do seu amigo... ✍️" id="txt-vibe-mural"></textarea>
+                    <button class="btn-enviar-vibe" id="btn-postar-vibe">Enviar Vibe</button>
+                </div>
+
+                <!-- Lista dinâmica vinda do Firebase Firestore -->
+                <div class="vibes-lista" id="container-vibes-mural">
+                    <p style="font-size:0.85rem; color:var(--texto-suave); font-style:italic; text-align: center; margin-top: 15px;">Nenhuma vibe registrada neste mural por enquanto.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Encanamento Real do Perfil em Tempo Real -->
+    <script type="module" src="./src/services/app-perfil.js"></script>
+</body>
+</html>
