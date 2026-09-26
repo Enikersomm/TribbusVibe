@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Carregando sua órbita...</title>
+    <style>
+        /* 🎨 Alinhado com a paleta oficial Cyberpunk / Synthwave */
+        :root {
+            --preto-profundo: #0B0C10;   /* Fundo preto azulado oficial */
+            --ciano-neon: #00F0FF;
+            --pink-magenta: #FF007F;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--preto-profundo);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: opacity 0.8s ease-in-out; /* Transição de sumiço suave */
+        }
+
+        /* CONTAINER DA ANIMAÇÃO CENTRAL */
+        .splash-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+        }
+
+        /* A NOSSA LOGO SUPREMA COM ANIMAÇÃO DE PULSAR E BRILHAR */
+        .logo-splash {
+            max-width: 380px;
+            width: 85%;
+            height: auto;
+            image-rendering: high-quality;
+            /* Brilho neon duplo nas cores do nosso manifesto */
+            filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.3)) drop-shadow(0 0 12px rgba(255, 0, 127, 0.25));
+            animation: pulsarLogo 2s ease-in-out infinite;
+        }
+
+        /* BARRA DE CARREGAMENTO ULTRA FINA EM DEGRADÊ NEON */
+        .loader-bar-base {
+            width: 200px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
+        .loader-bar-preenchimento {
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-supremo);
+            border-radius: 10px;
+            animation: carregarProgresso 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* 🚀 KEYFRAMES DAS ANIMAÇÕES NEON */
+        @keyframes pulsarLogo {
+            0%, 100% {
+                transform: scale(0.97);
+                filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.2)) drop-shadow(0 0 10px rgba(255, 0, 127, 0.15));
+            }
+            50% {
+                transform: scale(1.02);
+                filter: drop-shadow(0 0 35px rgba(0, 240, 255, 0.45)) drop-shadow(0 0 18px rgba(255, 0, 127, 0.35));
+            }
+        }
+
+        @keyframes carregarProgresso {
+            0% { width: 0%; }
+            20% { width: 15%; }
+            50% { width: 65%; }
+            100% { width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .logo-splash { max-width: 290px; }
+            .loader-bar-base { width: 160px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="splash-container">
+        <!-- Puxando a nossa logo definitiva do Tribbu'sVibe acesa no breu -->
+        <img class="logo-splash" src="img/image_p_Y_em.png" alt="Tribbu'sVibe Oficial">
+        
+        <!-- Linha discreta de carregamento cyberpunk -->
+        <div class="loader-bar-base">
+            <div class="loader-bar-preenchimento"></div>
+        </div>
+    </div>
+
+    <script>
+        // 🪐 Lógica de Transição da Splash Screen
+        document.addEventListener("DOMContentLoaded", () => {
+            // Aguarda 3 segundos (tempo perfeito da animação) antes de mudar de tela
+            setTimeout(() => {
+                // Aplica o efeito de sumiço (fade-out) no corpo da página
+                document.body.style.opacity = "0";
+                
+                // Aguarda o término do efeito visual para redirecionar de verdade
+                setTimeout(() => {
+                    window.location.href = "login.html"; // Joga direto na tela de acesso escura
+                }, 800);
+                
+            }, 3000);
+        });
+    </script>
+
+</body>
+</html>

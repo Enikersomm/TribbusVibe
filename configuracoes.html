@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Configurações</title>
+    <link rel="icon" type="image/png" href="/TribbusVibe.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --preto-fundo: #0B0911;   
+            --cinza-card: #151221;    
+            --cinza-input: #1F1C33;   
+            --branco: #FFFFFF;
+            --texto-suave: #A5A2B8;
+            --rosa-choque: #FF1493;
+            --gradient-neon: linear-gradient(135deg, #FF1493 0%, #9400D3 25%, #00BFFF 50%, #00FF00 75%, #FFD700 100%);
+            --gradient-hover: linear-gradient(135deg, #FF69B4 0%, #BA55D3 25%, #00BFFF 50%, #7FFF00 75%, #FFD700 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--preto-fundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-neon) 1;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .nav-logo-img { height: 45px; width: auto; object-fit: contain; }
+        .nav-brand-text { font-size: 1.3rem; font-weight: 900; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .nav-links { display: flex; align-items: center; gap: 5px; }
+        .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--rosa-choque); }
+
+        .btn-nav-sair {
+            background: rgba(255, 20, 147, 0.15);
+            border: 1px solid rgba(255, 20, 147, 0.3);
+            color: #FF69B4;
+            padding: 6px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-nav-sair:hover {
+            background: var(--rosa-choque);
+            color: #fff;
+        }
+
+        .config-container { max-width: 700px; width: 100%; margin-top: 30px; padding: 0 20px; }
+        
+        .card-config {
+            background: var(--cinza-card);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-config h2 { font-size: 1.4rem; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .card-config h2 i { background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .form-secao { margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
+        .form-secao h3 { font-size: 0.9rem; color: var(--texto-suave); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .grupo-campo { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        label { font-size: 0.9rem; font-weight: 700; color: var(--texto-suave); }
+
+        .input-config { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; font-size: 0.95rem; background: var(--cinza-input); color: var(--branco); transition: border-color 0.2s; }
+        .input-config:focus { outline: none; border-color: #00BFFF; }
+
+        .range-container { display: flex; align-items: center; gap: 15px; }
+        .range-input { flex: 1; accent-color: #9400D3; cursor: pointer; height: 6px; }
+        .range-valor { font-size: 0.9rem; font-weight: bold; color: #00BFFF; width: 40px; text-align: right; }
+
+        .btn-salvar-config {
+            width: 100%; padding: 14px; background: var(--gradient-neon); color: var(--branco); border: none; border-radius: 50px; font-size: 1.05rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2); transition: all 0.3s ease;
+        }
+        .btn-salvar-config:hover { background: var(--gradient-hover); transform: translateY(-2px); }
+        .btn-salvar-config:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-direction: column; gap: 12px; }
+            .card-config { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="/" class="nav-logo-container" title="Tribbu'sVibe">
+            <!-- Pequena logo oculta e nome substituído pela imagem oficial Tribbu'sVibe -->
+            <img class="nav-brand-banner-img" src="/tribbusvibe.png" onerror="this.onerror=null; this.src='/tribbusvibe.png';" alt="Tribbu'sVibe" style="height: 42px; width: auto; object-fit: contain;">
+        </a>
+        <nav class="nav-links">
+            <a href="/">Feed</a>
+            <a href="/tribos.html">Tribos</a>
+            <a href="/perfil.html">Meu Perfil</a>
+            <a href="#" class="active">Configurações</a>
+            <button class="nav-user btn-nav-sair" id="btn-sair-config" title="Desconectar da sua Tribo">
+                <span>👑</span> Sair
+            </button>
+        </nav>
+    </header>
+
+    <div class="config-container">
+        <main class="card-config">
+            <h2><i class="fas fa-sliders-h"></i> Configurações da Minha Vibe</h2>
+            <form action="#" method="POST">
+                <div class="form-secao">
+                    <h3>Identidade</h3>
+                    <div class="grupo-campo">
+                        <label for="input-nome">Nome na Tribo</label>
+                        <input type="text" id="input-nome" class="input-config" value="Lara Croft">
+                    </div>
+                    <div class="grupo-campo">
+                        <label for="input-status">Sua Vibe Atual</label>
+                        <input type="text" id="input-status" class="input-config" value="🪐 em órbita...">
+                    </div>
+                </div>
+
+                <div class="form-secao">
+                    <h3>Termômetros</h3>
+                    <div class="grupo-campo">
+                        <label>🧊 Confiabilidade</label>
+                        <div class="range-container">
+                            <input type="range" class="range-input range-confiavel" min="0" max="100" value="85">
+                            <span class="range-valor">85%</span>
+                        </div>
+                    </div>
+                    <div class="grupo-campo">
+                        <label>🌟 Energia Vibe</label>
+                        <div class="range-container">
+                            <input type="range" class="range-input range-vibe" min="0" max="100" value="100">
+                            <span class="range-valor">100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-salvar-config">Salvar Minha Nova Vibe</button>
+            </form>
+        </main>
+    </div>
+
+    <!-- Encanamento com Firebase Firestore e Auth -->
+    <script type="module" src="./src/services/app-configuracoes.js"></script>
+    <script type="module">
+        import { realizarLogout } from "./src/services/firebase-auth-login.js";
+
+        const btnSair = document.getElementById("btn-sair-config");
+        if (btnSair) {
+            btnSair.addEventListener("click", async () => {
+                const confirmar = confirm("Deseja desconectar da sua Tribo por hoje e descansar a mente? ☕");
+                if (confirmar) {
+                    console.log("Encerrando sessão com segurança...");
+                    await realizarLogout();
+                    window.location.href = "/";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
