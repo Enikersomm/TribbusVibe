@@ -1,32 +1,23 @@
 {
-  "id": "/",
-  "name": "TribbusVibe - Conectando Pessoas de Verdade",
   "short_name": "TribbusVibe",
-  "description": "TribbusVibe - Conectando pessoas de verdade. A rede social nostálgica e autêntica inspirada no melhor da cultura Y2K e das comunidades.",
-  "start_url": "/",
-  "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#FF1493",
-  "background_color": "#FFF0F5",
+  "name": "Tribbu'sVibe - Conexões Reais",
   "icons": [
     {
-      "src": "/pwa-192x192.png",
-      "sizes": "192x192",
+      "src": "/img/image_p_Y_em.png",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     },
     {
-      "src": "/pwa-512x512.png",
-      "sizes": "512x512",
+      "src": "img/image_p_Y_em.png",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/pwa-maskable-512x512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "start_url": "/index.html",
+  "background_color": "#0B0C10",
+  "theme_color": "#0B0C10",
+  "display": "standalone",
+  "orientation": "portrait"
 }
