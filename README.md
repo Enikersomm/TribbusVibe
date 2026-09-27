@@ -1,6 +1,6 @@
 # 🪐 Tribbu'sVibe — Conectando pessoas de verdade.
 
-O **Tribbu'sVibe** é uma plataforma de rede social antialgoritmo híbrida desenvolvida especificamente para a Geração Z que resgata o aconchego das comunidades e a interação humana saudável, combinando as melhores ferramentas de comunicação do século 21.
+O **Tribbu'sVibe** é uma plataforma de rede social antialgoritmo híbrida desenvolvida especificamente para a nova Geração  que resgata o aconchego das comunidades e a interação humana saudável, combinando as melhores ferramentas de comunicação do século 21.
 
 ## 📐 Os 3 Pilares Estratégicos
 
