@@ -113,10 +113,10 @@
         <nav class="nav-links">
             <a href="feed.html" class="active">Feed</a>
             <a href="tribos.html">Tribos</a>
-            <a href="chat.html">Messenger</a>
+            <a href="perfil.html?tab=chat">Messenger</a>
             <a href="perfil.html">Meu Perfil</a>
-            <a href="config.html">Configurações</a>
-            <a href="login.html" style="color: var(--pink-magenta);"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            <a href="configuracoes.html">Configurações</a>
+            <a href="login.html" class="btn-logout-global" style="color: var(--pink-magenta); cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
         </nav>
     </header>
 
@@ -251,7 +251,8 @@
 
     </div>
 
-    <!-- Encanamento Firebase em Tempo Real -->
+    <!-- Encanamento Firebase em Tempo Real e Navegação Global -->
+    <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-feed-page.js"></script>
 </body>
 </html>

@@ -159,17 +159,16 @@
 <body>
 
     <header class="navbar">
-        <a href="/" class="nav-logo-container" title="Tribbu'sVibe">
-            <img class="nav-brand-banner-img" src="/logo.png" onerror="this.onerror=null; this.src='/logo.png';" alt="Tribbu'sVibe" style="height: 38px; width: auto; max-width: 180px; object-fit: contain;">
+        <a href="feed.html" class="nav-logo-container" title="Tribbu'sVibe" style="text-decoration: none;">
+            <img class="nav-brand-banner-img" src="/tribbusvibe.png" onerror="this.onerror=null; this.src='/logo.png';" alt="Tribbu'sVibe" style="height: 38px; width: auto; max-width: 180px; object-fit: contain;">
         </a>
         <nav class="nav-links">
-            <a href="/">Feed</a>
-            <a href="/tribos.html" class="active">Tribos</a>
-            <a href="/perfil.html">Meu Perfil</a>
-            <a href="/configuracoes.html">Configurações</a>
-            <button class="nav-user btn-nav-sair" id="btn-sair-forum" title="Desconectar da sua Tribo">
-                <span>👑</span> Sair
-            </button>
+            <a href="feed.html">Feed</a>
+            <a href="tribos.html" class="active">Tribos</a>
+            <a href="perfil.html?tab=chat">Messenger</a>
+            <a href="perfil.html">Meu Perfil</a>
+            <a href="configuracoes.html">Configurações</a>
+            <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
         </nav>
     </header>
 
@@ -264,7 +263,8 @@
         </div>
     </div>
 
-    <!-- Encanamento em Tempo Real do Fórum & Mural de Vibes -->
+    <!-- Encanamento em Tempo Real do Fórum & Mural de Vibes e Navegação Global -->
+    <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-forum.js"></script>
     <script type="module" src="./src/services/app-forum-actions.js"></script>
     <script type="module" src="./src/services/app-mural-vibes.js"></script>

@@ -6,7 +6,7 @@ import { escutarVitrineAmigos } from "./firebase-top-amigos.js";
 export function inicializarVitrineAmigosLateral(uidOverride) {
     const containerGradeAmigos = document.getElementById("grade-favoritos-lateral");
     const contadorAmigos = document.getElementById("lbl-total-favoritos");
-    const meuUID = uidOverride || "user_lara_123"; // UID simulado do desenvolvedor
+    const meuUID = uidOverride || auth?.currentUser?.uid || "";
 
     if (!containerGradeAmigos) return () => {};
 

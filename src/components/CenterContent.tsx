@@ -151,28 +151,28 @@ export const CenterContent: React.FC<CenterContentProps> = ({
 
             <div className="medidor-linha">
               <div className="medidor-info">
-                <span>🧊 Confiável</span> <span>85%</span>
+                <span>🧊 Confiável</span> <span>0%</span>
               </div>
               <div className="barra-base">
-                <div className="barra-preenchimento" style={{ width: '85%' }}></div>
+                <div className="barra-preenchimento" style={{ width: '0%' }}></div>
               </div>
             </div>
 
             <div className="medidor-linha">
               <div className="medidor-info">
-                <span>❤️ Legal</span> <span>95%</span>
+                <span>❤️ Legal</span> <span>0%</span>
               </div>
               <div className="barra-base">
-                <div className="barra-preenchimento" style={{ width: '95%' }}></div>
+                <div className="barra-preenchimento" style={{ width: '0%' }}></div>
               </div>
             </div>
 
             <div className="medidor-linha">
               <div className="medidor-info">
-                <span>🌟 Vibe</span> <span>100%</span>
+                <span>🌟 Vibe</span> <span>0%</span>
               </div>
               <div className="barra-base">
-                <div className="barra-preenchimento" style={{ width: '100%' }}></div>
+                <div className="barra-preenchimento" style={{ width: '0%' }}></div>
               </div>
             </div>
           </section>

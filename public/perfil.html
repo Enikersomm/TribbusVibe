@@ -77,7 +77,12 @@
 
         /* BANDEIRA ESQUERDA - DADOS REAIS */
         .perfil-esquerda { align-items: center; text-align: center; }
-        .avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 4rem; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        .avatar-container { position: relative; width: 124px; height: 124px; margin: 0 auto; cursor: pointer; }
+        .avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); overflow: hidden; position: relative; transition: all 0.3s ease; }
+        .avatar-g img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar-container:hover .avatar-g { border-color: var(--pink-magenta); box-shadow: 0 0 20px rgba(255, 0, 127, 0.4); transform: scale(1.02); }
+        .badge-camera { position: absolute; bottom: 2px; right: 2px; background: var(--gradient-supremo); width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #FFF; font-size: 0.9rem; border: 2px solid var(--cinza-card); box-shadow: 0 2px 8px rgba(0,0,0,0.5); pointer-events: none; transition: transform 0.2s ease; }
+        .avatar-container:hover .badge-camera { transform: scale(1.15); }
         
         .termometros-container { width: 100%; text-align: left; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
         .barra-base { width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden; margin-top: 4px; }
@@ -120,18 +125,20 @@
     
     <!-- Lado Esquerdo: Nossa Logo Definitiva -->
     <div class="nav-logo-container">
-        <a href="/">
-            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));" onerror="this.onerror=null; this.src='/logo.png';">
+        <a href="feed.html" style="text-decoration: none;">
+            <img class="nav-logo-img" src="/tribbusvibe.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));" onerror="this.onerror=null; this.src='/logo.png';">
         </a>
     </div>
 
-    <!-- Lado Direito: Links de Navegação + O Botão de Criar Tribu -->
+    <!-- Lado Direito: Links de Navegação + O Botão de Criar Tribu + Sair -->
     <div style="display: flex; align-items: center; gap: 20px;">
         <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
-            <a href="/" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Feed</a>
+            <a href="feed.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Feed</a>
             <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Tribos</a>
-            <a href="/" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Messenger</a>
+            <a href="perfil.html?tab=chat" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Messenger</a>
             <a href="perfil.html" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
+            <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Configurações</a>
+            <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
         </nav>
 
         <!-- 🚀 O BOTÃO SUPREMO DE CRIAR NOVA TRIBU -->
@@ -145,7 +152,12 @@
         <!-- ESQUERDA: AVATAR, STATUS E FAVORITOS ILIMITADOS -->
         <aside style="display: flex; flex-direction: column; gap: 20px;">
             <div class="card-vibe perfil-esquerda">
-                <div class="avatar-g" id="lbl-perfil-avatar">👤</div>
+                <!-- Foto do Perfil com Abertura da Câmera / Selfie Nativa -->
+                <div class="avatar-container" id="btn-tirar-selfie" title="Clique para tirar uma Selfie na hora! 📸">
+                    <div class="avatar-g" id="lbl-perfil-avatar">👤</div>
+                    <div class="badge-camera"><i class="fas fa-camera"></i></div>
+                    <input type="file" id="input-camera-perfil" accept="image/*" capture="user" style="display: none;">
+                </div>
                 <h2 id="lbl-perfil-nome" style="margin-top: 10px; font-size: 1.3rem;">Carregando...</h2>
                 <span class="status-tag" id="lbl-perfil-status"></span>
                 
@@ -194,7 +206,8 @@
         </main>
     </div>
 
-    <!-- Encanamento Real do Perfil em Tempo Real -->
+    <!-- Encanamento Real do Perfil em Tempo Real e Navegação Global -->
+    <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-perfil.js"></script>
 </body>
 </html>

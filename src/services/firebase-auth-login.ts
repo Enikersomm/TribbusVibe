@@ -109,9 +109,9 @@ export async function realizarCadastro(
         data_nascimento: dataNascimento,
         status_vibe: 'Cheguei no Tribbu\'sVibe! Sintonizando novas frequências ✨',
         bio: `Membro novinho na tribo. Criei minha conta pelo portal oficial.`,
-        medidor_confiavel: 100,
-        medidor_legal: 100,
-        medidor_vibe: 100
+        medidor_confiavel: 0,
+        medidor_legal: 0,
+        medidor_vibe: 0
       });
     } catch (dbErr) {
       console.warn('Aviso ao sincronizar documento do usuário no Firestore:', dbErr);

@@ -68,7 +68,12 @@
 
         /* BANDEIRA ESQUERDA - DADOS REAIS */
         .perfil-esquerda { align-items: center; text-align: center; }
-        .avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 4rem; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        .avatar-container { position: relative; width: 124px; height: 124px; margin: 0 auto; cursor: pointer; }
+        .avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); overflow: hidden; position: relative; transition: all 0.3s ease; }
+        .avatar-g img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar-container:hover .avatar-g { border-color: var(--pink-magenta); box-shadow: 0 0 20px rgba(255, 0, 127, 0.4); transform: scale(1.02); }
+        .badge-camera { position: absolute; bottom: 2px; right: 2px; background: var(--gradient-supremo); width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #FFF; font-size: 0.9rem; border: 2px solid var(--cinza-card); box-shadow: 0 2px 8px rgba(0,0,0,0.5); pointer-events: none; transition: transform 0.2s ease; }
+        .avatar-container:hover .badge-camera { transform: scale(1.15); }
         
         .termometros-container { width: 100%; text-align: left; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
         .barra-base { width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden; margin-top: 4px; }
@@ -101,21 +106,68 @@
         .membros-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
         .membro-avatar-mini { width: 100%; aspect-ratio: 1; background: var(--cinza-input); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.05); padding: 5px; }
 
-        @media (max-width: 768px) { .perfil-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            .perfil-layout { grid-template-columns: 1fr; }
+            .navbar { padding: 10px 15px; flex-direction: column; gap: 12px; align-items: stretch; }
+            .nav-logo-container { justify-content: center; }
+            .nav-links {
+                display: flex;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 8px;
+                padding-bottom: 4px;
+                justify-content: flex-start;
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links a {
+                margin-right: 0;
+                padding: 6px 14px;
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 50px;
+                font-size: 0.85rem;
+                flex-shrink: 0;
+                white-space: nowrap;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .nav-links a.active {
+                background: rgba(255, 0, 127, 0.15);
+                border-color: var(--pink-magenta);
+            }
+        }
+
+        /* 🔥 Efeito hover interativo nos botões de voto no CSS */
+        .btn-voto-neon:hover {
+            transform: translateY(-2px);
+        }
+        .btn-voto-neon[data-termometro="medidor_confiavel"]:hover {
+            background: rgba(0, 240, 255, 0.1) !important;
+            box-shadow: 0 0 15px var(--ciano-neon) !important;
+        }
+        .btn-voto-neon[data-termometro="medidor_legal"]:hover {
+            background: rgba(255, 0, 127, 0.1) !important;
+            box-shadow: 0 0 15px var(--pink-magenta) !important;
+        }
+        .btn-voto-neon[data-termometro="medidor_vibe"]:hover {
+            background: rgba(255, 215, 0, 0.1) !important;
+            box-shadow: 0 0 15px #FFD700 !important;
+        }
     </style>
 </head>
 <body>
 
     <header class="navbar">
-        <div class="nav-logo-container">
-            <img class="nav-logo-img" src="tribbusvibe_transparent.png" alt="Tribbu'sVibe Logo" onerror="this.onerror=null; this.src='tribbusvibe.png';">
-        </div>
+        <a href="feed.html" class="nav-logo-container" title="Tribbu'sVibe" style="text-decoration: none; display: flex; align-items: center;">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" onerror="this.onerror=null; this.src='/tribbusvibe.png';" style="height: 38px; width: auto; max-width: 180px; object-fit: contain;">
+        </a>
         <nav class="nav-links">
-            <a href="index.html">Feed</a>
+            <a href="feed.html">Feed</a>
             <a href="tribos.html">Tribos</a>
-            <a href="chat.html">Messenger</a>
-            <a href="#" class="active">Meu Perfil</a>
-            <a href="config.html">Configurações</a>
+            <a href="perfil.html?tab=chat">Messenger</a>
+            <a href="perfil.html" class="active">Meu Perfil</a>
+            <a href="configuracoes.html">Configurações</a>
+            <a href="login.html" class="btn-logout-global" style="color: var(--pink-magenta); cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
         </nav>
     </header>
 
@@ -123,14 +175,83 @@
         <!-- ESQUERDA: AVATAR, STATUS E FAVORITOS ILIMITADOS -->
         <aside style="display: flex; flex-direction: column; gap: 20px;">
             <div class="card-vibe perfil-esquerda">
-                <div class="avatar-g" id="lbl-perfil-avatar">👤</div>
+                <!-- Foto do Perfil com Abertura da Câmera / Selfie Nativa -->
+                <div class="avatar-container" id="btn-tirar-selfie" title="Clique para tirar uma Selfie na hora! 📸">
+                    <div class="avatar-g" id="lbl-perfil-avatar">👤</div>
+                    <div class="badge-camera"><i class="fas fa-camera"></i></div>
+                    <input type="file" id="input-camera-perfil" accept="image/*" capture="user" style="display: none;">
+                </div>
                 <h2 id="lbl-perfil-nome" style="margin-top: 10px; font-size: 1.3rem;">Carregando...</h2>
                 <span class="status-tag" id="lbl-perfil-status"></span>
                 
-                <div class="termometros-container">
-                    <div>🧊 Confiável <div class="barra-base"><div class="barra-preenchida id-barra-confiavel"></div></div></div>
-                    <div>❤️ Legal <div class="barra-base"><div class="barra-preenchida id-barra-legal"></div></div></div>
-                    <div>🌟 Vibe <div class="barra-base"><div class="barra-preenchida id-barra-vibe"></div></div></div>
+                <!-- 🪐 COMPONENTE ATUALIZADO: TERMÔMETROS DE REPUTAÇÃO COM BOTÕES DE VOTAÇÃO MÚTUA -->
+                <div class="card-vibe reputacao-votos-box" style="background: var(--cinza-card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                    
+                    <h3 style="font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-medal" style="color: var(--ciano-neon);"></i> Reputação da Tribo
+                    </h3>
+                    
+                    <!-- 1. EXIBIÇÃO DAS BARRAS DE PROGRESSO NEON -->
+                    <div class="termometros-container" style="width: 100%; display: flex; flex-direction: column; gap: 12px;">
+                        
+                        <!--🧊 CONFIÁVEL -->
+                        <div class="termometro-item">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                                <span>🧊 Confiabilidade</span>
+                                <span id="txt-val-confiavel" style="color: var(--ciano-neon);">0%</span>
+                            </div>
+                            <div class="barra-base" style="width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden;">
+                                <div class="barra-preenchida id-barra-confiavel" style="height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--ciano-neon);"></div>
+                            </div>
+                        </div>
+
+                        <!--❤️ LEGAL -->
+                        <div class="termometro-item">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                                <span>❤️ Nível Legal</span>
+                                <span id="txt-val-legal" style="color: var(--pink-magenta);">0%</span>
+                            </div>
+                            <div class="barra-base" style="width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden;">
+                                <div class="barra-preenchida id-barra-legal" style="height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--pink-magenta);"></div>
+                            </div>
+                        </div>
+
+                        <!--🌟 VIBE -->
+                        <div class="termometro-item">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                                <span>🌟 Energia Vibe</span>
+                                <span id="txt-val-vibe" style="color: #FFD700;">0%</span>
+                            </div>
+                            <div class="barra-base" style="width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden;">
+                                <div class="barra-preenchida id-barra-vibe" style="height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px #FFD700;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 2. GRADE DE BOTÕES DE VOTAÇÃO (PARA OS AMIGOS CLICAREM) -->
+                    <div class="votos-acoes-area" style="margin-top: 5px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px;">
+                        <p style="font-size: 0.8rem; color: var(--texto-suave); font-style: italic; text-align: center;">Avalie a vibe do dono deste perfil:</p>
+                        
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            
+                            <!-- Botão Votar Confiável -->
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_confiavel" style="background: var(--cinza-input); color: var(--branco); border: 1px solid var(--ciano-neon); padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 0 5px rgba(0, 240, 255, 0.15);">
+                                +1 🧊 Confiável
+                            </button>
+
+                            <!-- Botão Votar Legal -->
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_legal" style="background: var(--cinza-input); color: var(--branco); border: 1px solid var(--pink-magenta); padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 0 5px rgba(255, 0, 127, 0.15);">
+                                +1 ❤️ Legal
+                            </button>
+
+                            <!-- Botão Votar Vibe -->
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_vibe" style="background: var(--cinza-input); color: var(--branco); border: 1px solid #FFD700; padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 0 5px rgba(255, 215, 0, 0.15);">
+                                +1 🌟 Vibe
+                            </button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -172,7 +293,9 @@
         </main>
     </div>
 
-    <!-- Encanamento Real do Perfil em Tempo Real -->
+    <!-- Encanamento Real do Perfil em Tempo Real e Navegação Global -->
+    <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-perfil.js"></script>
+    <script type="module" src="./src/services/app-reputacao-clique.js"></script>
 </body>
 </html>

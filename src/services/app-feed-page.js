@@ -35,6 +35,50 @@ import {
 import { 
   fazerUploadDeAudio 
 } from "./firebase-storage.js";
+import { abrirVisualizadorStory } from "./story-viewer.js";
+import { abrirModalPostarVibe } from "./modal-postar-vibe.js";
+
+// 🪐 Tribbu'sVibe - Renderizador Multimídia Híbrido do Mural de Vibes
+export function renderizarConteudoVibeModal(tipo, dado, corFundo) {
+    const modalArea = document.getElementById("modal-vibe-visualizador-conteudo") || document.getElementById("story-viewer-content");
+    if (!modalArea) return;
+
+    modalArea.innerHTML = ""; // Limpa a tela do modal anterior
+
+    // 🎥 SE FOR CLIPE DE VÍDEO (Estilo TikTok Vertical)
+    if (tipo === "video") {
+        modalArea.innerHTML = `
+            <div style="position: relative; width: 100%; max-width: 400px; height: 75vh; margin: 0 auto; background: #000; border-radius: 20px; overflow: hidden; border: 2px solid var(--ciano-neon); box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);">
+                <video src="${dado}" autoplay controls loop playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+            </div>
+        `;
+    } 
+    // 🎧 SE FOR TRILHA SONORA OU GRAVAÇÃO EM MP3
+    else if (tipo === "musica" || tipo === "audio") {
+        modalArea.innerHTML = `
+            <div style="background: var(--cinza-card); padding: 30px; border-radius: 20px; text-align: center; border: 2px solid #FFD700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 380px;">
+                <div style="width: 80px; height: 80px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: #FFD700; animation: pulsarLogo 1.5s infinite;">
+                    <i class="fas fa-compact-disc fa-spin"></i>
+                </div>
+                <h4 style="color: var(--branco); margin: 0;">Trilha Sonora da Tribo</h4>
+                <p style="font-size: 0.85rem; color: var(--texto-suave); margin: 0;">Ouvindo vibe por voz ou música em MP3</p>
+                <audio src="${dado}" autoplay controls style="width: 100%; margin-top: 10px; accent-color: #FFD700;"></audio>
+            </div>
+        `;
+    } 
+    // 📝 SE FOR TEXTO NEON OU FOTO COMUM (Fallback seguro)
+    else {
+        if (tipo === "texto") {
+            modalArea.innerHTML = `
+                <div style="background: ${corFundo || 'var(--cinza-card)'}; width: 100%; max-width: 400px; height: 60vh; border-radius: 20px; display: flex; justify-content: center; align-items: center; padding: 25px; border: 2px solid var(--pink-magenta); box-shadow: 0 0 25px rgba(255, 0, 127, 0.35); box-sizing: border-box;">
+                    <h2 style="font-size: 1.8rem; font-weight: 900; text-align: center; background: var(--gradient-supremo); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0;">${dado}</h2>
+                </div>
+            `;
+        } else {
+            modalArea.innerHTML = `<img src="${dado}" style="width: 100%; max-height: 70vh; border-radius: 16px; object-fit: contain; border: 2px solid var(--ciano-neon);" onerror="this.onerror=null; this.src='/logo.png';" />`;
+        }
+    }
+}
 
 export function iniciarFeedPage() {
   console.log("🪐 [Tribbu'sVibe] Inicializando Feed Central...");
@@ -65,8 +109,14 @@ export function iniciarFeedPage() {
         if (userDocSnap.exists()) {
           const dados = userDocSnap.data();
           usuarioAtual.nome = dados.nome || usuarioAtual.nome;
-          usuarioAtual.avatar = dados.avatar_emoji || dados.avatar || "🤠";
+          usuarioAtual.avatar = dados.avatar_emoji || dados.avatar || "👤";
+          if (dados.avatar_url && typeof dados.avatar_url === "string" && dados.avatar_url.trim().startsWith("http")) {
+            usuarioAtual.avatar_url = dados.avatar_url;
+          }
           usuarioAtual.status = dados.frase_status || dados.recado || "Conectando pessoas de verdade 🪐";
+          usuarioAtual.medidor_confiavel = dados.medidor_confiavel ?? 0;
+          usuarioAtual.medidor_legal = dados.medidor_legal ?? 0;
+          usuarioAtual.medidor_vibe = dados.medidor_vibe ?? 0;
         }
       } catch (e) {
         console.warn("[Feed] Usando dados da sessão Auth:", e);
@@ -79,14 +129,20 @@ export function iniciarFeedPage() {
       if (emojiSalvo) usuarioAtual.avatar = emojiSalvo;
     }
 
-    if (lblAvatar) lblAvatar.textContent = usuarioAtual.avatar;
+    if (lblAvatar) {
+      if (usuarioAtual.avatar_url) {
+        lblAvatar.innerHTML = `<img src="${usuarioAtual.avatar_url}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.onerror=null; this.parentElement.innerText='👤';">`;
+      } else {
+        lblAvatar.textContent = usuarioAtual.avatar || "👤";
+      }
+    }
     if (lblNome) lblNome.textContent = usuarioAtual.nome;
     if (lblStatus) lblStatus.textContent = usuarioAtual.status;
 
-    // Termômetros com animação suave
-    if (barraConfiavel) barraConfiavel.style.width = "92%";
-    if (barraLegal) barraLegal.style.width = "96%";
-    if (barraVibe) barraVibe.style.width = "100%";
+    // Termômetros com animação suave zerados para novos usuários
+    if (barraConfiavel) barraConfiavel.style.width = `${usuarioAtual.medidor_confiavel ?? 0}%`;
+    if (barraLegal) barraLegal.style.width = `${usuarioAtual.medidor_legal ?? 0}%`;
+    if (barraVibe) barraVibe.style.width = `${usuarioAtual.medidor_vibe ?? 0}%`;
   });
 
   // 2. MURAL DE VIBES FLEXÍVEL (STORIES DAS TRIBOS EM TEMPO REAL)
@@ -172,9 +228,14 @@ export function iniciarFeedPage() {
     }
   }
 
-  // Inicializa exibição padrão (aba Foto selecionada)
-  if (containerSeletorFoto) {
-    containerSeletorFoto.style.display = "flex";
+  // Botão Principal de Adicionar (+) - Abre o Modal Completo de Vibes
+  const btnAbrirSeletor = document.querySelector(".btn-abrir-seletor");
+  if (btnAbrirSeletor) {
+    btnAbrirSeletor.addEventListener("click", () => {
+      abrirModalPostarVibe("geral", () => {
+        console.log("Vibe postada com sucesso pelo modal no Feed!");
+      });
+    });
   }
 
   // Controle das abas de tipo de mídia
@@ -401,24 +462,16 @@ export function iniciarFeedPage() {
     });
   }
 
-  // Abertura rápida pelo botão redondo '+'
-  const btnAbrirSeletor = document.querySelector(".btn-abrir-seletor");
-  if (btnAbrirSeletor) {
-    btnAbrirSeletor.addEventListener("click", () => {
-      const painel = document.getElementById("painel-vibe-abas");
-      if (painel) {
-        painel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        if (inputVibeDado) inputVibeDado.focus();
-      }
-    });
-  }
-
   // Disparo da Vibe no Mural
   if (btnDispararVibe) {
     btnDispararVibe.addEventListener("click", async () => {
       let dadoConteudo = "";
       if (tipoSelecionado === "foto") {
-        dadoConteudo = arquivoFotoUrl || inputVibeDado?.value?.trim() || "";
+        // Usa estritamente a URL/base64 da foto processada
+        dadoConteudo = arquivoFotoUrl || "";
+        if (!dadoConteudo && inputVibeDado?.value?.trim() && (inputVibeDado.value.startsWith("http") || inputVibeDado.value.startsWith("data:image"))) {
+          dadoConteudo = inputVibeDado.value.trim();
+        }
         if (!dadoConteudo) {
           const urlManual = prompt("🪐 Insira o link da foto ou selecione um arquivo:");
           if (urlManual && urlManual.trim()) dadoConteudo = urlManual.trim();
@@ -508,51 +561,39 @@ export function iniciarFeedPage() {
           storyDiv.style.backgroundPosition = "center";
           storyDiv.style.transition = "transform 0.2s";
 
-          const tipo = story.tipo_conteudo || (story.media_url ? "foto" : "texto");
+          const tipo = story.tipo || story.tipo_conteudo || (story.media_url ? "foto" : "texto");
           const dado = story.dado_conteudo || story.media_url || "";
 
-          if (tipo === "foto" && dado && (dado.startsWith("http") || dado.startsWith("data:"))) {
+          if (tipo === "video") {
+            storyDiv.style.background = "linear-gradient(135deg, #121214, #9d4edd)";
+            storyDiv.style.border = "2px solid #9d4edd";
+            storyDiv.innerHTML = `<span style="font-size: 1.5rem;">🎥</span>`;
+            storyDiv.title = "Vibe de Vídeo (Clique para assistir)";
+          } else if (tipo === "musica" || tipo === "audio") {
+            storyDiv.style.background = "linear-gradient(135deg, #1f1b2e, #FF007F)";
+            storyDiv.style.border = "2px solid #FF007F";
+            storyDiv.innerHTML = `<span style="font-size: 1.5rem;">🎵</span>`;
+            storyDiv.title = "Trilha Sonora / Áudio (Clique para ouvir)";
+          } else if (tipo === "foto" && dado && (dado.startsWith("http") || dado.startsWith("data:"))) {
             storyDiv.style.backgroundImage = `url('${dado}')`;
+            storyDiv.innerHTML = "";
           } else if (tipo === "texto") {
             storyDiv.style.background = story.cor_fundo_neon || "#121214";
             storyDiv.style.border = "2px solid var(--ciano-neon)";
             storyDiv.innerHTML = `<i class="fas fa-font" style="color: var(--pink-magenta); font-size: 1.2rem;"></i>`;
-          } else if (tipo === "musica") {
-            storyDiv.style.background = "#18181b";
-            storyDiv.style.border = "2px solid #FFD700";
-            const isAudioGravado = dado.startsWith("data:audio") || dado.includes("audio");
-            storyDiv.innerHTML = `<i class="fas ${isAudioGravado ? "fa-microphone-lines" : "fa-music"}" style="color: #FFD700; font-size: 1.2rem;"></i>`;
-            storyDiv.title = `Story de Áudio/Trilha Sonora de ${story.autor_id || "Membro"} (Clique para ouvir)`;
           } else {
             storyDiv.innerHTML = `✨`;
           }
 
           storyDiv.onclick = () => {
-            if (tipo === "foto" && dado.startsWith("http")) {
-              window.open(dado, "_blank");
-            } else if (tipo === "musica" && (dado.startsWith("data:audio") || dado.startsWith("http"))) {
-              // Tocar áudio capturado
-              if (storyAudioAtivo) {
-                storyAudioAtivo.pause();
-                storyAudioAtivo = null;
-                storyDiv.style.transform = "scale(1)";
-              }
-              const player = new Audio(dado);
-              storyAudioAtivo = player;
-              storyDiv.style.transform = "scale(1.15)";
-              storyDiv.style.borderColor = "#00F0FF";
-              player.onended = () => {
-                storyDiv.style.transform = "scale(1)";
-                storyDiv.style.borderColor = "#FFD700";
-                storyAudioAtivo = null;
-              };
-              player.play().catch((err) => {
-                console.warn("Erro ao reproduzir áudio do story:", err);
-                alert(`🪐 Trilha sonora: ${dado}`);
-              });
-            } else {
-              alert(`🪐 Vibe da Tribo:\n[${tipo.toUpperCase()}]: ${dado}`);
-            }
+            abrirVisualizadorStory({
+              tipo,
+              dado,
+              autorNome: story.autor_nome || "Membro da Tribo",
+              autorAvatar: story.autor_avatar || "👤",
+              tempo: story.data_criacao ? new Date(story.data_criacao).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Vibe de 24h",
+              corFundo: story.cor_fundo_neon || "#121214"
+            });
           };
 
           containerStories.appendChild(storyDiv);

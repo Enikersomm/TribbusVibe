@@ -1,11 +1,13 @@
 // 🪐 Tribbu'sVibe - Encanamento Real do Perfil em Tempo Real
 // Arquivo: app-perfil.js
 
-import { doc, onSnapshot } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { db, auth } from "./tribbusFirebase.js";
 import { escutarScrapsDoPerfil, enviarScrapMural } from "./firebase-scraps.js";
 import { escutarVitrineAmigos, adicionarAmigoNoTop, removerAmigoDoTop } from "./firebase-top-amigos.js";
+import { fazerUploadDeFoto } from "./firebase-storage.js";
+import { votarNoTermometroAmigo } from "./firebase-reputacao.js";
 
 /**
  * 🚀 Inicializa o encanamento em tempo real da tela de Perfil (Dark Mode)
@@ -18,6 +20,14 @@ export function inicializarPerfilEmTempoReal() {
     const barraConfiavel = document.querySelector(".id-barra-confiavel") || document.querySelector(".barra-confiavel");
     const barraLegal = document.querySelector(".id-barra-legal") || document.querySelector(".barra-legal");
     const barraVibe = document.querySelector(".id-barra-vibe") || document.querySelector(".barra-vibe");
+    const txtValConfiavel = document.getElementById("txt-val-confiavel");
+    const txtValLegal = document.getElementById("txt-val-legal");
+    const txtValVibe = document.getElementById("txt-val-vibe");
+    const btnsVotoNeon = document.querySelectorAll(".btn-voto-neon");
+    
+    const containerAvatar = document.getElementById("btn-tirar-selfie");
+    const lblAvatar = document.getElementById("lbl-perfil-avatar");
+    const inputCamera = document.getElementById("input-camera-perfil");
     
     const txtScrapInput = document.getElementById("txt-vibe-mural") || document.getElementById("txt-scrap-mural");
     const btnPostarScrap = document.getElementById("btn-postar-vibe") || document.getElementById("btn-postar-scrap");
@@ -50,14 +60,82 @@ export function inicializarPerfilEmTempoReal() {
                 if(txtBio) txtBio.innerText = dados.bio || "Sem bio por enquanto... ✨";
                 if(txtStatus) txtStatus.innerText = dados.status_vibe || "🪐 em órbita...";
                 
-                // Atualiza a largura das barras de reputação em degradê neon
-                if(barraConfiavel) barraConfiavel.style.width = `${dados.medidor_confiavel || 50}%`;
-                if(barraLegal) barraLegal.style.width = `${dados.medidor_legal || 50}%`;
-                if(barraVibe) barraVibe.style.width = `${dados.medidor_vibe || 50}%`;
+                // Exibe a foto do perfil ou o avatar
+                if (lblAvatar) {
+                    if (dados.avatar_url && typeof dados.avatar_url === "string" && dados.avatar_url.trim().startsWith("http")) {
+                        lblAvatar.innerHTML = `<img src="${escapeHTML(dados.avatar_url)}" alt="Selfie" onerror="this.onerror=null; this.parentElement.innerText='👤';">`;
+                    } else if (dados.avatar_emoji) {
+                        lblAvatar.innerText = dados.avatar_emoji;
+                    } else {
+                        lblAvatar.innerText = "👤";
+                    }
+                }
+                
+                // Atualiza a largura das barras de reputação em degradê neon e os rótulos de porcentagem
+                const valConfiavel = dados.medidor_confiavel ?? 0;
+                const valLegal = dados.medidor_legal ?? 0;
+                const valVibe = dados.medidor_vibe ?? 0;
+
+                if(barraConfiavel) barraConfiavel.style.width = `${valConfiavel}%`;
+                if(barraLegal) barraLegal.style.width = `${valLegal}%`;
+                if(barraVibe) barraVibe.style.width = `${valVibe}%`;
+
+                if(txtValConfiavel) txtValConfiavel.innerText = `${valConfiavel}%`;
+                if(txtValLegal) txtValLegal.innerText = `${valLegal}%`;
+                if(txtValVibe) txtValVibe.innerText = `${valVibe}%`;
             }
         }, (err) => {
             console.warn("Aviso ao carregar dados do perfil em tempo real:", err);
         });
+
+        // 📸 GATILHO DA CÂMERA DO CELULAR (SELFIE) AO CLICAR NA FOTO
+        if (containerAvatar && inputCamera) {
+            containerAvatar.onclick = (e) => {
+                // Se clicou no input, deixa seguir para não gerar loop
+                if (e.target === inputCamera) return;
+                inputCamera.click();
+            };
+
+            inputCamera.onchange = async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                try {
+                    // Feedback visual imediato de carregamento
+                    if (lblAvatar) {
+                        lblAvatar.innerHTML = `<div style="font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--ciano-neon);"><i class="fas fa-spinner fa-spin"></i><span style="font-size: 0.65rem; font-weight: bold;">Salvando...</span></div>`;
+                    }
+
+                    console.log("[Perfil] Processando selfie capturada:", file.name, file.size);
+                    const urlFoto = await fazerUploadDeFoto(file);
+
+                    if (urlFoto) {
+                        // 1. Atualiza no Firestore
+                        await updateDoc(doc(db, "usuarios", meuUID), {
+                            avatar_url: urlFoto
+                        });
+
+                        // 2. Atualiza no Auth
+                        if (auth.currentUser) {
+                            await updateProfile(auth.currentUser, {
+                                photoURL: urlFoto
+                            }).catch(() => {});
+                        }
+
+                        // 3. Atualiza cache local
+                        localStorage.setItem("tribbus_user_avatar_url", urlFoto);
+
+                        console.log("[Perfil] Selfie atualizada com sucesso no perfil e Firestore!");
+                    }
+                } catch (err) {
+                    console.error("[Perfil] Erro ao salvar selfie:", err);
+                    alert("Não foi possível salvar a selfie. Tente novamente!");
+                    if (lblAvatar) lblAvatar.innerText = "👤";
+                } finally {
+                    inputCamera.value = "";
+                }
+            };
+        }
 
         // 📥 ESCUTA O MURAL DE SCRAPS EM TEMPO REAL
         let unsubscribeScraps = () => {};
@@ -139,6 +217,35 @@ export function inicializarPerfilEmTempoReal() {
 
                 await adicionarAmigoNoTop(meuUID, amigoId, nome.trim(), avatarFinal);
             };
+        }
+
+        // 🗳️ VOTAÇÃO MÚTUA DE TERMÔMETROS DE REPUTAÇÃO
+        if (btnsVotoNeon && btnsVotoNeon.length > 0) {
+            // Verifica se está visualizando o perfil de outro membro via URL (?uid=...)
+            const urlParams = new URLSearchParams(window.location.search);
+            const alvoUID = urlParams.get("uid") || meuUID;
+
+            btnsVotoNeon.forEach((btn) => {
+                btn.onclick = async () => {
+                    const tipoTermometro = btn.getAttribute("data-termometro");
+                    if (!tipoTermometro) return;
+
+                    btn.disabled = true;
+                    const textoOriginal = btn.innerHTML;
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Votando...`;
+
+                    const res = await votarNoTermometroAmigo(meuUID, alvoUID, tipoTermometro);
+                    
+                    if (res.sucesso) {
+                        alert("✨ Voto computado com sucesso! A reputação subiu +5%!");
+                    } else {
+                        alert(res.erro || "⚠️ Erro ao registrar voto.");
+                    }
+
+                    btn.innerHTML = textoOriginal;
+                    btn.disabled = false;
+                };
+            });
         }
 
         // ✍️ ENVIAR NOVO SCRAP NO MURAL

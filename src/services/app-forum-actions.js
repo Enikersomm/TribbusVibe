@@ -12,7 +12,11 @@ function configurarBotaoParticipar() {
 
     if (btnEntrar) {
         btnEntrar.addEventListener("click", async () => {
-            const usuarioLogadoUID = auth?.currentUser?.uid || "user_lara_123";
+            const usuarioLogadoUID = auth?.currentUser?.uid || "";
+            if (!usuarioLogadoUID) {
+                alert("Você precisa estar conectado para entrar na Tribo!");
+                return;
+            }
 
             // Desabilita temporariamente para evitar cliques duplos
             btnEntrar.disabled = true;

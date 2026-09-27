@@ -16,7 +16,7 @@ export function inicializarChatPrivado(meuUIDOverride, amigoUIDOverride) {
     }
 
     // IDs para o teste/sessão (usa os IDs reais se fornecidos, ou fallback)
-    const meuUID = meuUIDOverride || "user_lara_123";
+    const meuUID = meuUIDOverride || auth?.currentUser?.uid || "";
     const amigoUID = amigoUIDOverride || "user_lucas_456";
 
     // --- ESCUTA EM TEMPO REAL ---
