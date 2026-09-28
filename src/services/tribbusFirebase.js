@@ -115,10 +115,10 @@ export async function cadastrarUsuario({
   data_nascimento = '',
   status_vibe = 'Sintonizando novas vibes ✌️',
   bio = 'Aqui ninguém precisa performar produtividade. Vivendo na minha própria sintonia.',
-  avatar_url = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop&crop=faces',
-  medidor_confiavel = 100,
-  medidor_legal = 100,
-  medidor_vibe = 100
+  avatar_url = '',
+  medidor_confiavel = 0,
+  medidor_legal = 0,
+  medidor_vibe = 0
 }) {
   if (!id) {
     throw new Error('O id (UID do Auth) é obrigatório para cadastrar o usuário.');
