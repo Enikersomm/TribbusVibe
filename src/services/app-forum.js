@@ -15,7 +15,7 @@ import { enviarRespostaTopico, escutarRespostasDoTopico } from "./firebase-respo
 export function inicializarForum() {
     // Parâmetro de URL para tribo customizada se houver
     const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-    const triboId = params?.get("id") || "tribo_ps2_oficial";
+    const triboId = params?.get("id") || "tribo_oficial";
 
     const lblNome = document.getElementById("lbl-nome-tribo");
     const lblDesc = document.getElementById("lbl-desc-tribo");

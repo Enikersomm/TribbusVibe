@@ -8,7 +8,7 @@ import {
   orderBy, 
   onSnapshot 
 } from "firebase/firestore";
-import { db } from "./tribbusFirebase";
+import { db } from "./tribbusFirebase.js";
 
 /**
  * 💬 ENVIAR MENSAGEM: Envia um texto privado ou dispara o comando de Chamar Atenção

@@ -13,6 +13,12 @@ import { votarNoTermometroAmigo } from "./firebase-reputacao.js";
  * 🚀 Inicializa o encanamento em tempo real da tela de Perfil (Dark Mode)
  */
 export function inicializarPerfilEmTempoReal() {
+    // 🚀 REDIRECIONADOR DEFESA TOTAL: Se houver tab=chat ou hash de chat, redireciona na hora para chat.html
+    if (typeof window !== "undefined" && (window.location.search.includes("tab=chat") || window.location.hash.includes("chat"))) {
+        window.location.replace("chat.html");
+        return () => {};
+    }
+
     // Captura os elementos do HTML Dark Mode (compatível com os novos IDs e classes)
     const txtNome = document.getElementById("lbl-perfil-nome") || document.getElementById("perfil-nome-texto");
     const txtBio = document.getElementById("lbl-perfil-bio") || document.querySelector(".bio-box p");
@@ -47,18 +53,31 @@ export function inicializarPerfilEmTempoReal() {
             return;
         }
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUID = urlParams.get("id") || urlParams.get("uid") || usuario.uid;
         const meuUID = usuario.uid;
         const meuNome = usuario.displayName || usuario.email?.split("@")[0] || "Membro da Tribo";
 
-        // 🔄 ESCUTA PERFIL EM TEMPO REAL: Se ele mudar a bio nas configurações, atualiza aqui na hora!
-        const unsubscribePerfil = onSnapshot(doc(db, "usuarios", meuUID), (docSnap) => {
+        // 🚀 ARRANCADA IMEDIATA DO "Carregando...":
+        // Garante que o usuário logado nunca fique preso no estado de carregamento se o banco demorar
+        if (targetUID === meuUID) {
+            if (txtNome && txtNome.innerText.includes("Carregando")) {
+                txtNome.innerText = meuNome;
+            }
+            if (txtStatus && txtStatus.innerText.includes("Carregando")) {
+                txtStatus.innerText = "🪐 em órbita...";
+            }
+        }
+
+        // 🔄 ESCUTA PERFIL EM TEMPO REAL: Atualiza na hora os dados do perfil visualizado!
+        const unsubscribePerfil = onSnapshot(doc(db, "usuarios", targetUID), (docSnap) => {
             if (docSnap.exists()) {
                 const dados = docSnap.data();
                 
-                // Injeta os dados nos blocos
-                if(txtNome) txtNome.innerText = dados.nome || meuNome;
+                // Injeta os dados nos blocos com as chaves padronizadas (nome, frase_status, medidor_confiavel, medidor_legal, medidor_vibe)
+                if(txtNome) txtNome.innerText = dados.nome || (targetUID === meuUID ? meuNome : "Membro da Tribo");
                 if(txtBio) txtBio.innerText = dados.bio || "Sem bio por enquanto... ✨";
-                if(txtStatus) txtStatus.innerText = dados.status_vibe || "🪐 em órbita...";
+                if(txtStatus) txtStatus.innerText = dados.frase_status || dados.status_vibe || "🪐 em órbita...";
                 
                 // Exibe a foto do perfil ou o avatar
                 if (lblAvatar) {
@@ -72,9 +91,9 @@ export function inicializarPerfilEmTempoReal() {
                 }
                 
                 // Atualiza a largura das barras de reputação em degradê neon e os rótulos de porcentagem
-                const valConfiavel = dados.medidor_confiavel ?? 0;
-                const valLegal = dados.medidor_legal ?? 0;
-                const valVibe = dados.medidor_vibe ?? 0;
+                const valConfiavel = dados.medidor_confiavel ?? 85;
+                const valLegal = dados.medidor_legal ?? 90;
+                const valVibe = dados.medidor_vibe ?? 100;
 
                 if(barraConfiavel) barraConfiavel.style.width = `${valConfiavel}%`;
                 if(barraLegal) barraLegal.style.width = `${valLegal}%`;
@@ -83,9 +102,24 @@ export function inicializarPerfilEmTempoReal() {
                 if(txtValConfiavel) txtValConfiavel.innerText = `${valConfiavel}%`;
                 if(txtValLegal) txtValLegal.innerText = `${valLegal}%`;
                 if(txtValVibe) txtValVibe.innerText = `${valVibe}%`;
+            } else {
+                // Documento ainda vazio ou em criação: fallback imediato
+                if (txtNome && txtNome.innerText.includes("Carregando")) {
+                    txtNome.innerText = targetUID === meuUID ? meuNome : "Membro da Tribo";
+                }
+                if (txtStatus && txtStatus.innerText.includes("Carregando")) {
+                    txtStatus.innerText = "🪐 em órbita...";
+                }
             }
         }, (err) => {
             console.warn("Aviso ao carregar dados do perfil em tempo real:", err);
+            // Fallback em caso de erro de rede ou Firestore
+            if (txtNome && txtNome.innerText.includes("Carregando")) {
+                txtNome.innerText = targetUID === meuUID ? meuNome : "Membro da Tribo";
+            }
+            if (txtStatus && txtStatus.innerText.includes("Carregando")) {
+                txtStatus.innerText = "🪐 em órbita...";
+            }
         });
 
         // 📸 GATILHO DA CÂMERA DO CELULAR (SELFIE) AO CLICAR NA FOTO

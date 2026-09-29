@@ -325,7 +325,7 @@ export const CenterContent: React.FC<CenterContentProps> = ({
               : 'text-gray-500 hover:text-[#FF1493] hover:bg-white/50'
           }`}
         >
-          🧭 Minhas Tribos ({communities.filter((c) => c.joined).length})
+          🧭 Minhas Tribbu's ({communities.filter((c) => c.joined).length})
         </button>
       </div>
 

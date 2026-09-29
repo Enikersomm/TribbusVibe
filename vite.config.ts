@@ -25,6 +25,7 @@ export default defineConfig(() => {
           perfil: path.resolve(__dirname, 'perfil.html'),
           forum: path.resolve(__dirname, 'forum.html'),
           configuracoes: path.resolve(__dirname, 'configuracoes.html'),
+          chat: path.resolve(__dirname, 'chat.html'),
           privacidade: path.resolve(__dirname, 'privacidade.html'),
           splash: path.resolve(__dirname, 'splash.html'),
         },

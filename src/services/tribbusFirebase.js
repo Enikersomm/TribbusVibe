@@ -60,23 +60,21 @@ export const firebaseConfig = {
 // Inicializa a aplicação Firebase
 export const app = initializeApp(firebaseConfig);
 
-// Inicializa o Firestore Database com experimentalForceLongPolling e useFetchStreams desativado
-// para evitar timeout de 10s no WebChannel em ambientes de iframe/proxy
-let firestoreInstance;
+// Inicializa o Firestore Database de forma segura
+let firestoreInstance = null;
+const dbId = firebaseConfig.firestoreDatabaseId;
+
 try {
-  firestoreInstance = initializeFirestore(
-    app,
-    {
-      experimentalForceLongPolling: true,
-      useFetchStreams: false,
-    },
-    firebaseConfig.firestoreDatabaseId || undefined
-  );
+  if (dbId) {
+    firestoreInstance = getFirestore(app, dbId);
+  } else {
+    firestoreInstance = getFirestore(app);
+  }
 } catch {
   try {
-    firestoreInstance = firebaseConfig.firestoreDatabaseId
-      ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
-      : getFirestore(app);
+    firestoreInstance = initializeFirestore(app, {
+      experimentalForceLongPolling: true
+    });
   } catch {
     firestoreInstance = getFirestore(app);
   }

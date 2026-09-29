@@ -184,30 +184,42 @@
 </head>
 <body>
 
-    <header class="navbar">
-        <a href="feed.html" class="nav-logo-container" title="Tribbu'sVibe" style="text-decoration: none; display: flex; align-items: center;">
-            <img class="nav-brand-banner-img" src="/logo.png" onerror="this.onerror=null; this.src='/tribbusvibe.png';" alt="Tribbu'sVibe" style="height: 38px; width: auto; max-width: 180px; object-fit: contain;">
+<!-- 🪐 NAVBAR UNIFICADA CORRIGIDA: LINK DE MENSAGENS APONTANDO DIRETO PARA O CHAT -->
+    <header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: 65px;">
+        <!-- Lado Esquerdo: Nossa Logo Definitiva -->
+        <a href="feed.html" class="nav-logo-container" style="text-decoration: none; display: flex; align-items: center;">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 42px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));">
         </a>
-        <nav class="nav-links">
-            <a href="feed.html">Feed</a>
-            <a href="tribos.html" class="active">Tribos</a>
-            <a href="perfil.html?tab=chat">Messenger</a>
-            <a href="perfil.html">Meu Perfil</a>
-            <a href="configuracoes.html">Configurações</a>
-            <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
-        </nav>
+
+        <!-- Lado Direito: Links de Navegação Unificados + Botão de Fundar Tribu -->
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
+                <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Feed</a>
+                <a href="tribos.html" class="active" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.95rem;">Tribbu's</a>
+                <!-- 🔥 CANO CORRIGIDO AQUI: Aponta direto para o arquivo do Tribbu's Messenger -->
+                <a href="chat.html" onclick="event.preventDefault(); window.location.href='chat.html';" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Messenger</a>
+                <a href="perfil.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
+                <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Configurações</a>
+                <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </nav>
+
+            <!-- 🚀 O Botão de Criar Nova Tribbu -->
+            <button onclick="window.location.href='tribos.html#formulario-criar'" class="btn-criar-nav" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: var(--branco, #FFFFFF); border: none; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-plus-circle"></i> Fundar Tribbu
+            </button>
+        </div>
     </header>
 
     <!-- HEADER DA TRIBO ATIVA -->
     <div class="tribo-header-card">
         <div class="tribo-info-principal">
-            <div class="tribo-emblema">🎮</div>
+            <div class="tribo-emblema" id="lbl-emblema-tribo">🪐</div>
             <div class="tribo-titulos">
-                <h1 id="lbl-nome-tribo">Tocadores de PS2</h1>
-                <p id="lbl-desc-tribo">Bomba Patch atualizado, Guitar Hero e memórias do melhor console de todos os tempos.</p>
+                <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
+                <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>
             </div>
         </div>
-        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribo</button>
+        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribbu</button>
     </div>
 
     <div class="forum-layout">
@@ -226,7 +238,7 @@
 
             <!-- Caixa de Criar Tópico -->
             <div class="criar-topico-box">
-                <input type="text" placeholder="Título do Tópico (Ex: Quem joga Guitar Hero ainda?)" id="txt-titulo-topico">
+                <input type="text" placeholder="Título do Tópico..." id="txt-titulo-topico">
                 <textarea placeholder="Escreva o argumento inicial da sua discussão... ✍️" id="txt-corpo-topico"></textarea>
                 <button class="btn-criar-topico" id="btn-lançar-topico">Lançar Tópico</button>
             </div>
@@ -234,7 +246,7 @@
             <!-- Lista de Tópicos (Preenchida em tempo real pelo Firebase) -->
             <div class="topicos-lista" id="container-topicos-forum">
                 <p style="text-align: center; color: var(--texto-suave); font-size: 0.9rem; padding: 20px 0; font-style: italic;">
-                    Nenhum tópico aberto nesta Tribo por enquanto. Seja o primeiro a puxar conversa! 🪐
+                    Nenhum tópico aberto nesta Tribbu por enquanto. Seja o primeiro a puxar conversa! 🪐
                 </p>
             </div>
 
@@ -242,14 +254,9 @@
 
         <!-- COLUNA DIREITA: MEMBROS DA TRIBO -->
         <aside class="card-vibe coluna-membros">
-            <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Membros (2.1k)</h3>
-            <div class="membros-grade">
-                <div class="membro-avatar-mini" title="Lara Croft">🤠</div>
-                <div class="membro-avatar-mini" title="Lucas">🛹</div>
-                <div class="membro-avatar-mini" title="Marina">🎧</div>
-                <div class="membro-avatar-mini" title="Beatriz">👩‍🎨</div>
-                <div class="membro-avatar-mini" title="Gamer">🎮</div>
-                <div class="membro-avatar-mini" title="Pet Vibe">🐱</div>
+            <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;" id="lbl-contagem-membros">Membros</h3>
+            <div class="membros-grade" id="grade-membros-tribo">
+                <p style="color: var(--texto-suave); font-size: 0.8rem; grid-column: span 3; text-align: center; padding: 10px 0;">Membros sincronizados em tempo real.</p>
             </div>
         </aside>
     </div>

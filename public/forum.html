@@ -160,12 +160,12 @@
 
     <header class="navbar">
         <a href="feed.html" class="nav-logo-container" title="Tribbu'sVibe" style="text-decoration: none;">
-            <img class="nav-brand-banner-img" src="/tribbusvibe.png" onerror="this.onerror=null; this.src='/logo.png';" alt="Tribbu'sVibe" style="height: 38px; width: auto; max-width: 180px; object-fit: contain;">
+            <img class="nav-brand-banner-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 42px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));">
         </a>
         <nav class="nav-links">
             <a href="feed.html">Feed</a>
-            <a href="tribos.html" class="active">Tribos</a>
-            <a href="perfil.html?tab=chat">Messenger</a>
+            <a href="tribos.html" class="active">Tribbu's</a>
+            <a href="chat.html" onclick="event.preventDefault(); window.location.href='chat.html';">Messenger</a>
             <a href="perfil.html">Meu Perfil</a>
             <a href="configuracoes.html">Configurações</a>
             <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
@@ -175,13 +175,13 @@
     <!-- HEADER DA TRIBO ATIVA -->
     <div class="tribo-header-card">
         <div class="tribo-info-principal">
-            <div class="tribo-emblema">🎮</div>
+            <div class="tribo-emblema" id="lbl-emblema-tribo">🪐</div>
             <div class="tribo-titulos">
-                <h1 id="lbl-nome-tribo">Tocadores de PS2</h1>
-                <p id="lbl-desc-tribo">Bomba Patch atualizado, Guitar Hero e memórias do melhor console de todos os tempos.</p>
+                <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
+                <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>
             </div>
         </div>
-        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribo</button>
+        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribbu</button>
     </div>
 
     <div class="forum-layout">
@@ -191,9 +191,6 @@
             <!-- Mural de Vibes Rápidas (Stories da Comu) -->
             <div class="stories-tribo-mural" id="mural-stories-tribo">
                 <div class="circle-story" title="Postar uma Vibe rápida de 24h">➕</div>
-                <div class="circle-story" title="Vibe PS2">📸</div>
-                <div class="circle-story" title="Trilha Sonora">🎧</div>
-                <div class="circle-story" title="Skatistas PS2">🛹</div>
             </div>
 
             <h2 style="font-size: 1.3rem; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
@@ -203,41 +200,25 @@
 
             <!-- Caixa de Criar Tópico -->
             <div class="criar-topico-box">
-                <input type="text" placeholder="Título do Tópico (Ex: Quem joga Guitar Hero ainda?)" id="txt-titulo-topico">
+                <input type="text" placeholder="Título do Tópico..." id="txt-titulo-topico">
                 <textarea placeholder="Escreva o argumento inicial da sua discussão... ✍️" id="txt-corpo-topico"></textarea>
                 <button class="btn-criar-topico" id="btn-lançar-topico">Lançar Tópico</button>
             </div>
 
             <!-- Lista de Tópicos -->
             <div class="topicos-lista" id="container-topicos-forum">
-                <div class="topico-linha">
-                    <div class="topico-info">
-                        <h4>Qual o melhor patch do Bomba Patch de todos?</h4>
-                        <span>Criado por @lucas_skate • há 2 horas</span>
-                    </div>
-                    <div class="topico-stats">14 respostas</div>
-                </div>
-                <div class="topico-linha">
-                    <div class="topico-info">
-                        <h4>Memory Card corrompido: tem salvação?</h4>
-                        <span>Criado por @marina_retro • há 1 dia</span>
-                    </div>
-                    <div class="topico-stats">8 respostas</div>
-                </div>
+                <p style="text-align: center; color: var(--texto-suave); font-size: 0.9rem; padding: 20px 0; font-style: italic;">
+                    Nenhum tópico aberto nesta Tribbu por enquanto. Seja o primeiro a puxar conversa! 🪐
+                </p>
             </div>
 
         </main>
 
         <!-- COLUNA DIREITA: MEMBROS DA TRIBO -->
         <aside class="card-vibe coluna-membros">
-            <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Membros (2.1k)</h3>
-            <div class="membros-grade">
-                <div class="membro-avatar-mini" title="Membro">🤠</div>
-                <div class="membro-avatar-mini" title="Lucas">🛹</div>
-                <div class="membro-avatar-mini" title="Marina">🎧</div>
-                <div class="membro-avatar-mini" title="Beatriz">👩‍🎨</div>
-                <div class="membro-avatar-mini" title="Gamer">🎮</div>
-                <div class="membro-avatar-mini" title="Pet Vibe">🐱</div>
+            <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;" id="lbl-contagem-membros">Membros</h3>
+            <div class="membros-grade" id="grade-membros-tribo">
+                <p style="color: var(--texto-suave); font-size: 0.8rem; grid-column: span 3; text-align: center; padding: 10px 0;">Membros sincronizados em tempo real.</p>
             </div>
         </aside>
     </div>

@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./tribbusFirebase.js";
 
-const TRIBO_PADRAO_ID = "tribo_ps2_oficial";
+const TRIBO_PADRAO_ID = "tribo_oficial";
 
 /**
  * ✍️ LANÇAR TÓPICO: Cria uma nova discussão/tópico dentro de uma Tribo específica
@@ -105,12 +105,12 @@ export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
     }
 
     const dadosIniciais = {
-      nome: "Tocadores de PS2",
-      descricao: "Bomba Patch atualizado, Guitar Hero e memórias do melhor console de todos os tempos.",
-      emblema: "🎮",
-      membros_count: 2140,
-      membros: ["user_fundador", "user_lucas_456"],
-      categoria: "Games & Nostalgia",
+      nome: "Tribbu's Oficial",
+      descricao: "Comunidade principal para reunir todos os membros do Tribbu'sVibe.",
+      emblema: "🪐",
+      membros_count: 1,
+      membros: [],
+      categoria: "Geral",
       data_criacao: new Date().toISOString()
     };
 
@@ -120,10 +120,10 @@ export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
     console.warn("Aviso ao obter dados da tribo:", err);
     return {
       id: triboId,
-      nome: "Tocadores de PS2",
-      descricao: "Bomba Patch atualizado, Guitar Hero e memórias do melhor console de todos os tempos.",
-      emblema: "🎮",
-      membros_count: 2140
+      nome: "Tribbu's Oficial",
+      descricao: "Comunidade principal para reunir todos os membros do Tribbu'sVibe.",
+      emblema: "🪐",
+      membros_count: 1
     };
   }
 }

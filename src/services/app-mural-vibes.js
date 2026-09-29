@@ -37,7 +37,12 @@ function inicializarMuralVibes() {
                 conteudoBolinha = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1f1b2e, #FF007F); font-size:1.3rem;">🎵</div>`;
             } else if (tipoStory === "video") {
                 corBorda = "#9d4edd";
-                conteudoBolinha = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #121214, #9d4edd); font-size:1.3rem;">🎥</div>`;
+                conteudoBolinha = `
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                        <video src="${fotoUrl}" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;"></video>
+                        <i class="fas fa-play" style="position: absolute; color: #FFF; font-size: 0.85rem; filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));"></i>
+                    </div>
+                `;
             } else if (tipoStory === "texto") {
                 corBorda = "#FFD700";
                 conteudoBolinha = `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:${story.cor_fundo_neon || '#222'}; color:#fff; font-size:0.7rem; font-weight:bold; padding:4px; text-align:center;">VIBE</div>`;
@@ -51,12 +56,15 @@ function inicializarMuralVibes() {
 
             storyEl.onclick = () => {
                 abrirVisualizadorStory({
+                    id: docSnap.id,
+                    autorId: story.autor_id || "",
                     tipo: tipoStory,
                     dado: story.dado_conteudo || story.media_url || fotoUrl,
                     autorNome: story.autor_nome || "Membro da Tribo",
                     autorAvatar: story.autor_avatar || "👤",
                     tempo: story.data_criacao ? new Date(story.data_criacao).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Vibe de 24h",
-                    corFundo: story.cor_fundo_neon || "#121214"
+                    corFundo: story.cor_fundo_neon || "#121214",
+                    usuarioAtualId: meuUID
                 });
             };
 

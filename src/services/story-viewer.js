@@ -1,6 +1,9 @@
 // 🪐 Tribbu'sVibe - Visualizador de Stories/Status em Tela Cheia (Modal Neon)
 // Arquivo: src/services/story-viewer.js
 
+import { db } from "./tribbusFirebase.js";
+import { doc, deleteDoc } from "firebase/firestore";
+
 let visualizadorContainer = null;
 let audioPlayerAtivo = null;
 
@@ -73,20 +76,41 @@ function garantirEstruturaVisualizador() {
           </div>
         </div>
 
-        <button id="btn-fechar-story-viewer" style="
-          background: rgba(255, 255, 255, 0.15);
-          border: none;
-          color: #FFFFFF;
-          width: 34px;
-          height: 34px;
-          border-radius: 50%;
-          cursor: pointer;
-          font-size: 1.1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 0.2s;
-        " title="Fechar (Esc)">✕</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button id="btn-excluir-story-viewer" class="btn-deletar-vibe" style="
+            display: none;
+            background: rgba(255, 0, 127, 0.15);
+            border: 1px solid rgba(255, 0, 127, 0.6);
+            color: var(--pink-magenta, #FF007F);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 5px var(--pink-magenta));
+            transition: all 0.2s ease;
+          " title="Eliminar da órbita">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+
+          <button id="btn-fechar-story-viewer" style="
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: #FFFFFF;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+          " title="Fechar (Esc)">✕</button>
+        </div>
       </div>
 
       <!-- Área de Conteúdo Visual -->
@@ -164,21 +188,50 @@ export function abrirVisualizadorStory(storyObj) {
   }
 
   const {
+    id: storyId = "",
+    autorId = "",
     tipo = "foto",
     dado = "",
     autorNome = "Membro da Tribo",
     autorAvatar = "👤",
     tempo = "Vibe de 24h",
-    corFundo = "#121214"
+    corFundo = "#121214",
+    usuarioAtualId = ""
   } = storyObj;
 
   const lblAutor = container.querySelector("#story-viewer-autor");
   const lblTempo = container.querySelector("#story-viewer-tempo");
   const lblAvatar = container.querySelector("#story-viewer-avatar");
   const contentArea = container.querySelector("#story-viewer-content");
+  const btnExcluir = container.querySelector("#btn-excluir-story-viewer");
 
   if (lblAutor) lblAutor.textContent = autorNome;
   if (lblTempo) lblTempo.textContent = tempo;
+
+  // Lógica do botão de exclusão da Vibe (só visível se for o dono ou id anonimo)
+  if (btnExcluir) {
+    const isOwner = storyId && usuarioAtualId && (autorId === usuarioAtualId || autorId === "user_anonimo" || autorId === "anonimo");
+    btnExcluir.style.display = isOwner ? "flex" : "none";
+
+    btnExcluir.onclick = async () => {
+      const confirmar = confirm("Tem certeza de que deseja excluir esta micro-vibe?");
+      if (!confirmar) return;
+
+      btnExcluir.disabled = true;
+      btnExcluir.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+      try {
+        if (db && storyId) {
+          await deleteDoc(doc(db, "comunidades_stories", storyId));
+        }
+        fecharVisualizadorStory();
+      } catch (err) {
+        console.error("Erro ao excluir story:", err);
+        alert("Não foi possível excluir a vibe: " + err.message);
+        btnExcluir.disabled = false;
+        btnExcluir.innerHTML = `<i class="fas fa-trash-alt"></i>`;
+      }
+    };
+  }
 
   if (lblAvatar) {
     if (typeof autorAvatar === "string" && autorAvatar.startsWith("http")) {

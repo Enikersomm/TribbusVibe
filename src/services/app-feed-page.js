@@ -13,6 +13,7 @@ import {
   addDoc, 
   doc, 
   updateDoc, 
+  deleteDoc,
   increment, 
   getDoc,
   serverTimestamp 
@@ -37,6 +38,28 @@ import {
 } from "./firebase-storage.js";
 import { abrirVisualizadorStory } from "./story-viewer.js";
 import { abrirModalPostarVibe } from "./modal-postar-vibe.js";
+
+// 🪐 Tribbu'sVibe - Calculadora Dinâmica de Tempo de Postagem
+function calcularTempoTranscorrido(dataPost) {
+    if (!dataPost) return "agora há pouco";
+
+    // Converte a data do Firebase (Timestamp) para o formato de data do JavaScript
+    const dataPostagem = dataPost.seconds ? new Date(dataPost.seconds * 1000) : new Date(dataPost);
+    const agora = new Date();
+    const diferencaEmSegundos = Math.floor((agora - dataPostagem) / 1000);
+
+    if (diferencaEmSegundos < 60) return "agora há pouco";
+    
+    const diferencaEmMinutos = Math.floor(diferencaEmSegundos / 60);
+    if (diferencaEmMinutos < 60) return `há ${diferencaEmMinutos} min`;
+    
+    const diferencaEmHoras = Math.floor(diferencaEmMinutos / 60);
+    if (diferencaEmHoras < 24) return `há ${diferencaEmHoras} h`;
+    
+    const diferencaEmDias = Math.floor(diferencaEmHoras / 24);
+    if (diferencaEmDias === 1) return "ontem";
+    return `há ${diferencaEmDias} dias`;
+}
 
 // 🪐 Tribbu'sVibe - Renderizador Multimídia Híbrido do Mural de Vibes
 export function renderizarConteudoVibeModal(tipo, dado, corFundo) {
@@ -105,18 +128,20 @@ export function iniciarFeedPage() {
 
       // Tenta buscar o perfil detalhado no Firestore
       try {
-        const userDocSnap = await getDoc(doc(db, "usuarios", user.uid));
-        if (userDocSnap.exists()) {
-          const dados = userDocSnap.data();
-          usuarioAtual.nome = dados.nome || usuarioAtual.nome;
-          usuarioAtual.avatar = dados.avatar_emoji || dados.avatar || "👤";
-          if (dados.avatar_url && typeof dados.avatar_url === "string" && dados.avatar_url.trim().startsWith("http")) {
-            usuarioAtual.avatar_url = dados.avatar_url;
+        if (db && user.uid) {
+          const userDocSnap = await getDoc(doc(db, "usuarios", user.uid));
+          if (userDocSnap.exists()) {
+            const dados = userDocSnap.data();
+            usuarioAtual.nome = dados.nome || usuarioAtual.nome;
+            usuarioAtual.avatar = dados.avatar_emoji || dados.avatar || "👤";
+            if (dados.avatar_url && typeof dados.avatar_url === "string" && dados.avatar_url.trim().startsWith("http")) {
+              usuarioAtual.avatar_url = dados.avatar_url;
+            }
+            usuarioAtual.status = dados.frase_status || dados.recado || "Conectando pessoas de verdade 🪐";
+            usuarioAtual.medidor_confiavel = dados.medidor_confiavel ?? 0;
+            usuarioAtual.medidor_legal = dados.medidor_legal ?? 0;
+            usuarioAtual.medidor_vibe = dados.medidor_vibe ?? 0;
           }
-          usuarioAtual.status = dados.frase_status || dados.recado || "Conectando pessoas de verdade 🪐";
-          usuarioAtual.medidor_confiavel = dados.medidor_confiavel ?? 0;
-          usuarioAtual.medidor_legal = dados.medidor_legal ?? 0;
-          usuarioAtual.medidor_vibe = dados.medidor_vibe ?? 0;
         }
       } catch (e) {
         console.warn("[Feed] Usando dados da sessão Auth:", e);
@@ -565,9 +590,14 @@ export function iniciarFeedPage() {
           const dado = story.dado_conteudo || story.media_url || "";
 
           if (tipo === "video") {
-            storyDiv.style.background = "linear-gradient(135deg, #121214, #9d4edd)";
+            storyDiv.style.background = "#000";
             storyDiv.style.border = "2px solid #9d4edd";
-            storyDiv.innerHTML = `<span style="font-size: 1.5rem;">🎥</span>`;
+            storyDiv.innerHTML = `
+              <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                <video src="${dado}" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;"></video>
+                <i class="fas fa-play" style="position: absolute; color: #FFF; font-size: 0.9rem; filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));"></i>
+              </div>
+            `;
             storyDiv.title = "Vibe de Vídeo (Clique para assistir)";
           } else if (tipo === "musica" || tipo === "audio") {
             storyDiv.style.background = "linear-gradient(135deg, #1f1b2e, #FF007F)";
@@ -587,12 +617,15 @@ export function iniciarFeedPage() {
 
           storyDiv.onclick = () => {
             abrirVisualizadorStory({
+              id: docSnap.id,
+              autorId: story.autor_id || "",
               tipo,
               dado,
               autorNome: story.autor_nome || "Membro da Tribo",
               autorAvatar: story.autor_avatar || "👤",
               tempo: story.data_criacao ? new Date(story.data_criacao).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Vibe de 24h",
-              corFundo: story.cor_fundo_neon || "#121214"
+              corFundo: story.cor_fundo_neon || "#121214",
+              usuarioAtualId: usuarioAtual.uid
             });
           };
 
@@ -659,18 +692,30 @@ export function iniciarFeedPage() {
         const curtidas = post.curtidas_contador ?? post.curtidas ?? 0;
         const comentariosCount = post.comentarios_contador ?? post.comentarios ?? 0;
 
+        const isAutor = usuarioAtual.uid && (post.autor_id === usuarioAtual.uid || post.autor_id === "user_anonimo");
+        const btnExcluirHTML = isAutor ? `
+          <!-- 🗑️ BOTÃO DA LIXEIRA SUPREMA CYBERPUNK -->
+          <button class="btn-deletar-vibe btn-excluir-post" data-id="${post.id}" data-post-id="${post.id}" title="Eliminar da órbita" style="background: none; border: none; color: var(--pink-magenta, #FF007F); cursor: pointer; font-size: 0.95rem; padding: 6px; opacity: 0.7; transition: all 0.2s ease; margin-left: auto; filter: drop-shadow(0 0 3px var(--pink-magenta));" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.15)';" onmouseout="this.style.opacity='0.7'; this.style.transform='scale(1)';">
+              <i class="fas fa-trash-alt"></i>
+          </button>
+        ` : "";
+
+        const tempoFormatado = calcularTempoTranscorrido(post.data_criacao || post.timestamp || post.data_postagem);
+
+        const autorUID = post.autor_id || post.autor_uid || "";
         const card = document.createElement("div");
         card.className = "card-vibe card-feed";
         card.setAttribute("data-id", post.id);
         card.innerHTML = `
-          <div class="feed-header">
-              <div class="usuario-info">
+          <div class="feed-header" style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="usuario-info btn-visitar-perfil" data-autor-uid="${autorUID}" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
                   <div class="avatar-m">🤠</div>
                   <div>
-                      <h4 style="font-size: 0.95rem; font-weight: 600;">${escapeHTML(nomeAutor)}</h4>
-                      <span style="font-size: 0.75rem; color: var(--texto-suave);">agora há pouco</span>
+                      <h4 style="font-size: 0.95rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='var(--ciano-neon)';" onmouseout="this.style.color='';">${escapeHTML(nomeAutor)}</h4>
+                      <span style="font-size: 0.75rem; color: var(--texto-suave);">${tempoFormatado}</span>
                   </div>
               </div>
+              ${btnExcluirHTML}
           </div>
           <div class="feed-conteudo">
               <p>${escapeHTML(textoPost)}</p>
@@ -692,13 +737,33 @@ export function iniciarFeedPage() {
           </div>
         `;
 
-        // Like handler
+        // Ativador do redirecionamento dinâmico para a página de perfil
+        const btnPerfil = card.querySelector(".btn-visitar-perfil");
+        if (btnPerfil) {
+            btnPerfil.onclick = () => {
+                const targetUID = btnPerfil.getAttribute("data-autor-uid");
+                if (targetUID) {
+                    console.log(`Navegando para a órbita do usuário: ${targetUID}`);
+                    window.location.href = `perfil.html?id=${targetUID}`;
+                }
+            };
+        }
+
+        // Like handler com trava antiauto-curtida
         const btnCurtir = card.querySelector(".btn-curtir");
         btnCurtir.onclick = async () => {
+          const meuUID = auth?.currentUser?.uid || usuarioAtual.uid;
+          if (meuUID && (post.autor_id === meuUID || post.autor_uid === meuUID)) {
+            alert("⚠️ Você não pode curtir sua própria publicação, malandro! Deixe que a Tribu avalie. 😉");
+            return;
+          }
+
           btnCurtir.style.color = "var(--pink-magenta)";
           try {
-            const pRef = doc(db, "feed_posts", post.id);
-            await updateDoc(pRef, { curtidas_contador: increment(1) });
+            if (db && post.id) {
+              const pRef = doc(db, "feed_posts", post.id);
+              await updateDoc(pRef, { curtidas_contador: increment(1) });
+            }
           } catch (err) {
             console.error("Erro ao curtir:", err);
           }
@@ -747,6 +812,29 @@ export function iniciarFeedPage() {
           inputResp.value = "";
           await enviarComentarioPost(post.id, usuarioAtual.uid, usuarioAtual.nome, txt);
         };
+
+        // Handler de exclusão do post
+        const btnExcluir = card.querySelector(".btn-excluir-post");
+        if (btnExcluir) {
+          btnExcluir.onclick = async () => {
+            const confirmar = confirm("Tem certeza de que deseja excluir esta postagem?");
+            if (!confirmar) return;
+
+            btnExcluir.disabled = true;
+            btnExcluir.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+            try {
+              if (db && post.id) {
+                await deleteDoc(doc(db, "feed_posts", post.id));
+              }
+              card.remove();
+            } catch (err) {
+              console.error("Erro ao excluir postagem:", err);
+              alert("Não foi possível excluir a postagem: " + err.message);
+              btnExcluir.disabled = false;
+              btnExcluir.innerHTML = `<i class="fas fa-trash-alt"></i>`;
+            }
+          };
+        }
 
         feedContainer.appendChild(card);
       });

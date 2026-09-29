@@ -18,10 +18,10 @@ export function inicializarCliquesDeVotacao(alvoUidOverride) {
             const eleitorUid = auth?.currentUser?.uid;
             
             // ID do dono do perfil (Usa o parâmetro da página, o override ou o usuário atual)
-            const alvoUid = alvoUidOverride || uidDaPagina || eleitorUid || "user_lucas_456"; 
+            const alvoUid = alvoUidOverride || uidDaPagina || eleitorUid; 
 
-            if (!eleitorUid) {
-                alert("⚠️ Ops! Você precisa estar logado na sua Tribo para votar na vibe de alguém.");
+            if (!eleitorUid || !alvoUid) {
+                alert("⚠️ Ops! Você precisa estar logado para votar na vibe.");
                 return;
             }
 

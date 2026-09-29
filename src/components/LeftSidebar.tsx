@@ -174,7 +174,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
           }}
           className={`menu-item ${currentTab === 'communities' ? 'active' : ''}`}
         >
-          🧭 Explorar Tribos
+          🧭 Explorar Tribbu's
         </a>
         <a
           href="#albuns"

@@ -12,6 +12,7 @@ export function inicializarConfiguracoes() {
     const inputNome = document.getElementById("input-nome");
     const inputStatus = document.getElementById("input-status");
     const rangeConfiavel = document.querySelector(".range-confiavel");
+    const rangeLegal = document.querySelector(".range-legal");
     const rangeVibe = document.querySelector(".range-vibe");
     const form = document.querySelector("form");
     const btnSalvar = document.querySelector(".btn-salvar-config");
@@ -36,18 +37,32 @@ export function inicializarConfiguracoes() {
 
         const meuUID = usuario.uid;
 
+        // Pré-preenchimento imediato de fallback com o Auth
+        if (inputNome && !inputNome.value) {
+            inputNome.value = usuario.displayName || usuario.email?.split("@")[0] || "";
+        }
+
         // 📥 Pré-carrega dados salvos no Firestore
         const res = await buscarDadosConfiguracao(meuUID);
         if (res && res.sucesso && res.dados) {
             const dados = res.dados;
             if (inputNome && dados.nome) inputNome.value = dados.nome;
-            if (inputStatus && dados.status_vibe) inputStatus.value = dados.status_vibe;
+            if (inputStatus && (dados.frase_status || dados.status_vibe)) {
+                inputStatus.value = dados.frase_status || dados.status_vibe;
+            }
 
             if (rangeConfiavel && typeof dados.medidor_confiavel === "number") {
                 rangeConfiavel.value = dados.medidor_confiavel;
                 const container = rangeConfiavel.closest(".range-container");
                 const valorSpan = container?.querySelector(".range-valor");
                 if (valorSpan) valorSpan.textContent = `${dados.medidor_confiavel}%`;
+            }
+
+            if (rangeLegal && typeof dados.medidor_legal === "number") {
+                rangeLegal.value = dados.medidor_legal;
+                const container = rangeLegal.closest(".range-container");
+                const valorSpan = container?.querySelector(".range-valor");
+                if (valorSpan) valorSpan.textContent = `${dados.medidor_legal}%`;
             }
 
             if (rangeVibe && typeof dados.medidor_vibe === "number") {
@@ -69,10 +84,15 @@ export function inicializarConfiguracoes() {
                     btnSalvar.textContent = "⏳ Gravando na Vibe...";
                 }
 
+                const nomeDigitado = inputNome?.value?.trim() || usuario.displayName || "Membro da Tribo";
+                const statusDigitado = inputStatus?.value?.trim() || "🪐 em órbita...";
+
                 const dadosAtualizados = {
-                    nome: inputNome?.value?.trim() || "Membro da Tribo",
-                    status_vibe: inputStatus?.value?.trim() || "🪐 em órbita...",
+                    nome: nomeDigitado,
+                    frase_status: statusDigitado,
+                    status_vibe: statusDigitado, // Compatibilidade retroativa
                     medidor_confiavel: rangeConfiavel ? Number(rangeConfiavel.value) : 85,
+                    medidor_legal: rangeLegal ? Number(rangeLegal.value) : 90,
                     medidor_vibe: rangeVibe ? Number(rangeVibe.value) : 100
                 };
 

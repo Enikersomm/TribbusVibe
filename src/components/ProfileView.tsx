@@ -340,13 +340,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           community={
             communities.find((c) => c.id === selectedCommunityId) ||
             communities[0] || {
-              id: 'tribo_ps2_oficial',
-              name: 'Tocadores de PS2',
-              category: 'Games Nostalgia',
-              memberCount: '2.1k',
-              avatar: '🎮',
+              id: 'tribo_oficial',
+              name: "Tribbu's Oficial",
+              category: 'Comunidade Geral',
+              memberCount: '1',
+              avatar: '🪐',
               joined: false,
-              description: 'Comunidade oficial para debater ideias e compartilhar postagens!',
+              description: "Espaço oficial para conectar todos os membros do Tribbu'sVibe!",
             }
           }
           user={user}

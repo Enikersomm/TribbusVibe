@@ -94,11 +94,13 @@ export const Header: React.FC<HeaderProps> = ({
               }}
               className="hover:text-[var(--pink-magenta)]"
             >
-              Tribos
+              Tribbu's
             </button>
 
             <button
-              onClick={() => onSelectTab('messages')}
+              onClick={() => {
+                window.location.href = 'chat.html';
+              }}
               style={{
                 textDecoration: 'none',
                 color: currentTab === 'messages' ? 'var(--ciano-neon)' : 'var(--texto-suave)',

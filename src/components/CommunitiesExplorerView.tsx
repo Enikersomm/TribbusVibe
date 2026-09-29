@@ -69,7 +69,7 @@ export const CommunitiesExplorerView: React.FC<CommunitiesExplorerViewProps> = (
         <main className="bg-white p-6 sm:p-7 rounded-[20px] border border-[#FF69B4]/15 shadow-[0_8px_24px_rgba(255,20,147,0.05)]">
           <h2 className="text-[#4A4A4A] text-xl sm:text-2xl font-bold mb-5 flex items-center gap-2.5">
             <Compass className="w-6 h-6 text-[#FF1493]" />
-            <span>Descubra Novas Tribos</span>
+            <span>Descubra Novas Tribbu's</span>
           </h2>
 
           {/* Barra de Busca */}

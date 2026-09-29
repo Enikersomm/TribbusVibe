@@ -57,6 +57,12 @@ export function escutarComentariosDoPost(postId, callbackRenderizar) {
     }
 
     try {
+        if (!db) {
+            console.warn("escutarComentariosDoPost: instância do banco Firestore ainda não está pronta.");
+            if (typeof callbackRenderizar === "function") callbackRenderizar([]);
+            return () => {};
+        }
+
         const consultaComments = query(
             collection(db, "feed_comentarios"),
             where("post_id", "==", postId),

@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tribbu'sVibe - Perfil</title>
+    <script>
+        // 🚀 REDIRECIONADOR INSTANTÂNEO: Se vier ?tab=chat ou hash de chat, pula na hora para chat.html
+        if (window.location.search.includes("tab=chat") || window.location.hash.includes("chat")) {
+            window.location.replace("chat.html");
+        }
+    </script>
     <meta name="theme-color" content="#0B0C10">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -165,18 +171,30 @@
 </head>
 <body>
 
-    <header class="navbar">
-        <a href="feed.html" class="nav-logo-container" title="Tribbu'sVibe" style="text-decoration: none; display: flex; align-items: center;">
-            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" onerror="this.onerror=null; this.src='/tribbusvibe.png';" style="height: 38px; width: auto; max-width: 180px; object-fit: contain;">
+<!-- 🪐 NAVBAR UNIFICADA CORRIGIDA: LINK DE MENSAGENS APONTANDO DIRETO PARA O CHAT -->
+    <header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: 65px;">
+        <!-- Lado Esquerdo: Nossa Logo Definitiva -->
+        <a href="feed.html" class="nav-logo-container" style="text-decoration: none; display: flex; align-items: center;">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 42px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));">
         </a>
-        <nav class="nav-links">
-            <a href="feed.html">Feed</a>
-            <a href="tribos.html">Tribos</a>
-            <a href="perfil.html?tab=chat">Messenger</a>
-            <a href="perfil.html" class="active">Meu Perfil</a>
-            <a href="configuracoes.html">Configurações</a>
-            <a href="login.html" class="btn-logout-global" style="color: var(--pink-magenta); cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
-        </nav>
+
+        <!-- Lado Direito: Links de Navegação Unificados + Botão de Fundar Tribu -->
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
+                <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Feed</a>
+                <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Tribbu's</a>
+                <!-- 🔥 CANO CORRIGIDO AQUI: Aponta direto para o arquivo do Tribbu's Messenger -->
+                <a href="chat.html" onclick="event.preventDefault(); window.location.href='chat.html';" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Messenger</a>
+                <a href="perfil.html" class="active" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
+                <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Configurações</a>
+                <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </nav>
+
+            <!-- 🚀 O Botão de Criar Nova Tribbu -->
+            <button onclick="window.location.href='tribos.html#formulario-criar'" class="btn-criar-nav" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: var(--branco, #FFFFFF); border: none; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-plus-circle"></i> Fundar Tribbu
+            </button>
+        </div>
     </header>
 
     <div class="perfil-layout">
