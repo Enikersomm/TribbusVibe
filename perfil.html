@@ -171,43 +171,78 @@
 </head>
 <body>
 
-<!-- 🪐 NAVBAR UNIFICADA CORRIGIDA: LINK DE MENSAGENS APONTANDO DIRETO PARA O CHAT -->
-    <header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: 65px;">
-        <!-- Lado Esquerdo: Nossa Logo Definitiva -->
-        <a href="feed.html" class="nav-logo-container" style="text-decoration: none; display: flex; align-items: center;">
-            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 42px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));">
-        </a>
+<!-- 🪐 NAVBAR SUPREMA CYBERPUNK COM SCROLL HORIZONTAl DESLIZANTE PARA CELULAR -->
+<header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: auto; min-height: 55px; flex-wrap: wrap; gap: 10px;">
+    
+    <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
+    <div class="nav-logo-container" style="flex-shrink: 0;">
+        <img class="nav-logo-img" src="img/image_p_Y_em.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+    </div>
 
-        <!-- Lado Direito: Links de Navegação Unificados + Botão de Fundar Tribu -->
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
-                <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Feed</a>
-                <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Tribbu's</a>
-                <!-- 🔥 CANO CORRIGIDO AQUI: Aponta direto para o arquivo do Tribbu's Messenger -->
-                <a href="chat.html" onclick="event.preventDefault(); window.location.href='chat.html';" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Messenger</a>
-                <a href="perfil.html" class="active" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
-                <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.95rem;">Configurações</a>
-                <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
-            </nav>
-
-            <!-- 🚀 O Botão de Criar Nova Tribbu -->
-            <button onclick="window.location.href='tribos.html#formulario-criar'" class="btn-criar-nav" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: var(--branco, #FFFFFF); border: none; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;">
-                <i class="fas fa-plus-circle"></i> Fundar Tribbu
-            </button>
+    <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
+    <div class="nav-scroll-central" style="display: flex; align-items: center; gap: 15px; overflow-x: auto; max-width: 100%; padding: 5px 0; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+        
+        <!-- Componente do Sininho de Alertas -->
+        <div class="nav-notificacoes-wrapper" style="position: relative; display: flex; align-items: center; cursor: pointer; flex-shrink: 0;">
+            <i class="fas fa-bell id-icone-sininho" style="color: var(--texto-suave, #9AA0A6); font-size: 1.15rem; transition: color 0.2s, filter 0.2s;"></i>
+            <span id="badge-notificacoes-num" style="display: none; position: absolute; top: -6px; right: -6px; background: var(--pink-magenta, #FF007F); color: #FFF; font-size: 0.6rem; font-weight: 900; padding: 2px 5px; border-radius: 50%;">0</span>
+            
+            <!-- 📂 GAVETA DE NOTIFICAÇÕES ESCONDIDA (Abre ao clicar no sininho) -->
+            <div id="gaveta-sininho-lista" style="display: none; position: absolute; top: 35px; right: -10px; width: 280px; background: var(--cinza-card, #121214); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); padding: 12px; z-index: 200; max-height: 350px; overflow-y: auto;">
+                <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Últimas Interações</h5>
+                <div id="sininho-itens-acumulados" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; padding: 10px 0;">Nenhum alerta por enquanto... ✨</div>
+                </div>
+            </div>
         </div>
-    </header>
 
-    <div class="perfil-layout">
-        <!-- ESQUERDA: AVATAR, STATUS E FAVORITOS ILIMITADOS -->
+        <!-- Links de Navegação (Ficam todos na mesma linha sem quebrar ou sumir!) -->
+        <nav class="nav-links" style="display: flex; gap: 18px; align-items: center; flex-shrink: 0;">
+            <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Feed</a>
+            <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Tribos</a>
+            <a href="chat.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Messenger</a>
+            <a href="perfil.html" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Meu Perfil</a>
+            <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Configurações</a>
+            <a href="index.html" id="btn-sair-vibe" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: bold; font-size: 0.88rem; white-space: nowrap; filter: drop-shadow(0 0 3px var(--pink-magenta));">Sair</a>
+        </nav>
+
+        <!-- Botão de Fundar Nova Tribu -->
+        <button onclick="window.location.href='criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 0, 127, 0.25); flex-shrink: 0; white-space: nowrap;">
+            <i class="fas fa-plus-circle"></i> Fundar Tribu
+        </button>
+    </div>
+</header>
+
+<style>
+    /* 🚫 Esconde totalmente a barra de rolagem cinza feia do navegador para manter o visual limpo */
+    .nav-scroll-central::-webkit-scrollbar {
+        display: none;
+    }
+    .nav-notificacoes-wrapper:hover .id-icone-sininho {
+        color: var(--ciano-neon, #00F0FF);
+        filter: drop-shadow(0 0 5px var(--ciano-neon));
+    }
+</style>
+
+    <!-- 🌌 NOVO: FOTO DE CAPA HORIZONTAL SUPERIOR COM AVATAR FLUTUANTE EM ANEL CIANO NEON -->
+    <div class="capa-perfil-wrapper" style="max-width: 1100px; margin: 20px auto 0; padding: 0 20px; position: relative;">
+        <div id="img-capa-dinamica" style="width: 100%; height: 230px; border-radius: 24px; background: linear-gradient(135deg, #180c2e 0%, #0c1a2e 50%, #121214 100%); background-size: cover; background-position: center; position: relative; border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); overflow: visible;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11,12,16,0.85) 0%, rgba(18,18,20,0) 60%); border-radius: 24px;"></div>
+            
+            <!-- Avatar redondo posicionado flutuando na parte inferior esquerda com anel ciano neon -->
+            <div class="avatar-flutuante-capa" id="btn-tirar-selfie" title="Clique para tirar uma Selfie na hora! 📸" style="position: absolute; bottom: -35px; left: 35px; width: 110px; height: 110px; border-radius: 50%; background: var(--cinza-card); border: 3.5px solid var(--ciano-neon); box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), inset 0 0 10px rgba(0, 240, 255, 0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; z-index: 10;">
+                <img id="img-avatar-perfil" src="" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;" />
+                <span id="lbl-perfil-avatar" style="font-size: 3.2rem;">👤</span>
+                <input type="file" id="input-camera-perfil" accept="image/*" capture="user" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <div class="perfil-layout" style="margin-top: 50px;">
+        <!-- ESQUERDA: STATUS E FAVORITOS ILIMITADOS -->
         <aside style="display: flex; flex-direction: column; gap: 20px;">
             <div class="card-vibe perfil-esquerda">
-                <!-- Foto do Perfil com Abertura da Câmera / Selfie Nativa -->
-                <div class="avatar-container" id="btn-tirar-selfie" title="Clique para tirar uma Selfie na hora! 📸">
-                    <div class="avatar-g" id="lbl-perfil-avatar">👤</div>
-                    <div class="badge-camera"><i class="fas fa-camera"></i></div>
-                    <input type="file" id="input-camera-perfil" accept="image/*" capture="user" style="display: none;">
-                </div>
-                <h2 id="lbl-perfil-nome" style="margin-top: 10px; font-size: 1.3rem;">Carregando...</h2>
+                <h2 id="lbl-perfil-nome" style="margin-top: 5px; font-size: 1.3rem;">Carregando...</h2>
                 <span class="status-tag" id="lbl-perfil-status"></span>
                 
                 <!-- 🪐 COMPONENTE ATUALIZADO: TERMÔMETROS DE REPUTAÇÃO COM BOTÕES DE VOTAÇÃO MÚTUA -->
@@ -256,36 +291,77 @@
                     </div>
 
                     <!-- 2. GRADE DE BOTÕES DE VOTAÇÃO (PARA OS AMIGOS CLICAREM) -->
-                    <div class="votos-acoes-area" style="margin-top: 5px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px;">
-                        <p style="font-size: 0.8rem; color: var(--texto-suave); font-style: italic; text-align: center;">Avalie a vibe do dono deste perfil:</p>
-                        
-                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                            
-                            <!-- Botão Votar Confiável -->
-                            <button type="button" class="btn-voto-neon" data-termometro="medidor_confiavel" style="background: var(--cinza-input); color: var(--branco); border: 1px solid var(--ciano-neon); padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 0 5px rgba(0, 240, 255, 0.15);">
-                                +1 🧊 Confiável
-                            </button>
-
-                            <!-- Botão Votar Legal -->
-                            <button type="button" class="btn-voto-neon" data-termometro="medidor_legal" style="background: var(--cinza-input); color: var(--branco); border: 1px solid var(--pink-magenta); padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 0 5px rgba(255, 0, 127, 0.15);">
-                                +1 ❤️ Legal
-                            </button>
-
-                            <!-- Botão Votar Vibe -->
-                            <button type="button" class="btn-voto-neon" data-termometro="medidor_vibe" style="background: var(--cinza-input); color: var(--branco); border: 1px solid #FFD700; padding: 8px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; box-shadow: 0 0 5px rgba(255, 215, 0, 0.15);">
-                                +1 🌟 Vibe
-                            </button>
-
+                    <div class="votos-acoes-area" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                        <p style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; margin: 0;">Avalie a vibe deste amigo:</p>
+                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%;">
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_confiavel" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--ciano-neon); padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">+1 🧊 Confiável</button>
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_legal" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--pink-magenta); padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">+1 ❤️ Legal</button>
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_vibe" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid #FFD700; padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">+1 🌟 Vibe</button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- 🪐 CARTÃO CYBERPUNK: DADOS PESSOAIS DO FUNDADOR -->
+            <div class="card-vibe dados-pessoais-box" style="background: var(--cinza-card, #121214); padding: 25px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+                
+                <h3 style="font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-id-card" style="color: var(--ciano-neon, #00F0FF);"></i> Ficha do Membro
+                </h3>
+
+                <!-- Grade de informações limpa e direta -->
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem;">
+                    
+                    <!-- Estado Civil -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-heart" style="color: var(--pink-magenta, #FF007F); width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Relacionamento:</span>
+                        <strong id="lbl-estado-civil" style="color: #FFF;">Solteiro(a)</strong>
+                    </div>
+
+                    <!-- Cidade Atual -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--ciano-neon, #00F0FF); width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Mora em:</span>
+                        <strong id="lbl-cidade-atual" style="color: #FFF;">Não informado</strong>
+                    </div>
+
+                    <!-- Cidade Natal -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-baby" style="color: #FFD700; width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Natural de:</span>
+                        <strong id="lbl-cidade-natal" style="color: #FFF;">Não informado</strong>
+                    </div>
+
+                    <!-- Idade / Nascimento -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-birthday-cake" style="color: #9400D3; width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Nascimento:</span>
+                        <strong id="lbl-data-nascimento" style="color: #FFF;">--/--/----</strong>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-dna" style="color: #00FF00; width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Sexo:</span>
+                        <strong id="lbl-sexo" style="color: #FFF;">Não informado</strong>
+                    </div>
+
+                </div>
+            </div>
+
             <!-- VITRINE DE FAVORITOS ILIMITADOS DO FUNDADOR -->
             <div class="card-vibe">
-                <h3 style="font-size:0.95rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; justify-content: space-between;">
-                    <span>⭐ Favoritos</span> <span id="lbl-total-favoritos" style="color: var(--pink-magenta); font-weight: bold;">(0)</span>
-                </h3>
+                <!-- 🌟 CABEÇALHO DA VITRINE COM O BOTÃO DE ADICIONAR AMIGO DE VOLTA -->
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 12px; padding: 0 5px;">
+                    <h4 style="font-size: 0.95rem; color: #FFF; margin: 0; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-users" style="color: var(--pink-magenta);"></i> Vitrine de Amigos <span id="lbl-total-favoritos" style="color: var(--pink-magenta); font-size: 0.8rem;">(0)</span>
+                    </h4>
+                    <!-- 🔥 BOTÃO COMPACTO E NEON DE ADICIONAR AMIGO NA VITRINE -->
+                    <button id="btn-adicionar-favorito" style="background: rgba(0, 240, 255, 0.1); color: var(--ciano-neon); border: 1px solid var(--ciano-neon); padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 5px rgba(0,240,255,0.2);">
+                        <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                </div>
                 <div class="membros-grade" id="grade-favoritos-lateral">
                     <!-- Preenchido automaticamente via Firebase -->
                 </div>
@@ -320,6 +396,7 @@
     </div>
 
     <!-- Encanamento Real do Perfil em Tempo Real e Navegação Global -->
+    <script type="module" src="./src/services/app-sininho.js"></script>
     <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-perfil.js"></script>
     <script type="module" src="./src/services/app-reputacao-clique.js"></script>

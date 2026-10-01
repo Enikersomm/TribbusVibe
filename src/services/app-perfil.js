@@ -10,6 +10,134 @@ import { fazerUploadDeFoto } from "./firebase-storage.js";
 import { votarNoTermometroAmigo } from "./firebase-reputacao.js";
 
 /**
+ * 🪐 Tribbu'sVibe - Sincronizador de Foto de Capa em Tempo Real
+ * @param {string} meuUID - UID do perfil a ser escutado
+ */
+export function escutarPerfilComCapa(meuUID) {
+    const txtNome = document.getElementById("lbl-perfil-nome") || document.getElementById("perfil-nome-texto");
+    const txtStatus = document.getElementById("lbl-perfil-status") || document.querySelector(".status-tag");
+    const txtBio = document.getElementById("lbl-perfil-bio") || document.querySelector(".bio-box p");
+    const imgAvatar = document.getElementById("img-avatar-perfil");
+    const lblAvatar = document.getElementById("lbl-perfil-avatar");
+    const imgCapaDinamica = document.getElementById("img-capa-dinamica");
+    
+    // Barras de reputação neon
+    const barraConfiavel = document.querySelector(".id-barra-confiavel") || document.querySelector(".barra-confiavel");
+    const barraLegal = document.querySelector(".id-barra-legal") || document.querySelector(".barra-legal");
+    const barraVibe = document.querySelector(".id-barra-vibe") || document.querySelector(".barra-vibe");
+    const txtValConfiavel = document.getElementById("txt-val-confiavel");
+    const txtValLegal = document.getElementById("txt-val-legal");
+    const txtValVibe = document.getElementById("txt-val-vibe");
+
+    // 🪐 Injeção de Dados Pessoais para acoplar no src/services/app-perfil.js
+    const lblEstadoCivil = document.getElementById("lbl-estado-civil");
+    const lblCidadeAtual = document.getElementById("lbl-cidade-atual");
+    const lblCidadeNatal = document.getElementById("lbl-cidade-natal");
+    const lblDataNasc = document.getElementById("lbl-data-nascimento");
+    const lblSexo = document.getElementById("lbl-sexo");
+
+    if (!meuUID) return;
+
+    console.log("Conectando cano em tempo real com a órbita do perfil...");
+
+    // 🚀 Fallback instantâneo: se o campo estiver com Carregando, preenche com dados locais da sessão
+    const meuNomeFallback = auth.currentUser?.displayName || auth.currentUser?.email?.split("@")[0] || "Membro da Tribo";
+    if (txtNome && txtNome.innerText.includes("Carregando")) {
+        txtNome.innerText = meuNomeFallback;
+    }
+    if (txtStatus && txtStatus.innerText.includes("Carregando")) {
+        txtStatus.innerText = "🪐 em órbita...";
+    }
+
+    // 🔄 ESCUTA EM TEMPO REAL VIA ONSNAPSHOT
+    return onSnapshot(doc(db, "usuarios", meuUID), (docSnap) => {
+        // Fallback imediato: se o documento não existir ainda, define dados seguros da sessão Auth
+        let nomeExibir = meuNomeFallback;
+        let statusExibir = "🪐 em órbita...";
+        let avatarExibir = "";
+        let capaExibir = "";
+
+        if (docSnap.exists()) {
+            const dados = docSnap.data();
+            nomeExibir = dados.nome || nomeExibir;
+            statusExibir = dados.frase_status || dados.status_vibe || statusExibir;
+            avatarExibir = dados.avatar_url || dados.avatar || avatarExibir;
+            capaExibir = dados.foto_capa_url || capaExibir; // 🖼️ Puxa a capa real do banco!
+
+            const valConfiavel = dados.medidor_confiavel ?? 85;
+            const valLegal = dados.medidor_legal ?? 50;
+            const valVibe = dados.medidor_vibe ?? 100;
+
+            if (dados.bio && txtBio) {
+                txtBio.innerText = dados.bio;
+            }
+
+            // Atualiza a largura das 3 barras de reputação com os neons acesos
+            if (barraConfiavel) barraConfiavel.style.width = `${valConfiavel}%`;
+            if (barraLegal) barraLegal.style.width = `${valLegal}%`;
+            if (barraVibe) barraVibe.style.width = `${valVibe}%`;
+
+            if (txtValConfiavel) txtValConfiavel.innerText = `${valConfiavel}%`;
+            if (txtValLegal) txtValLegal.innerText = `${valLegal}%`;
+            if (txtValVibe) txtValVibe.innerText = `${valVibe}%`;
+
+            // 🔥 ADICIONAR ESTE ENCANAMENTO DENTRO DO SEU ONSNAPSHOT DE PERFIL:
+            const lblEstadoCivil = document.getElementById("lbl-estado-civil");
+            const lblCidadeAtual = document.getElementById("lbl-cidade-atual");
+            const lblCidadeNatal = document.getElementById("lbl-cidade-natal");
+            const lblDataNasc = document.getElementById("lbl-data-nascimento");
+            const lblSexo = document.getElementById("lbl-sexo");
+
+            // Injeta os novos dados pessoais ou mantém o texto padrão se estiver vazio
+            if (lblEstadoCivil) lblEstadoCivil.innerText = dados.estado_civil || "Solteiro(a)";
+            if (lblCidadeAtual) lblCidadeAtual.innerText = dados.cidade_atual || "Não informado";
+            if (lblCidadeNatal) lblCidadeNatal.innerText = dados.cidade_natal || "Não informado";
+            if (lblSexo) lblSexo.innerText = dados.sexo || "Não informado";
+
+            // Trata a formatação da data de nascimento (AAAA-MM-DD para DD/MM/AAAA)
+            if (lblDataNasc && dados.data_nascimento) {
+                const partes = dados.data_nascimento.split("-");
+                if (partes.length === 3) {
+                    lblDataNasc.innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                } else {
+                    lblDataNasc.innerText = dados.data_nascimento;
+                }
+            }
+        }
+
+        // 🚀 INJEÇÃO IMEDIATA NA INTERFACE (Arranca o travamento de 'Carregando...')
+        if (txtNome) txtNome.innerText = nomeExibir;
+        if (txtStatus) txtStatus.innerText = statusExibir;
+        
+        // Avatar Flutuante
+        if (avatarExibir && typeof avatarExibir === "string" && (avatarExibir.startsWith("http") || avatarExibir.startsWith("data:image"))) {
+            if (imgAvatar) {
+                imgAvatar.src = avatarExibir;
+                imgAvatar.style.display = "block";
+            }
+            if (lblAvatar) lblAvatar.style.display = "none";
+        } else if (lblAvatar) {
+            lblAvatar.innerText = avatarExibir || "👤";
+            lblAvatar.style.display = "block";
+            if (imgAvatar) imgAvatar.style.display = "none";
+        }
+        
+        // Aplica a nova capa com estilo de cobertura do Facebook
+        if (imgCapaDinamica && capaExibir) {
+            imgCapaDinamica.style.background = `url('${capaExibir}') center/cover no-repeat`;
+        }
+    }, (err) => {
+        console.warn("Aviso ao carregar órbita do perfil:", err);
+        if (txtNome && txtNome.innerText.includes("Carregando")) {
+            txtNome.innerText = meuNomeFallback;
+        }
+        if (txtStatus && txtStatus.innerText.includes("Carregando")) {
+            txtStatus.innerText = "🪐 em órbita...";
+        }
+    });
+}
+
+/**
  * 🚀 Inicializa o encanamento em tempo real da tela de Perfil (Dark Mode)
  */
 export function inicializarPerfilEmTempoReal() {
@@ -33,6 +161,8 @@ export function inicializarPerfilEmTempoReal() {
     
     const containerAvatar = document.getElementById("btn-tirar-selfie");
     const lblAvatar = document.getElementById("lbl-perfil-avatar");
+    const imgAvatarPerfil = document.getElementById("img-avatar-perfil");
+    const imgCapaDinamica = document.getElementById("img-capa-dinamica");
     const inputCamera = document.getElementById("input-camera-perfil");
     
     const txtScrapInput = document.getElementById("txt-vibe-mural") || document.getElementById("txt-scrap-mural");
@@ -56,71 +186,9 @@ export function inicializarPerfilEmTempoReal() {
         const urlParams = new URLSearchParams(window.location.search);
         const targetUID = urlParams.get("id") || urlParams.get("uid") || usuario.uid;
         const meuUID = usuario.uid;
-        const meuNome = usuario.displayName || usuario.email?.split("@")[0] || "Membro da Tribo";
 
-        // 🚀 ARRANCADA IMEDIATA DO "Carregando...":
-        // Garante que o usuário logado nunca fique preso no estado de carregamento se o banco demorar
-        if (targetUID === meuUID) {
-            if (txtNome && txtNome.innerText.includes("Carregando")) {
-                txtNome.innerText = meuNome;
-            }
-            if (txtStatus && txtStatus.innerText.includes("Carregando")) {
-                txtStatus.innerText = "🪐 em órbita...";
-            }
-        }
-
-        // 🔄 ESCUTA PERFIL EM TEMPO REAL: Atualiza na hora os dados do perfil visualizado!
-        const unsubscribePerfil = onSnapshot(doc(db, "usuarios", targetUID), (docSnap) => {
-            if (docSnap.exists()) {
-                const dados = docSnap.data();
-                
-                // Injeta os dados nos blocos com as chaves padronizadas (nome, frase_status, medidor_confiavel, medidor_legal, medidor_vibe)
-                if(txtNome) txtNome.innerText = dados.nome || (targetUID === meuUID ? meuNome : "Membro da Tribo");
-                if(txtBio) txtBio.innerText = dados.bio || "Sem bio por enquanto... ✨";
-                if(txtStatus) txtStatus.innerText = dados.frase_status || dados.status_vibe || "🪐 em órbita...";
-                
-                // Exibe a foto do perfil ou o avatar
-                if (lblAvatar) {
-                    if (dados.avatar_url && typeof dados.avatar_url === "string" && dados.avatar_url.trim().startsWith("http")) {
-                        lblAvatar.innerHTML = `<img src="${escapeHTML(dados.avatar_url)}" alt="Selfie" onerror="this.onerror=null; this.parentElement.innerText='👤';">`;
-                    } else if (dados.avatar_emoji) {
-                        lblAvatar.innerText = dados.avatar_emoji;
-                    } else {
-                        lblAvatar.innerText = "👤";
-                    }
-                }
-                
-                // Atualiza a largura das barras de reputação em degradê neon e os rótulos de porcentagem
-                const valConfiavel = dados.medidor_confiavel ?? 85;
-                const valLegal = dados.medidor_legal ?? 90;
-                const valVibe = dados.medidor_vibe ?? 100;
-
-                if(barraConfiavel) barraConfiavel.style.width = `${valConfiavel}%`;
-                if(barraLegal) barraLegal.style.width = `${valLegal}%`;
-                if(barraVibe) barraVibe.style.width = `${valVibe}%`;
-
-                if(txtValConfiavel) txtValConfiavel.innerText = `${valConfiavel}%`;
-                if(txtValLegal) txtValLegal.innerText = `${valLegal}%`;
-                if(txtValVibe) txtValVibe.innerText = `${valVibe}%`;
-            } else {
-                // Documento ainda vazio ou em criação: fallback imediato
-                if (txtNome && txtNome.innerText.includes("Carregando")) {
-                    txtNome.innerText = targetUID === meuUID ? meuNome : "Membro da Tribo";
-                }
-                if (txtStatus && txtStatus.innerText.includes("Carregando")) {
-                    txtStatus.innerText = "🪐 em órbita...";
-                }
-            }
-        }, (err) => {
-            console.warn("Aviso ao carregar dados do perfil em tempo real:", err);
-            // Fallback em caso de erro de rede ou Firestore
-            if (txtNome && txtNome.innerText.includes("Carregando")) {
-                txtNome.innerText = targetUID === meuUID ? meuNome : "Membro da Tribo";
-            }
-            if (txtStatus && txtStatus.innerText.includes("Carregando")) {
-                txtStatus.innerText = "🪐 em órbita...";
-            }
-        });
+        // 🔄 ESCUTA PERFIL EM TEMPO REAL VIA escutarPerfilComCapa
+        const unsubscribePerfil = escutarPerfilComCapa(targetUID);
 
         // 📸 GATILHO DA CÂMERA DO CELULAR (SELFIE) AO CLICAR NA FOTO
         if (containerAvatar && inputCamera) {

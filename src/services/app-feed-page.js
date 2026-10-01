@@ -16,7 +16,9 @@ import {
   deleteDoc,
   increment, 
   getDoc,
-  serverTimestamp 
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove 
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { 
@@ -101,6 +103,81 @@ export function renderizarConteudoVibeModal(tipo, dado, corFundo) {
             modalArea.innerHTML = `<img src="${dado}" style="width: 100%; max-height: 70vh; border-radius: 16px; object-fit: contain; border: 2px solid var(--ciano-neon);" onerror="this.onerror=null; this.src='/logo.png';" />`;
         }
     }
+}
+
+export function configurarInteracoesDoCard(card, post, usuarioAtual) {
+    const btnCurtir = card.querySelector(".btn-curtir");
+    const btnComentar = card.querySelector(".btn-comentar-gaveta");
+    const gaveta = card.querySelector(`#gaveta-post-${post.id}`);
+    const listaInner = card.querySelector(".lista-respostas-inner");
+    const txtCurtidasCount = card.querySelector(".curtidas-num");
+
+    if (!btnCurtir || !btnComentar || !gaveta || !listaInner) return;
+
+    // 🔒 1. TRAVA ANTIAUTO-CURTIDA
+    btnCurtir.onclick = async () => {
+        const meuUID = auth?.currentUser?.uid || usuarioAtual?.uid;
+        
+        if (post.autor_id === meuUID || post.autor_uid === meuUID) {
+            alert("⚠️ Você não pode curtir sua própria publicação, malandro! Deixe que a Tribu avalie. 😉");
+            return;
+        }
+
+        try {
+            const postRef = doc(db, "feed_posts", post.id);
+            await updateDoc(postRef, { 
+                curtidas_contador: increment(1)
+            });
+            btnCurtir.style.color = "var(--pink-magenta)";
+        } catch (err) {
+            console.error("Erro ao processar curtida:", err);
+        }
+    };
+
+    // 📡 2. ESCUTA DE COMENTÁRIOS EM TEMPO REAL NA GAVETA (onSnapshot)
+    let escutaGavetaAtiva = null;
+
+    btnComentar.onclick = () => {
+        const aberta = gaveta.style.display === "block";
+        gaveta.style.display = aberta ? "none" : "block";
+
+        if (!aberta && !escutaGavetaAtiva) {
+            console.log(`Abrindo cano ao vivo para comentários do post: ${post.id}`);
+            
+            const qComentarios = query(
+                collection(db, "feed_posts", post.id, "comentarios"),
+                orderBy("data_criacao", "asc")
+            );
+
+            // Inicia a escuta dinâmica do Firebase
+            escutaGavetaAtiva = onSnapshot(qComentarios, (snapshot) => {
+                listaInner.innerHTML = "";
+                
+                if (snapshot.empty) {
+                    listaInner.innerHTML = `<div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; padding: 5px;">Nenhuma resposta por enquanto... ✨</div>`;
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const c = docSnap.data();
+                    const item = document.createElement("div");
+                    item.style.background = "var(--cinza-input, #18181b)";
+                    item.style.padding = "8px 10px";
+                    item.style.borderRadius = "8px";
+                    item.style.marginBottom = "6px";
+                    item.style.borderLeft = "2px solid var(--ciano-neon)";
+                    item.innerHTML = `
+                        <strong style="color: var(--ciano-neon); font-size: 0.75rem;">${escapeHTML(c.autor_name || 'Membro')}</strong>
+                        <p style="font-size: 0.8rem; margin: 2px 0 0 0; color: #FFF;">${escapeHTML(c.conteudo_texto || '')}</p>
+                    `;
+                    listaInner.appendChild(item);
+                });
+                
+                // Força a rolagem automática para a última resposta enviada
+                listaInner.scrollTop = listaInner.scrollHeight;
+            });
+        }
+    };
 }
 
 export function iniciarFeedPage() {
@@ -569,53 +646,76 @@ export function iniciarFeedPage() {
           if (dataCriacao && dataCriacao < vinteQuatroHorasAtras) return;
 
           totalVibes++;
-          const storyDiv = document.createElement("div");
-          storyDiv.className = "circle-story item-vibe-renderizado";
-          storyDiv.style.width = "65px";
-          storyDiv.style.height = "65px";
-          storyDiv.style.borderRadius = "50%";
-          storyDiv.style.display = "flex";
-          storyDiv.style.flexDirection = "column";
-          storyDiv.style.justifyContent = "center";
-          storyDiv.style.alignItems = "center";
-          storyDiv.style.cursor = "pointer";
-          storyDiv.style.flexShrink = "0";
-          storyDiv.style.border = "2px solid var(--pink-magenta)";
-          storyDiv.style.boxShadow = "0 0 10px rgba(255, 0, 127, 0.3)";
-          storyDiv.style.backgroundSize = "cover";
-          storyDiv.style.backgroundPosition = "center";
-          storyDiv.style.transition = "transform 0.2s";
+          const cardStory = document.createElement("div");
+          cardStory.className = "story-card-vertical item-vibe-renderizado";
 
           const tipo = story.tipo || story.tipo_conteudo || (story.media_url ? "foto" : "texto");
           const dado = story.dado_conteudo || story.media_url || "";
+          const autorNome = story.autor_nome || "Membro";
+          const autorAvatar = story.autor_avatar || "👤";
+          const avatarHTML = typeof autorAvatar === "string" && autorAvatar.startsWith("http")
+            ? `<img src="${escapeHTML(autorAvatar)}" alt="${escapeHTML(autorNome)}" />`
+            : `<span>${escapeHTML(autorAvatar)}</span>`;
 
           if (tipo === "video") {
-            storyDiv.style.background = "#000";
-            storyDiv.style.border = "2px solid #9d4edd";
-            storyDiv.innerHTML = `
-              <div style="position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
-                <video src="${dado}" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;"></video>
-                <i class="fas fa-play" style="position: absolute; color: #FFF; font-size: 0.9rem; filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));"></i>
+            cardStory.style.background = "#050508";
+            cardStory.innerHTML = `
+              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
+                ${avatarHTML}
               </div>
+              <video src="${escapeHTML(dado)}" autoplay muted loop playsinline class="story-bg-img" style="pointer-events: none;"></video>
+              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 40%, rgba(0,0,0,0.85) 100%); z-index: 1;"></div>
+              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
             `;
-            storyDiv.title = "Vibe de Vídeo (Clique para assistir)";
+            cardStory.title = `Story de ${autorNome} (Vídeo)`;
           } else if (tipo === "musica" || tipo === "audio") {
-            storyDiv.style.background = "linear-gradient(135deg, #1f1b2e, #FF007F)";
-            storyDiv.style.border = "2px solid #FF007F";
-            storyDiv.innerHTML = `<span style="font-size: 1.5rem;">🎵</span>`;
-            storyDiv.title = "Trilha Sonora / Áudio (Clique para ouvir)";
+            cardStory.style.background = "linear-gradient(145deg, #180d26 0%, #FF007F 100%)";
+            cardStory.innerHTML = `
+              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
+                ${avatarHTML}
+              </div>
+              <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
+                <span style="font-size: 2.2rem; filter: drop-shadow(0 0 10px #00F0FF);">🎵</span>
+              </div>
+              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.85) 100%); z-index: 1;"></div>
+              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
+            `;
+            cardStory.title = `Story de ${autorNome} (Trilha / Áudio)`;
           } else if (tipo === "foto" && dado && (dado.startsWith("http") || dado.startsWith("data:"))) {
-            storyDiv.style.backgroundImage = `url('${dado}')`;
-            storyDiv.innerHTML = "";
+            cardStory.innerHTML = `
+              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
+                ${avatarHTML}
+              </div>
+              <img src="${escapeHTML(dado)}" class="story-bg-img" alt="Story" />
+              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(0,0,0,0.85) 100%); z-index: 1;"></div>
+              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
+            `;
+            cardStory.title = `Story de ${autorNome}`;
           } else if (tipo === "texto") {
-            storyDiv.style.background = story.cor_fundo_neon || "#121214";
-            storyDiv.style.border = "2px solid var(--ciano-neon)";
-            storyDiv.innerHTML = `<i class="fas fa-font" style="color: var(--pink-magenta); font-size: 1.2rem;"></i>`;
+            const corFundo = story.cor_fundo_neon || "#121214";
+            cardStory.style.background = corFundo;
+            cardStory.style.border = "1px solid var(--ciano-neon)";
+            cardStory.innerHTML = `
+              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
+                ${avatarHTML}
+              </div>
+              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; z-index: 1; text-align: center;">
+                <p style="font-size: 0.78rem; font-weight: 600; color: #FFF; line-height: 1.3;">${escapeHTML(dado).substring(0, 50)}</p>
+              </div>
+              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.7) 100%); z-index: 1;"></div>
+              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
+            `;
+            cardStory.title = `Story de ${autorNome}`;
           } else {
-            storyDiv.innerHTML = `✨`;
+            cardStory.innerHTML = `
+              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
+                ${avatarHTML}
+              </div>
+              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
+            `;
           }
 
-          storyDiv.onclick = () => {
+          cardStory.onclick = () => {
             abrirVisualizadorStory({
               id: docSnap.id,
               autorId: story.autor_id || "",
@@ -629,7 +729,7 @@ export function iniciarFeedPage() {
             });
           };
 
-          containerStories.appendChild(storyDiv);
+          containerStories.appendChild(cardStory);
         });
 
         if (txtSemVibes) {
@@ -749,69 +849,19 @@ export function iniciarFeedPage() {
             };
         }
 
-        // Like handler com trava antiauto-curtida
-        const btnCurtir = card.querySelector(".btn-curtir");
-        btnCurtir.onclick = async () => {
-          const meuUID = auth?.currentUser?.uid || usuarioAtual.uid;
-          if (meuUID && (post.autor_id === meuUID || post.autor_uid === meuUID)) {
-            alert("⚠️ Você não pode curtir sua própria publicação, malandro! Deixe que a Tribu avalie. 😉");
-            return;
-          }
-
-          btnCurtir.style.color = "var(--pink-magenta)";
-          try {
-            if (db && post.id) {
-              const pRef = doc(db, "feed_posts", post.id);
-              await updateDoc(pRef, { curtidas_contador: increment(1) });
-            }
-          } catch (err) {
-            console.error("Erro ao curtir:", err);
-          }
-        };
-
-        // Comentários gaveta
-        const btnComentar = card.querySelector(".btn-comentar-gaveta");
-        const gaveta = card.querySelector(`#gaveta-post-${post.id}`);
-        const listaInner = card.querySelector(".lista-respostas-inner");
-        let escutaAtiva = false;
-
-        btnComentar.onclick = () => {
-          const aberta = gaveta.style.display === "block";
-          gaveta.style.display = aberta ? "none" : "block";
-
-          if (!aberta && !escutaAtiva) {
-            escutaAtiva = true;
-            escutarComentariosDoPost(post.id, (comentarios) => {
-              listaInner.innerHTML = "";
-              if (comentarios.length === 0) {
-                listaInner.innerHTML = `<div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic;">Seja o primeiro a responder! ✨</div>`;
-                return;
-              }
-              comentarios.forEach((c) => {
-                const item = document.createElement("div");
-                item.style.background = "var(--cinza-input)";
-                item.style.padding = "6px 8px";
-                item.style.borderRadius = "6px";
-                item.style.marginBottom = "5px";
-                item.style.borderLeft = "2px solid var(--ciano-neon)";
-                item.innerHTML = `
-                  <strong style="color: var(--ciano-neon); font-size: 0.75rem;">${escapeHTML(c.autor_name || 'Membro')}</strong>
-                  <p style="font-size: 0.8rem; margin: 2px 0 0 0; color: #FFF;">${escapeHTML(c.conteudo_texto || '')}</p>
-                `;
-                listaInner.appendChild(item);
-              });
-            });
-          }
-        };
+        // Ativação das interações do card (trava antiauto-curtida e escuta onSnapshot dos comentários)
+        configurarInteracoesDoCard(card, post, usuarioAtual);
 
         const btnEnviarResp = card.querySelector(".btn-enviar-resp-vibe");
         const inputResp = card.querySelector(".input-resp-vibe");
-        btnEnviarResp.onclick = async () => {
-          const txt = inputResp.value.trim();
-          if (!txt) return;
-          inputResp.value = "";
-          await enviarComentarioPost(post.id, usuarioAtual.uid, usuarioAtual.nome, txt);
-        };
+        if (btnEnviarResp && inputResp) {
+            btnEnviarResp.onclick = async () => {
+              const txt = inputResp.value.trim();
+              if (!txt) return;
+              inputResp.value = "";
+              await enviarComentarioPost(post.id, usuarioAtual.uid, usuarioAtual.nome, txt);
+            };
+        }
 
         // Handler de exclusão do post
         const btnExcluir = card.querySelector(".btn-excluir-post");
@@ -866,11 +916,59 @@ export function iniciarFeedPage() {
           itemEv.style.border = "1px solid rgba(255,255,255,0.03)";
           itemEv.innerHTML = `
             <h4 style="font-size: 0.85rem; color: var(--ciano-neon); margin-bottom: 4px;">${escapeHTML(ev.titulo || 'Rolê da Tribo')}</h4>
-            <div style="font-size: 0.75rem; color: var(--texto-suave); display: flex; flex-direction: column; gap: 2px;">
+            <div style="font-size: 0.75rem; color: var(--texto-suave); display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px;">
               <span>📍 ${escapeHTML(ev.local || 'Online')}</span>
               <span>📅 ${escapeHTML(ev.data_hora || 'Em breve')}</span>
+              <span style="color: var(--pink-magenta); font-weight: bold; margin-top: 4px;" id="contador-presenca-${d.id}">🔥 ${ev.confirmados?.length || 0} confirmados</span>
             </div>
+            
+            <!-- 🚀 BOTÃO DE COLAR NO ROLÊ -->
+            <button class="btn-colar-role" data-evento-id="${d.id}" style="width: 100%; background: rgba(0, 240, 255, 0.1); color: var(--ciano-neon); border: 1px solid var(--ciano-neon); padding: 5px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.2s;">
+                Vou colar! 🚀
+            </button>
           `;
+
+          // Lógica de clique para confirmar presença
+          const botoesColar = itemEv.querySelectorAll(".btn-colar-role");
+          botoesColar.forEach((btn) => {
+              // Se já estiver confirmado pelo usuário atual, mostra estado verde
+              const usuarioAtual = auth?.currentUser;
+              if (usuarioAtual && Array.isArray(ev.confirmados) && ev.confirmados.includes(usuarioAtual.uid)) {
+                  btn.innerText = "Presença Confirmada! ✓";
+                  btn.style.borderColor = "#00FF00";
+                  btn.style.color = "#00FF00";
+                  btn.style.background = "rgba(0, 255, 0, 0.05)";
+              }
+
+              btn.onclick = async () => {
+                  const evId = btn.getAttribute("data-evento-id");
+                  const meuUID = auth?.currentUser?.uid;
+
+                  if (!meuUID) return;
+
+                  btn.disabled = true;
+                  btn.innerText = "⏳ Confirmando...";
+
+                  try {
+                      const evRef = doc(db, "eventos", evId);
+                      
+                      // Adiciona o UID do usuário na lista sem duplicar
+                      await updateDoc(evRef, {
+                          confirmados: arrayUnion(meuUID)
+                      });
+
+                      btn.innerText = "Presença Confirmada! ✓";
+                      btn.style.borderColor = "#00FF00";
+                      btn.style.color = "#00FF00";
+                      btn.style.background = "rgba(0, 255, 0, 0.05)";
+                  } catch (err) {
+                      console.error("Erro ao confirmar presença no rolê:", err);
+                      btn.disabled = false;
+                      btn.innerText = "Vou colar! 🚀";
+                  }
+              };
+          });
+
           listaEventos.appendChild(itemEv);
         });
       }, (e) => {
@@ -879,6 +977,24 @@ export function iniciarFeedPage() {
     } catch (e) {
       console.warn("[Feed] Eventos listener:", e);
     }
+  }
+
+  // 🪐 8. ENCANAMENTO DO SININHO CYBERPUNK (ABRIR/FECHAR GAVETA DE NOTIFICAÇÕES)
+  const wrapperSininho = document.querySelector(".nav-notificacoes-wrapper");
+  const gavetaSininho = document.getElementById("gaveta-sininho-lista");
+
+  if (wrapperSininho && gavetaSininho) {
+    wrapperSininho.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const aberto = gavetaSininho.style.display === "block";
+      gavetaSininho.style.display = aberto ? "none" : "block";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (gavetaSininho && !wrapperSininho.contains(e.target)) {
+        gavetaSininho.style.display = "none";
+      }
+    });
   }
 }
 

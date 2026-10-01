@@ -556,10 +556,39 @@
                 cadAlertErro.style.display = "none";
                 cadAlertOk.style.display = "none";
 
+                // 🪐 Tribbu'sVibe - Trava de Idade Antimenores de 13 Anos
+                const dataNascimentoInput = formCad.querySelector("input[type='date']");
+                const dataNascimentoValue = dataNascimentoInput ? dataNascimentoInput.value : "";
+
+                if (!dataNascimentoValue) {
+                    alert("⚠️ Por favor, informe sua data de nascimento para fundar seu perfil na Tribu.");
+                    return;
+                }
+
+                // 📅 CALCULA A IDADE EXATA COMPARANDO COM A DATA DE HOJE (2026)
+                const dataNascimento = new Date(dataNascimentoValue);
+                const hoje = new Date();
+
+                let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+                const diferencaMeses = hoje.getMonth() - dataNascimento.getMonth();
+
+                // Ajusta a idade se o aniversário ainda não aconteceu no ano corrente
+                if (diferencaMeses < 0 || (diferencaMeses === 0 && hoje.getDate() < dataNascimento.getDate())) {
+                    idade--;
+                }
+
+                console.log(`Idade calculada do novo membro: ${idade} anos`);
+
+                // 🛡️ A BARREIRA DE SEGURANÇA: Bloqueia menores de 13 anos na hora!
+                if (idade < 13) {
+                    alert("❌ Acesso Negado! O Tribbu'sVibe é exclusivo para jovens a partir de 13 anos para garantir a segurança da nossa comunidade. 🪐");
+                    return; // Interrompe o código e impede a criação da conta no Firebase Auth!
+                }
+
                 const nome = document.getElementById("cad-nome").value;
                 const email = document.getElementById("cad-email").value;
                 const senha = document.getElementById("cad-senha").value;
-                const nascimento = document.getElementById("cad-nascimento").value;
+                const nascimento = dataNascimentoValue;
 
                 btnCadastrar.disabled = true;
                 btnCadastrar.textContent = "Criando sua conta...";

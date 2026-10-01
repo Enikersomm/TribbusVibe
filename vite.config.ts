@@ -12,8 +12,8 @@ export default defineConfig(() => {
       },
     },
     server: {
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      hmr: false,
+      watch: null,
     },
     build: {
       rollupOptions: {
@@ -28,6 +28,7 @@ export default defineConfig(() => {
           chat: path.resolve(__dirname, 'chat.html'),
           privacidade: path.resolve(__dirname, 'privacidade.html'),
           splash: path.resolve(__dirname, 'splash.html'),
+          criarTribu: path.resolve(__dirname, 'criar-tribu.html'),
         },
       },
     },

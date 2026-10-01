@@ -39,6 +39,7 @@ import {
   onSnapshot 
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 import appletConfig from '../../firebase-applet-config.json';
 
@@ -84,6 +85,9 @@ export const db = firestoreInstance;
 
 // Inicializa o serviço de Autenticação
 export const auth = getAuth(app);
+
+// Inicializa o serviço de Armazenamento (Storage)
+export const storage = getStorage(app);
 
 
 /* ----------------------------------------------------------------------------

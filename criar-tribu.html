@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundar Minha Tribu - Tribbu'sVibe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --preto-profundo: #0B0C10;
+            --cinza-card: #121214;
+            --cinza-input: #18181b;
+            --ciano-neon: #00F0FF;
+            --pink-magenta: #FF007F;
+            --branco: #FFFFFF;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+        }
+        body {
+            background-color: var(--preto-profundo);
+            color: var(--branco);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container-criar {
+            background: var(--cinza-card);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-criar">
+    <div style="text-align: center; margin-bottom: 25px;">
+        <img src="/logo.png" onerror="this.src='img/image_p_Y_em.png'" alt="Tribbu'sVibe" style="height: 50px; width: auto; filter: drop-shadow(0 0 10px var(--ciano-neon));">
+        <h2 style="margin: 15px 0 5px 0; font-size: 1.4rem; font-weight: 800;">Fundar Nova Tribu</h2>
+        <p style="font-size: 0.8rem; color: #9AA0A6; font-style: italic; margin: 0;">Crie o seu bando focado em interesses reais! 🪐</p>
+    </div>
+
+    <form id="form-fundar-tribu">
+        <!-- Nome da Comunidade -->
+        <div style="margin-bottom: 16px;">
+            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px;">📛 Nome da Tribu</label>
+            <input type="text" id="input-nome-tribu" required placeholder="Ex: Tocadores de Counter-Strike" style="background: var(--cinza-input); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 10px; width: 93%; font-size: 0.9rem;">
+        </div>
+
+        <!-- Descrição / Manifesto -->
+        <div style="margin-bottom: 16px;">
+            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px;">📜 Manifesto / Descrição</label>
+            <textarea id="txt-descricao-tribu" rows="3" required placeholder="Escreva as regras ou o objetivo da comunidade..." style="background: var(--cinza-input); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 10px 14px; border-radius: 10px; width: 93%; font-size: 0.9rem; resize: none;"></textarea>
+        </div>
+
+        <!-- Upload da Foto de Capa -->
+        <div style="margin-bottom: 24px;">
+            <label style="font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 6px;">📸 Foto de Capa da Tribu</label>
+            <input type="file" id="file-capa-tribu" accept="image/*" required style="background: var(--cinza-input); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 10px; width: 93%; font-size: 0.85rem;">
+        </div>
+
+        <!-- Botões de Ação -->
+        <div style="display: flex; gap: 12px;">
+            <button type="button" onclick="window.location.href='tribos.html'" style="flex: 1; background: var(--cinza-input); color: #FFF; border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 50px; font-weight: bold; font-size: 0.85rem; cursor: pointer;">Cancelar</button>
+            <button type="submit" id="btn-lançar-tribu" style="flex: 2; background: var(--gradient-supremo); color: #FFF; border: none; padding: 12px; border-radius: 50px; font-weight: bold; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255,0,127,0.35);">Lançar no Universo</button>
+        </div>
+    </form>
+</div>
+
+<script type="module">
+    // Encanamento JavaScript direto acoplado com o Firebase
+    import { db, auth, storage } from "./src/services/tribbusFirebase.js";
+    import { collection, addDoc } from "firebase/firestore";
+    import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+    import { onAuthStateChanged } from "firebase/auth";
+
+    const form = document.getElementById("form-fundar-tribu");
+    const btnLancar = document.getElementById("btn-lançar-tribu");
+
+    let usuarioAtual = auth.currentUser;
+    onAuthStateChanged(auth, (u) => {
+        usuarioAtual = u;
+    });
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const meuUID = usuarioAtual?.uid || auth?.currentUser?.uid;
+
+        if (!meuUID) {
+            alert("⚠️ Faça login para fundar a sua própria Tribu!");
+            window.location.href = "login.html";
+            return;
+        }
+
+        btnLancar.disabled = true;
+        btnLancar.innerText = "⏳ Fundando bando...";
+
+        try {
+            const nome = document.getElementById("input-nome-tribu").value.trim();
+            const descricao = document.getElementById("txt-descricao-tribu").value.trim();
+            const arquivo = document.getElementById("file-capa-tribu").files[0];
+
+            let capaUrl = "";
+            if (arquivo) {
+                // 1. Upload da capa da comunidade no Storage
+                const capaRef = ref(storage, `capas_tribos/tribu_${Date.now()}.png`);
+                await uploadBytes(capaRef, arquivo);
+                capaUrl = await getDownloadURL(capaRef);
+            }
+
+            // 2. Grava na coleção central de tribos do Firestore
+            await addDoc(collection(db, "tribos"), {
+                nome: nome,
+                descricao: descricao,
+                capa_url: capaUrl,
+                criador_uid: meuUID,
+                data_criacao: new Date().toISOString(),
+                membros_count: 1
+            });
+
+            alert("🎉 Parabéns! Sua Tribu foi fundada com sucesso!");
+            window.location.href = "tribos.html";
+
+        } catch (err) {
+            console.error(err);
+            alert("⚠️ Erro ao fundar a Tribu. Tente novamente.");
+            btnLancar.disabled = false;
+            btnLancar.innerText = "Lançar no Universo";
+        }
+    };
+</script>
+
+</body>
+</html>
