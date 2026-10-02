@@ -190,6 +190,9 @@ export function iniciarFeedPage() {
     status: "Na vibe antialgoritmo ✨"
   };
 
+  let ultimoAvatarUrlRenderizado = "";
+  let ultimoNomeRenderizado = "";
+
   // 1. CARREGAR DADOS DO USUÁRIO LOGADO
   onAuthStateChanged(auth, async (user) => {
     const lblAvatar = document.getElementById("lbl-avatar-logado");
@@ -211,7 +214,7 @@ export function iniciarFeedPage() {
             const dados = userDocSnap.data();
             usuarioAtual.nome = dados.nome || usuarioAtual.nome;
             usuarioAtual.avatar = dados.avatar_emoji || dados.avatar || "👤";
-            if (dados.avatar_url && typeof dados.avatar_url === "string" && dados.avatar_url.trim().startsWith("http")) {
+            if (dados.avatar_url && typeof dados.avatar_url === "string" && (dados.avatar_url.trim().startsWith("http") || dados.avatar_url.trim().startsWith("data:image"))) {
               usuarioAtual.avatar_url = dados.avatar_url;
             }
             usuarioAtual.status = dados.frase_status || dados.recado || "Conectando pessoas de verdade 🪐";
@@ -231,14 +234,31 @@ export function iniciarFeedPage() {
       if (emojiSalvo) usuarioAtual.avatar = emojiSalvo;
     }
 
-    if (lblAvatar) {
-      if (usuarioAtual.avatar_url) {
-        lblAvatar.innerHTML = `<img src="${usuarioAtual.avatar_url}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.onerror=null; this.parentElement.innerText='👤';">`;
-      } else {
-        lblAvatar.textContent = usuarioAtual.avatar || "👤";
+    // Só atualiza os elementos se o avatar ou URL realmente tiverem mudado (evita piscar em loop)
+    const avatarKey = usuarioAtual.avatar_url || usuarioAtual.avatar || "👤";
+    if (avatarKey !== ultimoAvatarUrlRenderizado) {
+      ultimoAvatarUrlRenderizado = avatarKey;
+
+      if (lblAvatar) {
+        if (usuarioAtual.avatar_url) {
+          lblAvatar.innerHTML = `<img src="${usuarioAtual.avatar_url}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" onerror="this.onerror=null; this.parentElement.innerText='👤';">`;
+        } else {
+          lblAvatar.textContent = usuarioAtual.avatar || "👤";
+        }
+      }
+
+      const previewImg = document.getElementById("story-criar-preview-img");
+      if (previewImg && usuarioAtual.avatar_url) {
+        if (previewImg.src !== usuarioAtual.avatar_url) {
+          previewImg.src = usuarioAtual.avatar_url;
+        }
       }
     }
-    if (lblNome) lblNome.textContent = usuarioAtual.nome;
+
+    if (lblNome && usuarioAtual.nome !== ultimoNomeRenderizado) {
+      ultimoNomeRenderizado = usuarioAtual.nome;
+      lblNome.textContent = usuarioAtual.nome;
+    }
     if (lblStatus) lblStatus.textContent = usuarioAtual.status;
 
     // Termômetros com animação suave zerados para novos usuários
@@ -598,6 +618,8 @@ export function iniciarFeedPage() {
           dado: dadoConteudo,
           corFundo: "#121214",
           musicaId: tipoSelecionado === "musica" ? dadoConteudo : null,
+          autor_nome: usuarioAtual.nome || auth?.currentUser?.displayName || "Membro da Tribo",
+          autor_avatar: usuarioAtual.avatar_url || usuarioAtual.avatar || ""
         });
 
         if (res.sucesso) {
@@ -647,72 +669,62 @@ export function iniciarFeedPage() {
 
           totalVibes++;
           const cardStory = document.createElement("div");
-          cardStory.className = "story-card-vertical item-vibe-renderizado";
+          cardStory.className = "card-story-vertical item-vibe-renderizado";
+          cardStory.style.cssText = "min-width: 110px; width: 110px; height: 175px; flex-shrink: 0; position: relative; border-radius: 14px; overflow: hidden; cursor: pointer; border: 1px solid var(--pink-magenta); box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);";
 
           const tipo = story.tipo || story.tipo_conteudo || (story.media_url ? "foto" : "texto");
           const dado = story.dado_conteudo || story.media_url || "";
-          const autorNome = story.autor_nome || "Membro";
-          const autorAvatar = story.autor_avatar || "👤";
-          const avatarHTML = typeof autorAvatar === "string" && autorAvatar.startsWith("http")
-            ? `<img src="${escapeHTML(autorAvatar)}" alt="${escapeHTML(autorNome)}" />`
-            : `<span>${escapeHTML(autorAvatar)}</span>`;
+          const nomeAutor = escapeHTML(story.autor_nome || "Membro");
+          const avatarAutor = story.autor_avatar && typeof story.autor_avatar === "string" && story.autor_avatar.startsWith("http")
+            ? story.autor_avatar
+            : "img/avatar-fallback.png";
 
+          // Se for vídeo, coloca a prévia rodando em loop atrás do gradiente
           if (tipo === "video") {
-            cardStory.style.background = "#050508";
-            cardStory.innerHTML = `
-              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
-                ${avatarHTML}
-              </div>
-              <video src="${escapeHTML(dado)}" autoplay muted loop playsinline class="story-bg-img" style="pointer-events: none;"></video>
-              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 40%, rgba(0,0,0,0.85) 100%); z-index: 1;"></div>
-              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
-            `;
-            cardStory.title = `Story de ${autorNome} (Vídeo)`;
+              cardStory.style.background = "#000";
+              cardStory.innerHTML = `
+                  <video src="${escapeHTML(dado)}" autoplay muted loop playsinline style="position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none;"></video>
+                  <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+                  <div style="position: absolute; top: 10px; left: 10px; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ciano-neon); overflow: hidden; background: #000;">
+                      <img src="${escapeHTML(avatarAutor)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='img/avatar-fallback.png';">
+                  </div>
+                  <span style="position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 2; font-size: 0.7rem; color: #FFFFFF; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeAutor}</span>
+              `;
           } else if (tipo === "musica" || tipo === "audio") {
-            cardStory.style.background = "linear-gradient(145deg, #180d26 0%, #FF007F 100%)";
-            cardStory.innerHTML = `
-              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
-                ${avatarHTML}
-              </div>
-              <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
-                <span style="font-size: 2.2rem; filter: drop-shadow(0 0 10px #00F0FF);">🎵</span>
-              </div>
-              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.85) 100%); z-index: 1;"></div>
-              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
-            `;
-            cardStory.title = `Story de ${autorNome} (Trilha / Áudio)`;
-          } else if (tipo === "foto" && dado && (dado.startsWith("http") || dado.startsWith("data:"))) {
-            cardStory.innerHTML = `
-              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
-                ${avatarHTML}
-              </div>
-              <img src="${escapeHTML(dado)}" class="story-bg-img" alt="Story" />
-              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(0,0,0,0.85) 100%); z-index: 1;"></div>
-              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
-            `;
-            cardStory.title = `Story de ${autorNome}`;
+              cardStory.style.background = "linear-gradient(145deg, #180d26 0%, #FF007F 100%)";
+              cardStory.innerHTML = `
+                  <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;">
+                      <span style="font-size: 2.2rem; filter: drop-shadow(0 0 10px #00F0FF);">🎵</span>
+                  </div>
+                  <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+                  <div style="position: absolute; top: 10px; left: 10px; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ciano-neon); overflow: hidden; background: #000;">
+                      <img src="${escapeHTML(avatarAutor)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='img/avatar-fallback.png';">
+                  </div>
+                  <span style="position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 2; font-size: 0.7rem; color: #FFFFFF; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeAutor}</span>
+              `;
           } else if (tipo === "texto") {
-            const corFundo = story.cor_fundo_neon || "#121214";
-            cardStory.style.background = corFundo;
-            cardStory.style.border = "1px solid var(--ciano-neon)";
-            cardStory.innerHTML = `
-              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
-                ${avatarHTML}
-              </div>
-              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; z-index: 1; text-align: center;">
-                <p style="font-size: 0.78rem; font-weight: 600; color: #FFF; line-height: 1.3;">${escapeHTML(dado).substring(0, 50)}</p>
-              </div>
-              <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.7) 100%); z-index: 1;"></div>
-              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
-            `;
-            cardStory.title = `Story de ${autorNome}`;
+              const corFundo = story.cor_fundo_neon || "#121214";
+              cardStory.style.background = corFundo;
+              cardStory.innerHTML = `
+                  <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 10px; z-index: 1; text-align: center;">
+                      <p style="font-size: 0.75rem; font-weight: 600; color: #FFF; line-height: 1.3;">${escapeHTML(dado).substring(0, 50)}</p>
+                  </div>
+                  <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+                  <div style="position: absolute; top: 10px; left: 10px; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ciano-neon); overflow: hidden; background: #000;">
+                      <img src="${escapeHTML(avatarAutor)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='img/avatar-fallback.png';">
+                  </div>
+                  <span style="position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 2; font-size: 0.7rem; color: #FFFFFF; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeAutor}</span>
+              `;
           } else {
-            cardStory.innerHTML = `
-              <div class="story-autor-avatar" title="${escapeHTML(autorNome)}">
-                ${avatarHTML}
-              </div>
-              <span class="story-autor-nome">${escapeHTML(autorNome)}</span>
-            `;
+              // Se for imagem, aplica direto no background-image
+              cardStory.style.background = `url('${dado}') center/cover no-repeat`;
+              cardStory.innerHTML = `
+                  <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+                  <div style="position: absolute; top: 10px; left: 10px; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--ciano-neon); overflow: hidden; background: #000;">
+                      <img src="${escapeHTML(avatarAutor)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='img/avatar-fallback.png';">
+                  </div>
+                  <span style="position: absolute; bottom: 10px; left: 10px; right: 10px; z-index: 2; font-size: 0.7rem; color: #FFFFFF; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeAutor}</span>
+              `;
           }
 
           cardStory.onclick = () => {

@@ -113,66 +113,45 @@
             gap: 15px;
         }
 
-        /* PALHETA DE STORIES COLETIVOS (TOP) - GRADE VERTICAL 9:16 */
+        /* PALHETA DE STORIES COLETIVOS (TOP) - GRADE COMPACTA TRAVADA */
+        .stories-mural-container,
         .stories-container {
-            grid-column: 1 / -1;
             display: flex;
-            gap: 14px;
+            gap: 12px;
             overflow-x: auto;
-            padding: 10px 0 15px;
-            scrollbar-width: thin;
+            padding: 10px 0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
         }
-        .stories-container::-webkit-scrollbar { height: 4px; }
-        .stories-container::-webkit-scrollbar-thumb { background: var(--pink-magenta); border-radius: 4px; }
+        .stories-mural-container::-webkit-scrollbar,
+        .stories-container::-webkit-scrollbar { display: none; }
 
-        /* Card Vertical 9:16 */
+        /* Card Vertical Travado (110px x 175px) */
+        .card-story-vertical,
         .story-card-vertical {
             min-width: 110px;
             width: 110px;
-            height: 180px;
-            border-radius: 16px;
-            position: relative;
+            height: 175px;
+            background: var(--cinza-card, #121214);
+            border-radius: 14px;
             overflow: hidden;
-            cursor: pointer;
-            background: var(--cinza-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
-            padding: 10px;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             flex-shrink: 0;
+            cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+        .card-story-vertical:hover,
         .story-card-vertical:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 240, 255, 0.25);
-        }
-
-        /* Card Criar Story com botão + neon */
-        .story-card-criar {
-            background: linear-gradient(180deg, #1A1A22 0%, #121214 100%);
-            border: 1.5px dashed var(--ciano-neon);
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            gap: 8px;
-        }
-        .btn-mais-story {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--gradient-supremo);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #FFF;
-            font-size: 1.3rem;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
-            transition: transform 0.2s;
-        }
-        .story-card-criar:hover .btn-mais-story {
-            transform: scale(1.1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 240, 255, 0.25);
         }
 
         /* Avatar flutuando no topo esquerdo do card com aura brilhante */
@@ -180,16 +159,16 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             border: 2px solid var(--ciano-neon);
-            box-shadow: 0 0 10px var(--ciano-neon);
-            background: var(--cinza-input);
+            box-shadow: 0 0 8px var(--ciano-neon);
+            background: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             overflow: hidden;
             z-index: 3;
         }
@@ -200,18 +179,21 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.75;
+            opacity: 0.85;
         }
         .story-autor-nome {
-            position: relative;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
             z-index: 2;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #FFF;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            color: #FFFFFF;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
         }
 
         /* PERFIL LATERAL REAIS */
@@ -278,7 +260,7 @@
         </nav>
 
         <!-- Botão de Fundar Nova Tribu -->
-        <button onclick="window.location.href='criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 0, 127, 0.25); flex-shrink: 0; white-space: nowrap;">
+        <button onclick="window.location.href='./criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
             <i class="fas fa-plus-circle"></i> Fundar Tribu
         </button>
     </div>
@@ -297,22 +279,25 @@
 
     <div class="main-layout">
         
-        <!-- 🪐 COMPONENTE ATUALIZADO: MURAL DE VIBES FLEXÍVEL (STORIES DAS TRIBOS EM CARDS 9:16) -->
-        <div class="mural-vibes-secao" style="grid-column: 1 / -1; background: var(--cinza-card); padding: 20px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.03); margin-bottom: 10px;">
-            
-            <!-- 1. BARRA HORIZONTAL DE CARDS RETANGULARES VERTICAIS 9:16 -->
-            <div class="stories-container" id="container-stories-realtime" style="display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; align-items: center;">
+        <!-- 🪐 GRADE DE STORIES COM TAMANHO CORRIGIDO E TRAVADO (NÃO DEIXA A IMAGEM EXPLODIR) -->
+        <div class="mural-vibes-secao" style="grid-column: 1 / -1; background: var(--cinza-card); padding: 15px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); margin-bottom: 10px;">
+            <div class="stories-mural-container" id="container-stories-realtime">
                 
-                <!-- Botão Principal de Adicionar (Card Retangular 9:16 com + neon) -->
-                <div class="story-card-vertical story-card-criar btn-abrir-seletor" title="Compartilhar uma Vibe de 24h (Foto, Música, Vídeo ou Texto)">
-                    <div class="btn-mais-story">
-                        <i class="fas fa-plus"></i>
+                <!-- CARD 1: CRIAR STORY (TRAVADO EM 110PX DE LARGURA E 175PX DE ALTURA) -->
+                <div class="card-story-vertical btn-abrir-seletor" title="Criar novo Story (Foto, Música, Vídeo ou Texto)">
+                    <div style="height: 65%; width: 100%; position: relative; overflow: hidden; background: #1a1a24;">
+                        <img id="story-criar-preview-img" src="img/image_1gVwMG.png" alt="Prévia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src='img/avatar-fallback.png';" />
                     </div>
-                    <span style="font-size: 0.8rem; font-weight: bold; color: var(--ciano-neon);">Criar Story</span>
+                    <div style="height: 35%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: var(--cinza-card, #121214);">
+                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #FF007F, #00F0FF); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid #121214; position: absolute; top: -14px; box-shadow: 0 0 8px var(--ciano-neon);">
+                            <i class="fas fa-plus" style="color: #FFF; font-size: 0.75rem;"></i>
+                        </div>
+                        <span style="font-size: 0.7rem; color: #FFF; font-weight: bold; margin-top: 6px;">Criar story</span>
+                    </div>
                 </div>
 
-                <!-- O JavaScript do Firebase vai limpar e injetar os cards 9:16 reais dos usuários aqui -->
-                <span id="txt-sem-vibes" style="font-size: 0.85rem; color: var(--texto-suave); font-style: italic; margin-left: 10px;">Nenhuma vibe na comu hoje...</span>
+                <!-- O JavaScript do Firebase vai injetar os cards compactos dos amigos aqui -->
+                <span id="txt-sem-vibes" style="font-size: 0.8rem; color: var(--texto-suave); font-style: italic; margin-left: 10px; align-self: center;">Nenhuma vibe na comu hoje...</span>
             </div>
         </div>
 

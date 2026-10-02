@@ -32,12 +32,36 @@ export async function postarStoryComunidade(usuarioId, comunidadeId, imagemUrl, 
             comunidade_id: comunidadeId || "geral",
             comunidade_nome: options.comunidade_nome || "Tribo",
             tipo: tipoVibe,
+            tipo_conteudo: tipoVibe,
             media_url: urlSegura,
+            imagem_url: urlSegura,
+            dado_conteudo: urlSegura || options.texto_vibe || "",
             texto_vibe: options.texto_vibe || "",
             trilha_musica: options.trilha_musica || "",
             data_criacao: new Date().toISOString(),
             expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Calcula 24 horas exatas no futuro!
         });
+
+        // 🌟 Também grava em stories_24h para consulta global direta
+        try {
+            await addDoc(collection(db, "stories_24h"), {
+                autor_id: usuarioId || "anonimo",
+                autor_nome: options.autor_nome || "Membro da Tribo",
+                autor_avatar: options.autor_avatar || "",
+                comunidade_id: comunidadeId || "geral",
+                tipo: tipoVibe,
+                tipo_conteudo: tipoVibe,
+                media_url: urlSegura,
+                imagem_url: urlSegura,
+                dado_conteudo: urlSegura || options.texto_vibe || "",
+                texto_vibe: options.texto_vibe || "",
+                trilha_musica: options.trilha_musica || "",
+                data_criacao: new Date().toISOString(),
+                expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+            });
+        } catch (e24h) {
+            console.warn("Aviso ao espelhar story em stories_24h:", e24h);
+        }
         console.log("Story lançado no Mural com sucesso! ID:", docRef.id);
         return { sucesso: true, id: docRef.id };
     } catch (error) {
@@ -217,12 +241,42 @@ export function escutarStoriesAtivos(callbackDesenharStories) {
     }
 }
 
+/**
+ * 🪐 CONSULTA DE STORIES ABERTA PARA TODA A TRIBU
+ * Sem filtro restritivo de usuário, trazendo stories de todos os membros em tempo real!
+ */
+export function escutarStoriesGerais(callbackStories) {
+    console.log("Conectando cano público de Stories em tempo real...");
+
+    const vinteQuatroHorasAtras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const qStories = query(
+        collection(db, "comunidades_stories"),
+        orderBy("data_criacao", "desc")
+    );
+
+    return onSnapshot(qStories, (snapshot) => {
+        const storiesVivos = [];
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            if (!data.data_criacao || data.data_criacao >= vinteQuatroHorasAtras) {
+                storiesVivos.push({ id: docSnap.id, ...data });
+            }
+        });
+        if (typeof callbackStories === "function") {
+            callbackStories(storiesVivos);
+        }
+    }, (err) => {
+        console.warn("Aviso ao escutar stories gerais:", err);
+    });
+}
+
 export const escutarStoriesComunidade = escutarStoriesAtivos;
 
 export default {
     postarStoryComunidade,
     escutarStoriesAtivos,
     escutarStoriesComunidade,
+    escutarStoriesGerais,
     adicionarComentarioNoStory,
     escutarComentariosDoStory,
     abrirVibeComComentarios

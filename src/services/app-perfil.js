@@ -54,14 +54,14 @@ export function escutarPerfilComCapa(meuUID) {
         // Fallback imediato: se o documento não existir ainda, define dados seguros da sessão Auth
         let nomeExibir = meuNomeFallback;
         let statusExibir = "🪐 em órbita...";
-        let avatarExibir = "";
+        let avatarExibir = auth.currentUser?.photoURL || localStorage.getItem("tribbus_user_avatar_url") || "";
         let capaExibir = "";
 
         if (docSnap.exists()) {
             const dados = docSnap.data();
             nomeExibir = dados.nome || nomeExibir;
             statusExibir = dados.frase_status || dados.status_vibe || statusExibir;
-            avatarExibir = dados.avatar_url || dados.avatar || avatarExibir;
+            avatarExibir = dados.avatar_url || dados.avatar || auth.currentUser?.photoURL || localStorage.getItem("tribbus_user_avatar_url") || avatarExibir;
             capaExibir = dados.foto_capa_url || capaExibir; // 🖼️ Puxa a capa real do banco!
 
             const valConfiavel = dados.medidor_confiavel ?? 85;

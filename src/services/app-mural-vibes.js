@@ -11,9 +11,9 @@ function inicializarMuralVibes() {
     const containerMural = document.getElementById("mural-stories-tribo");
     if (!containerMural) return;
 
-    // ID da tribo ativa (obtém da URL ou fallback para comu_ps2_789)
+    // ID da tribo ativa (obtém da URL ou fallback para tribo_oficial ou geral)
     const urlParams = new URLSearchParams(window.location.search);
-    const triboAtivaID = urlParams.get("tribo") || "comu_ps2_789"; 
+    const triboAtivaID = urlParams.get("id") || urlParams.get("tribo") || "tribo_oficial"; 
     const meuUID = auth?.currentUser?.uid || "";
 
     // --- 🔄 ESCUTA OS STORIES DA TRIBO ATIVA EM TEMPO REAL ---
@@ -76,33 +76,31 @@ function inicializarMuralVibes() {
     };
 
     try {
-        const consultaStories = query(
-            collection(db, "comunidades_stories"),
-            where("comunidade_id", "==", triboAtivaID),
-            where("data_criacao", ">=", vinteQuatroHorasAtras),
-            orderBy("data_criacao", "desc")
-        );
+        const consultaStories = (triboAtivaID === "tribo_oficial" || triboAtivaID === "geral")
+            ? query(
+                collection(db, "comunidades_stories"),
+                orderBy("data_criacao", "desc")
+            )
+            : query(
+                collection(db, "comunidades_stories"),
+                where("comunidade_id", "==", triboAtivaID),
+                orderBy("data_criacao", "desc")
+            );
 
         onSnapshot(
             consultaStories, 
-            renderizarStories,
-            (erro) => {
-                console.warn("Consulta composta de stories requer índice ou fallback. Usando escuta simples:", erro.message);
-                // Fallback para caso ainda não haja índice composto criado no Firestore
-                const fallbackQuery = query(
-                    collection(db, "comunidades_stories"),
-                    where("comunidade_id", "==", triboAtivaID)
-                );
-                onSnapshot(fallbackQuery, (snapFallback) => {
-                    const storiesFiltrados = [];
-                    snapFallback.forEach((d) => {
-                        const data = d.data();
-                        if (data.data_criacao >= vinteQuatroHorasAtras) {
-                            storiesFiltrados.push(d);
-                        }
-                    });
-                    renderizarStories(storiesFiltrados);
+            (snap) => {
+                const storiesFiltrados = [];
+                snap.forEach((d) => {
+                    const data = d.data();
+                    if (!data.data_criacao || data.data_criacao >= vinteQuatroHorasAtras) {
+                        storiesFiltrados.push(d);
+                    }
                 });
+                renderizarStories(storiesFiltrados);
+            },
+            (erro) => {
+                console.warn("Aviso na consulta de stories da tribo:", erro.message);
             }
         );
     } catch (e) {

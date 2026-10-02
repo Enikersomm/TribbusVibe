@@ -2,7 +2,8 @@
 // Arquivo: app-forum.js
 
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./tribbusFirebase.js";
+import { auth, db } from "./tribbusFirebase.js";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { 
   obterDadosTribo, 
   escutarTopicosDaTribo, 
@@ -19,7 +20,9 @@ export function inicializarForum() {
 
     const lblNome = document.getElementById("lbl-nome-tribo");
     const lblDesc = document.getElementById("lbl-desc-tribo");
+    const lblEmblema = document.getElementById("lbl-emblema-tribo");
     const btnParticipar = document.getElementById("btn-entrar-tribo");
+    const listaTodasTribos = document.getElementById("lista-todas-tribos");
     
     const txtTitulo = document.getElementById("txt-titulo-topico");
     const txtCorpo = document.getElementById("txt-corpo-topico");
@@ -41,13 +44,62 @@ export function inicializarForum() {
     let unsubscribeRespostasAtivo = null;
     let topicoAtivoId = null;
 
-    // 1. Carrega dados da Tribo
+    // 1. Carrega dados da Tribo Ativa
     obterDadosTribo(triboId).then((dados) => {
         if (dados) {
             if (lblNome && dados.nome) lblNome.textContent = dados.nome;
             if (lblDesc && dados.descricao) lblDesc.textContent = dados.descricao;
+            if (lblEmblema) {
+                if (dados.capa_url) {
+                    lblEmblema.innerHTML = `<img src="${escapeAttr(dados.capa_url)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
+                } else if (dados.emblema) {
+                    lblEmblema.textContent = dados.emblema;
+                }
+            }
         }
     });
+
+    // 🪐 1.1 Explorador: Escuta e lista todas as Tribos criadas no Firebase
+    if (listaTodasTribos && db) {
+        try {
+            const qTribos = query(collection(db, "tribos"), orderBy("data_criacao", "desc"));
+            onSnapshot(qTribos, (snap) => {
+                let htmlTribos = `
+                    <div onclick="window.location.href='tribos.html'" style="display: flex; align-items: center; gap: 8px; background: ${triboId === 'tribo_oficial' ? 'rgba(0, 240, 255, 0.2)' : 'var(--cinza-input)'}; border: 1px solid ${triboId === 'tribo_oficial' ? 'var(--ciano-neon)' : 'rgba(255,255,255,0.06)'}; padding: 8px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0;">
+                        <span style="font-size: 1.2rem;">🪐</span>
+                        <div>
+                            <strong style="font-size: 0.82rem; color: #FFF; display: block;">Tribbu's Oficial</strong>
+                            <small style="font-size: 0.7rem; color: var(--texto-suave);">Comunidade Raiz</small>
+                        </div>
+                    </div>
+                `;
+
+                snap.forEach((docSnap) => {
+                    const t = docSnap.data();
+                    const isAtiva = triboId === docSnap.id;
+                    const capa = t.capa_url ? `<img src="${escapeAttr(t.capa_url)}" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover;" onerror="this.parentElement.innerHTML='🪐';" />` : `<span style="font-size: 1.1rem;">🪐</span>`;
+
+                    htmlTribos += `
+                        <div onclick="window.location.href='tribos.html?id=${docSnap.id}'" style="display: flex; align-items: center; gap: 8px; background: ${isAtiva ? 'rgba(255, 0, 127, 0.2)' : 'var(--cinza-input)'}; border: 1px solid ${isAtiva ? 'var(--pink-magenta)' : 'rgba(255,255,255,0.06)'}; padding: 8px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='scale(1)';">
+                            <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 6px;">
+                                ${capa}
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.82rem; color: #FFF; display: block; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(t.nome || "Tribbu")}</strong>
+                                <small style="font-size: 0.7rem; color: var(--texto-suave);">${t.membros_contador || 1} membros</small>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                listaTodasTribos.innerHTML = htmlTribos;
+            }, (err) => {
+                console.warn("[Tribos] Erro ao listar tribos:", err);
+            });
+        } catch (e) {
+            console.warn("[Tribos] Falha ao conectar explorador:", e);
+        }
+    }
 
     function fecharModal() {
         if (modalDiscussao) modalDiscussao.style.display = "none";

@@ -29,6 +29,7 @@ export default defineConfig(() => {
           privacidade: path.resolve(__dirname, 'privacidade.html'),
           splash: path.resolve(__dirname, 'splash.html'),
           criarTribu: path.resolve(__dirname, 'criar-tribu.html'),
+          criarTribo: path.resolve(__dirname, 'criar-tribo.html'),
         },
       },
     },

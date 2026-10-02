@@ -222,7 +222,7 @@
         </nav>
 
         <!-- Botão de Fundar Nova Tribu -->
-        <button onclick="window.location.href='criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 0, 127, 0.25); flex-shrink: 0; white-space: nowrap;">
+        <button type="button" class="btn-criar-nav btn-abrir-modal-fundar-tribu" onclick="if(window.abrirModalCriarTribo){window.abrirModalCriarTribo();}else{const m=document.getElementById('modal-criar-tribu-direto');if(m)m.style.display='flex';}" style="background: var(--gradient-supremo); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
             <i class="fas fa-plus-circle"></i> Fundar Tribu
         </button>
     </div>
@@ -240,15 +240,38 @@
 </style>
 
     <!-- HEADER DA TRIBO ATIVA -->
-    <div class="tribo-header-card">
-        <div class="tribo-info-principal">
-            <div class="tribo-emblema" id="lbl-emblema-tribo">🪐</div>
-            <div class="tribo-titulos">
-                <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
-                <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>
+    <div class="tribo-header-card" style="display: flex; flex-direction: column; gap: 15px; align-items: stretch;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div class="tribo-info-principal">
+                <div class="tribo-emblema" id="lbl-emblema-tribo">🪐</div>
+                <div class="tribo-titulos">
+                    <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
+                    <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribbu</button>
+                <button type="button" class="btn-abrir-modal-fundar-tribu" onclick="if(window.abrirModalCriarTribo){window.abrirModalCriarTribo();}else{const m=document.getElementById('modal-criar-tribu-direto');if(m)m.style.display='flex';}" style="background: var(--gradient-neon); color: #FFF; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);">
+                    <i class="fas fa-plus-circle"></i> Fundar Nova Tribu
+                </button>
             </div>
         </div>
-        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribbu</button>
+
+        <!-- 🪐 CARROSSEL / EXPLORADOR DE TRIBUS EM TEMPO REAL -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; margin-top: 5px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--ciano-neon); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fas fa-compass"></i> Explorar Outras Tribus Fundadas
+                </span>
+                <button type="button" class="btn-abrir-modal-fundar-tribu" onclick="if(window.abrirModalCriarTribo){window.abrirModalCriarTribo();}else{const m=document.getElementById('modal-criar-tribu-direto');if(m)m.style.display='flex';}" style="background:none; border:none; font-size: 0.78rem; color: var(--rosa-choque, #FF007F); cursor:pointer; font-weight: 600;">+ Criar a Minha</button>
+            </div>
+            <div id="lista-todas-tribos" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;">
+                <!-- Carregado via Firebase em app-forum.js -->
+                <div style="padding: 10px 14px; background: var(--cinza-input); border-radius: 12px; font-size: 0.8rem; color: var(--texto-suave);">
+                    Buscando tribos do universo... 🪐
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="forum-layout">
@@ -311,12 +334,65 @@
         </div>
     </div>
 
+    <!-- 🪐 MODAL DIRETO DE FUNDAR NOVA TRIBU (SEM REDIRECIONAMENTOS) -->
+    <div id="modal-criar-tribu-direto" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background: var(--cinza-card, #121214); max-width: 520px; width: 100%; border-radius: 20px; border: 1px solid var(--pink-magenta, #FF007F); box-shadow: 0 0 30px rgba(255, 0, 127, 0.35); position: relative; max-height: 90vh; overflow-y: auto; padding: 25px; box-sizing: border-box;">
+            <!-- Botão Fechar -->
+            <button type="button" id="btn-fechar-modal-criar-tribu" style="position: absolute; top: 15px; right: 18px; background: none; border: none; color: var(--texto-suave, #9AA0A6); font-size: 1.4rem; cursor: pointer; transition: color 0.2s;">✕</button>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 4px;">🪐</span>
+                <h2 style="margin: 0; font-size: 1.4rem; color: #FFFFFF; font-weight: 800; letter-spacing: 0.5px;">Fundar Minha Tribu</h2>
+                <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--texto-suave, #9AA0A6);">Crie o seu bando original por afinidades reais no Tribbu'sVibe!</p>
+            </div>
+
+            <form id="form-criar-tribu-direto" style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">📛 Nome da Tribu</label>
+                    <input type="text" id="input-nome-tribu-direto" required placeholder="Ex: Galera do PlayStation 2 ou Devs Indie" style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 12px; border-radius: 10px; color: #FFF; font-size: 0.9rem; outline: none;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">🏷️ Categoria da Tribu</label>
+                    <select id="select-categoria-tribu-direto" style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 12px; border-radius: 10px; color: #FFF; font-size: 0.9rem; outline: none;">
+                        <option value="Geral">🪐 Geral & Conexões</option>
+                        <option value="Games">🎮 Games & Retrogaming</option>
+                        <option value="Tecnologia">💻 Tecnologia & Programação</option>
+                        <option value="Música">🎵 Música & Festas</option>
+                        <option value="Cinema">🎬 Filmes & Séries</option>
+                        <option value="Arte">🎨 Arte & Design</option>
+                        <option value="Esportes">⚽ Esportes & Saúde</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">📜 Manifesto / Descrição da Vibe</label>
+                    <textarea id="txt-descricao-tribu-direto" rows="3" required placeholder="Descreva os objetivos, as regras e a vibe que rola nesta comunidade..." style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 12px; border-radius: 10px; color: #FFF; font-size: 0.9rem; resize: none; outline: none;"></textarea>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">📸 Foto de Capa da Tribu (Opcional)</label>
+                    <input type="file" id="file-capa-tribu-direto" accept="image/*" style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 8px; border-radius: 10px; color: #FFF; font-size: 0.85rem;">
+                    <img id="preview-capa-tribu-direto" src="" alt="Prévia" style="display: none; width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-top: 10px; border: 1px solid var(--ciano-neon);">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 10px;">
+                    <button type="button" onclick="document.getElementById('modal-criar-tribu-direto').style.display='none'" style="flex: 1; padding: 12px; border-radius: 50px; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.1); color: #FFF; cursor: pointer; font-weight: bold;">Cancelar</button>
+                    <button type="submit" id="btn-lancar-tribu-direto" style="flex: 2; padding: 12px; border-radius: 50px; background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); border: none; color: #FFF; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(255,0,127,0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-meteor"></i> Lançar no Universo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Encanamento em Tempo Real do Fórum & Mural de Vibes e Navegação Global -->
     <script type="module" src="./src/services/app-sininho.js"></script>
     <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-forum.js"></script>
     <script type="module" src="./src/services/app-forum-actions.js"></script>
     <script type="module" src="./src/services/app-mural-vibes.js"></script>
+    <script type="module" src="./src/services/modal-criar-tribo.js"></script>
     <script type="module">
         import { realizarLogout } from "./src/services/firebase-auth-login.js";
 

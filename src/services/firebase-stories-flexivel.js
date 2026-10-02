@@ -18,16 +18,31 @@ export async function lancarVibeFlexivel(usuarioId, comunidadeId, conteudoVibe) 
             dadoSeguro = await redimensionarEComprimirImagem(dadoSeguro, 1080, 0.72);
         }
 
-        await addDoc(collection(db, "comunidades_stories"), {
+        const payloadVibe = {
             autor_id: usuarioId,
-            comunidade_id: comunidadeId,
+            autor_nome: conteudoVibe.autor_nome || conteudoVibe.nome || "Membro da Tribo",
+            autor_avatar: conteudoVibe.autor_avatar || conteudoVibe.avatar || "",
+            comunidade_id: comunidadeId || "geral",
+            tipo: conteudoVibe.tipo,
             tipo_conteudo: conteudoVibe.tipo, // 'foto', 'texto' ou 'musica'
             dado_conteudo: dadoSeguro,        // Link da foto, ou o texto digitado
+            media_url: dadoSeguro,
+            imagem_url: dadoSeguro,
             cor_fundo_neon: conteudoVibe.corFundo || "#121214", // Para vibes de apenas texto
             trilha_musica: conteudoVibe.musicaId || null,      // Música vinculada se houver
             data_criacao: new Date().toISOString(),
             expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Some em 24h exatas!
-        });
+        };
+
+        // Salva na coleção comunidades_stories
+        await addDoc(collection(db, "comunidades_stories"), payloadVibe);
+
+        // Salva em stories_24h para compatibilidade total com consultas diretas
+        try {
+            await addDoc(collection(db, "stories_24h"), payloadVibe);
+        } catch (e24h) {
+            console.warn("Aviso ao salvar cópia em stories_24h:", e24h);
+        }
 
         console.log(`🎉 Nova Vibe do tipo [${conteudoVibe.tipo}] lançada na Tribo com sucesso!`);
         return { sucesso: true };

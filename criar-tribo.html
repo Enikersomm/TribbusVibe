@@ -155,6 +155,7 @@
         auth.onAuthStateChanged((user) => {
             authPronto = true;
             if (!user) {
+                // Dá um pequeno tempo antes de redirecionar para não cortar na transição
                 setTimeout(() => {
                     if (!auth.currentUser) {
                         console.warn("[CriarTribu] Sem usuário logado, redirecionando para login.");

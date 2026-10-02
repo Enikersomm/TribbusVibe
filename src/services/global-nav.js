@@ -35,7 +35,7 @@ export function inicializarNavegacaoGlobal() {
     });
 
     // 🛡️ Proteção de Rotas: se estiver em páginas privadas e o usuário não estiver logado, redireciona para login
-    const paginasPrivadas = ["feed.html", "perfil.html", "tribos.html", "forum.html", "configuracoes.html"];
+    const paginasPrivadas = ["feed.html", "perfil.html", "tribos.html", "forum.html", "configuracoes.html", "criar-tribo.html", "criar-tribu.html", "chat.html"];
     const caminhoAtual = window.location.pathname.split("/").pop() || "index.html";
 
     if (paginasPrivadas.includes(caminhoAtual)) {

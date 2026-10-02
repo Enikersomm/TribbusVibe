@@ -97,11 +97,29 @@ export const escutarTopicosDoForum = (triboId, callback) =>
  */
 export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
   try {
+    // 1. Tenta buscar na coleção comunidades
     const docRef = doc(db, "comunidades", triboId);
     const snap = await getDoc(docRef);
 
     if (snap.exists()) {
       return { id: snap.id, ...snap.data() };
+    }
+
+    // 2. Se não achou em comunidades, busca na coleção tribos (onde novas tribos são fundadas)
+    if (triboId !== TRIBO_PADRAO_ID) {
+      const triboRef = doc(db, "tribos", triboId);
+      const triboSnap = await getDoc(triboRef);
+      if (triboSnap.exists()) {
+        const tData = triboSnap.data();
+        return {
+          id: triboSnap.id,
+          nome: tData.nome || "Tribbu",
+          descricao: tData.descricao || "Comunidade do Tribbu'sVibe.",
+          capa_url: tData.capa_url || "",
+          emblema: "🪐",
+          membros_count: tData.membros_contador || 1
+        };
+      }
     }
 
     const dadosIniciais = {
@@ -114,7 +132,9 @@ export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
       data_criacao: new Date().toISOString()
     };
 
-    await setDoc(docRef, dadosIniciais);
+    if (triboId === TRIBO_PADRAO_ID) {
+      await setDoc(docRef, dadosIniciais);
+    }
     return { id: triboId, ...dadosIniciais };
   } catch (err) {
     console.warn("Aviso ao obter dados da tribo:", err);
