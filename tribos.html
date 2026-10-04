@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tribbu'sVibe - Fórum da Tribo</title>
     <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -17,6 +15,7 @@
             --texto-suave: #A5A2B8;
             --rosa-choque: #FF1493;
             --ciano-neon: #00BFFF;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
             --gradient-neon: linear-gradient(135deg, #FF1493 0%, #9400D3 25%, #00BFFF 50%, #00FF00 75%, #FFD700 100%);
         }
 
@@ -59,6 +58,15 @@
         .nav-links { display: flex; align-items: center; gap: 5px; }
         .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
         .nav-links a:hover, .nav-links a.active { color: var(--rosa-choque); }
+
+        .btn-criar-nav:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 6px 18px rgba(0, 240, 255, 0.4), 0 0 12px rgba(255, 0, 127, 0.5) !important;
+            filter: brightness(1.1);
+        }
+        .btn-criar-nav:active {
+            transform: scale(0.98);
+        }
 
         .btn-nav-sair {
             background: rgba(255, 20, 147, 0.15);
@@ -154,147 +162,50 @@
             .tribo-header-card { flex-direction: column; align-items: flex-start; gap: 15px; margin: 20px 20px 0 20px; width: calc(100% - 40px); }
         }
         @media (max-width: 768px) {
-            .navbar { padding: 10px 15px; flex-direction: column; gap: 12px; align-items: stretch; }
-            .nav-logo-container { justify-content: center; }
-            .nav-links {
-                display: flex;
-                width: 100%;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                gap: 8px;
-                padding-bottom: 4px;
-                justify-content: flex-start;
-            }
-            .nav-links::-webkit-scrollbar { display: none; }
-            .nav-links a {
-                margin-right: 0;
-                padding: 6px 14px;
-                background: rgba(255, 255, 255, 0.04);
-                border-radius: 50px;
-                font-size: 0.85rem;
-                flex-shrink: 0;
-                white-space: nowrap;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }
-            .nav-links a.active {
-                background: rgba(255, 0, 127, 0.15);
-                border-color: var(--rosa-choque);
-            }
+            .navbar { padding: 10px 16px; flex-direction: column; gap: 12px; }
         }
     </style>
 </head>
 <body>
 
-<!-- 🪐 NAVBAR SUPREMA CYBERPUNK COM SCROLL HORIZONTAl DESLIZANTE PARA CELULAR -->
-<header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: auto; min-height: 55px; flex-wrap: wrap; gap: 10px;">
+<!-- 🪐 NAVBAR UNIFICADA ATUALIZADA COM O BOTÃO SUPREMO DE CRIAR TRIBU -->
+<header class="navbar" style="background-color: var(--cinza-card); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo) 1; position: sticky; top: 0; z-index: 100; height: 65px;">
     
-    <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
-    <div class="nav-logo-container" style="flex-shrink: 0;">
-        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+    <!-- Lado Esquerdo: Nossa Logo Definitiva -->
+    <div class="nav-logo-container">
+        <a href="feed.html" style="text-decoration: none;">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 42px; width: auto; max-width: 180px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));">
+        </a>
     </div>
 
-    <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
-    <div class="nav-scroll-central" style="display: flex; align-items: center; gap: 15px; overflow-x: auto; max-width: 100%; padding: 5px 0; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
-        
-        <!-- Componente do Sininho de Alertas -->
-        <div class="nav-notificacoes-wrapper" style="position: relative; display: flex; align-items: center; cursor: pointer; flex-shrink: 0;">
-            <i class="fas fa-bell id-icone-sininho" style="color: var(--texto-suave, #9AA0A6); font-size: 1.15rem; transition: color 0.2s, filter 0.2s;"></i>
-            <span id="badge-notificacoes-num" style="display: none; position: absolute; top: -6px; right: -6px; background: var(--pink-magenta, #FF007F); color: #FFF; font-size: 0.6rem; font-weight: 900; padding: 2px 5px; border-radius: 50%;">0</span>
-            
-            <!-- 📂 GAVETA DE NOTIFICAÇÕES ESCONDIDA (Abre ao clicar no sininho) -->
-            <div id="gaveta-sininho-lista" style="display: none; position: absolute; top: 35px; right: -10px; width: 280px; background: var(--cinza-card, #121214); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); padding: 12px; z-index: 200; max-height: 350px; overflow-y: auto;">
-                <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Últimas Interações</h5>
-                <div id="sininho-itens-acumulados" style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; padding: 10px 0;">Nenhum alerta por enquanto... ✨</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Links de Navegação (Ficam todos na mesma linha sem quebrar ou sumir!) -->
-        <nav class="nav-links" style="display: flex; gap: 18px; align-items: center; flex-shrink: 0;">
-            <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Feed</a>
-            <a href="tribos.html" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Tribos</a>
-            <a href="chat.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Messenger</a>
-            <a href="perfil.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Meu Perfil</a>
-            <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Configurações</a>
-            <a href="#" onclick="executarSaidaSuprema(event)" id="btn-sair-vibe" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: bold; font-size: 0.88rem; white-space: nowrap; filter: drop-shadow(0 0 3px var(--pink-magenta));">Sair</a>
+    <!-- Lado Direito: Links de Navegação + O Botão de Criar Tribu -->
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <nav class="nav-links" style="display: flex; gap: 20px; align-items: center;">
+            <a href="feed.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Feed</a>
+            <a href="tribos.html" style="text-decoration: none; color: var(--rosa-choque); font-weight: 600; font-size: 0.95rem;">Tribbu's</a>
+            <a href="chat.html" onclick="event.preventDefault(); window.location.href='chat.html';" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Messenger</a>
+            <a href="perfil.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Meu Perfil</a>
+            <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave); font-weight: 600; font-size: 0.95rem;">Configurações</a>
+            <a href="login.html" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta); font-weight: 600; font-size: 0.95rem; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</a>
         </nav>
 
-        <!-- Botão de Fundar Nova Tribu -->
-        <button type="button" class="btn-criar-nav btn-abrir-modal-fundar-tribu" onclick="if(window.abrirModalCriarTribo){window.abrirModalCriarTribo();}else{const m=document.getElementById('modal-criar-tribu-direto');if(m)m.style.display='flex';}" style="background: var(--gradient-supremo); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
-            <i class="fas fa-plus-circle"></i> Fundar Tribu
+        <!-- 🚀 O BOTÃO SUPREMO DE CRIAR NOVA TRIBU -->
+        <button onclick="window.location.href='tribos.html#formulario-criar'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: var(--branco); border: none; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;">
+            <i class="fas fa-plus-circle"></i> Fundar Tribbu
         </button>
     </div>
 </header>
 
-<style>
-    /* 🚫 Esconde totalmente a barra de rolagem cinza feia do navegador para manter o visual limpo */
-    .nav-scroll-central::-webkit-scrollbar {
-        display: none;
-    }
-    .nav-notificacoes-wrapper:hover .id-icone-sininho {
-        color: var(--ciano-neon, #00F0FF);
-        filter: drop-shadow(0 0 5px var(--ciano-neon));
-    }
-</style>
-
     <!-- HEADER DA TRIBO ATIVA -->
-    <div class="tribo-header-card" style="display: flex; flex-direction: column; gap: 15px; align-items: stretch;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div class="tribo-info-principal" style="display: flex; align-items: center; gap: 15px;">
-                <!-- 🪐 CONTAINER DO AVATAR DA TRIBU: CLICÁVEL E PRONTO PARA TROCAR IMAGEM -->
-                <div class="avatar-tribu-container" id="container-avatar-tribu" style="position: relative; width: 80px; height: 80px; flex-shrink: 0; cursor: pointer;" title="Alterar foto da Tribu">
-                    <!-- Tag de Imagem dinâmica conectada ao Firebase (Carrega Saturno como Fallback) -->
-                    <img id="img-avatar-tribu-viva" src="img/saturno-logo.png" alt="Avatar da Tribu" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; border: 2px solid var(--ciano-neon, #00F0FF); box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);" onerror="this.onerror=null; this.src='img/saturno-logo.png';">
-
-                    <!-- Ícone discreto de câmera que aparece no Hover visual -->
-                    <div class="hover-camera-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s;">
-                        <i class="fas fa-camera" style="color: #FFF; font-size: 1.1rem;"></i>
-                    </div>
-
-                    <!-- 🔥 INPUT INVISÍVEL PARA CAPTURAR O ARQUIVO DO CELULAR/PC -->
-                    <input type="file" id="input-trocar-avatar-tribu" accept="image/*" style="display: none;">
-                </div>
-
-                <style>
-                    /* ✨ Efeito cyberpunk ao passar o mouse em cima do quadrado */
-                    .avatar-tribu-container:hover .hover-camera-overlay {
-                        opacity: 1 !important;
-                    }
-                    .avatar-tribu-container:hover img {
-                        border-color: var(--pink-magenta, #FF007F) !important;
-                        box-shadow: 0 0 15px var(--pink-magenta) !important;
-                    }
-                </style>
-                <div class="tribo-titulos">
-                    <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
-                    <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribbu</button>
-                <button type="button" class="btn-abrir-modal-fundar-tribu" onclick="if(window.abrirModalCriarTribo){window.abrirModalCriarTribo();}else{const m=document.getElementById('modal-criar-tribu-direto');if(m)m.style.display='flex';}" style="background: var(--gradient-neon); color: #FFF; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);">
-                    <i class="fas fa-plus-circle"></i> Fundar Nova Tribu
-                </button>
+    <div class="tribo-header-card">
+        <div class="tribo-info-principal">
+            <div class="tribo-emblema" id="lbl-emblema-tribo">🪐</div>
+            <div class="tribo-titulos">
+                <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
+                <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>
             </div>
         </div>
-
-        <!-- 🪐 CARROSSEL / EXPLORADOR DE TRIBUS EM TEMPO REAL -->
-        <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; margin-top: 5px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span style="font-size: 0.85rem; font-weight: 700; color: var(--ciano-neon); text-transform: uppercase; letter-spacing: 0.5px;">
-                    <i class="fas fa-compass"></i> Explorar Outras Tribus Fundadas
-                </span>
-                <button type="button" class="btn-abrir-modal-fundar-tribu" onclick="if(window.abrirModalCriarTribo){window.abrirModalCriarTribo();}else{const m=document.getElementById('modal-criar-tribu-direto');if(m)m.style.display='flex';}" style="background:none; border:none; font-size: 0.78rem; color: var(--rosa-choque, #FF007F); cursor:pointer; font-weight: 600;">+ Criar a Minha</button>
-            </div>
-            <div id="lista-todas-tribos" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;">
-                <!-- Carregado via Firebase em app-forum.js -->
-                <div style="padding: 10px 14px; background: var(--cinza-input); border-radius: 12px; font-size: 0.8rem; color: var(--texto-suave);">
-                    Buscando tribos do universo... 🪐
-                </div>
-            </div>
-        </div>
+        <button class="btn-participar" id="btn-entrar-tribo">Participar da Tribbu</button>
     </div>
 
     <div class="forum-layout">
@@ -357,65 +268,11 @@
         </div>
     </div>
 
-    <!-- 🪐 MODAL DIRETO DE FUNDAR NOVA TRIBU (SEM REDIRECIONAMENTOS) -->
-    <div id="modal-criar-tribu-direto" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
-        <div style="background: var(--cinza-card, #121214); max-width: 520px; width: 100%; border-radius: 20px; border: 1px solid var(--pink-magenta, #FF007F); box-shadow: 0 0 30px rgba(255, 0, 127, 0.35); position: relative; max-height: 90vh; overflow-y: auto; padding: 25px; box-sizing: border-box;">
-            <!-- Botão Fechar -->
-            <button type="button" id="btn-fechar-modal-criar-tribu" style="position: absolute; top: 15px; right: 18px; background: none; border: none; color: var(--texto-suave, #9AA0A6); font-size: 1.4rem; cursor: pointer; transition: color 0.2s;">✕</button>
-
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span style="font-size: 2.5rem; display: block; margin-bottom: 4px;">🪐</span>
-                <h2 style="margin: 0; font-size: 1.4rem; color: #FFFFFF; font-weight: 800; letter-spacing: 0.5px;">Fundar Minha Tribu</h2>
-                <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: var(--texto-suave, #9AA0A6);">Crie o seu bando original por afinidades reais no Tribbu'sVibe!</p>
-            </div>
-
-            <form id="form-criar-tribu-direto" style="display: flex; flex-direction: column; gap: 16px;">
-                <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">📛 Nome da Tribu</label>
-                    <input type="text" id="input-nome-tribu-direto" required placeholder="Ex: Galera do PlayStation 2 ou Devs Indie" style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 12px; border-radius: 10px; color: #FFF; font-size: 0.9rem; outline: none;">
-                </div>
-
-                <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">🏷️ Categoria da Tribu</label>
-                    <select id="select-categoria-tribu-direto" style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 12px; border-radius: 10px; color: #FFF; font-size: 0.9rem; outline: none;">
-                        <option value="Geral">🪐 Geral & Conexões</option>
-                        <option value="Games">🎮 Games & Retrogaming</option>
-                        <option value="Tecnologia">💻 Tecnologia & Programação</option>
-                        <option value="Música">🎵 Música & Festas</option>
-                        <option value="Cinema">🎬 Filmes & Séries</option>
-                        <option value="Arte">🎨 Arte & Design</option>
-                        <option value="Esportes">⚽ Esportes & Saúde</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">📜 Manifesto / Descrição da Vibe</label>
-                    <textarea id="txt-descricao-tribu-direto" rows="3" required placeholder="Descreva os objetivos, as regras e a vibe que rola nesta comunidade..." style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 12px; border-radius: 10px; color: #FFF; font-size: 0.9rem; resize: none; outline: none;"></textarea>
-                </div>
-
-                <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #FFF;">📸 Foto de Capa da Tribu (Opcional)</label>
-                    <input type="file" id="file-capa-tribu-direto" accept="image/*" style="width: 100%; box-sizing: border-box; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.12); padding: 8px; border-radius: 10px; color: #FFF; font-size: 0.85rem;">
-                    <img id="preview-capa-tribu-direto" src="" alt="Prévia" style="display: none; width: 100%; height: 120px; object-fit: cover; border-radius: 10px; margin-top: 10px; border: 1px solid var(--ciano-neon);">
-                </div>
-
-                <div style="display: flex; gap: 12px; margin-top: 10px;">
-                    <button type="button" onclick="document.getElementById('modal-criar-tribu-direto').style.display='none'" style="flex: 1; padding: 12px; border-radius: 50px; background: var(--cinza-input, #18181b); border: 1px solid rgba(255,255,255,0.1); color: #FFF; cursor: pointer; font-weight: bold;">Cancelar</button>
-                    <button type="submit" id="btn-lancar-tribu-direto" style="flex: 2; padding: 12px; border-radius: 50px; background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); border: none; color: #FFF; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(255,0,127,0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="fas fa-meteor"></i> Lançar no Universo
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Encanamento em Tempo Real do Fórum & Mural de Vibes e Navegação Global -->
-    <script type="module" src="./src/services/app-sininho.js"></script>
     <script type="module" src="./src/services/global-nav.js"></script>
     <script type="module" src="./src/services/app-forum.js"></script>
     <script type="module" src="./src/services/app-forum-actions.js"></script>
     <script type="module" src="./src/services/app-mural-vibes.js"></script>
-    <script type="module" src="./src/services/modal-criar-tribo.js"></script>
     <script type="module">
         import { realizarLogout } from "./src/services/firebase-auth-login.js";
 
