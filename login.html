@@ -363,11 +363,68 @@
             gap: 25px;
         }
 
+        /* 🪐 CARD DE LOGIN EM VIDRO FUMÊ CYBERPUNK - SEM CORTAR OS CIRCUITOS */
+        .container-login-box {
+            /* 🌌 Fundo preto profundo semi-transparente (efeito fumê) */
+            background: rgba(11, 12, 16, 0.85); 
+            
+            /* 🌟 Efeito de desfoque no vidro para dar profundidade premium */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            
+            /* 📐 Ajustes de tamanho e espaçamento */
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            border-radius: 24px;
+            box-sizing: border-box;
+            margin: 40px auto;
+            
+            /* 💥 O SEGREDO: Uma borda fina em degradê neon que combina com os robôs! */
+            border: 1px solid transparent;
+            border-image: linear-gradient(135deg, var(--ciano-neon, #00F0FF) 0%, var(--pink-magenta, #FF007F) 100%) 1;
+            
+            /* Sombra suave para o card flutuar no cenário */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+        }
+
+        /* 📝 Ajuste dos textos lá dentro para brilharem no breu */
+        .container-login-box h3,
+        .container-login-box h2 {
+            color: #FFFFFF;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        /* Botão de Entrar sutil e elegante */
+        .btn-entrar-vibe {
+            background: linear-gradient(135deg, #00F0FF 0%, #FF007F 100%);
+            color: #FFFFFF;
+            border: none;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-entrar-vibe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
         .form-box {
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(11, 12, 16, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 25px;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
 
         .form-box h2 {
@@ -497,7 +554,7 @@
         <!-- Formulários de Alto Impacto -->
         <section class="auth-column">
             
-            <div class="form-box">
+            <div class="form-box container-login-box">
                 <h2>Que bom te ver de volta!</h2>
                 <div id="login-alert" class="alert-box alert-error"></div>
                 <form id="form-login" action="#" method="POST">
@@ -507,11 +564,11 @@
                     <div class="input-group">
                         <input type="password" id="login-senha" placeholder="Sua senha" required>
                     </div>
-                    <button type="submit" id="btn-entrar" class="btn-submit">Entrar no Tribbu'sVibe</button>
+                    <button type="submit" id="btn-entrar" class="btn-submit btn-entrar-vibe">Entrar no Tribbu'sVibe</button>
                 </form>
             </div>
 
-            <div class="form-box">
+            <div class="form-box container-login-box">
                 <h2>Faça parte da nossa comu</h2>
                 <div id="cadastro-alert-erro" class="alert-box alert-error"></div>
                 <div id="cadastro-alert-ok" class="alert-box alert-success"></div>
@@ -528,7 +585,7 @@
                     <div class="input-group">
                         <input type="date" id="cad-nascimento" title="Data de Nascimento" required>
                     </div>
-                    <button type="submit" id="btn-cadastrar" class="btn-submit">Começar Minha Jornada</button>
+                    <button type="submit" id="btn-cadastrar" class="btn-submit btn-entrar-vibe">Começar Minha Jornada</button>
                 </form>
             </div>
 

@@ -203,15 +203,20 @@ export function inicializarPerfilEmTempoReal() {
             return;
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const targetUID = urlParams.get("id") || urlParams.get("uid") || usuario.uid;
+        // 🪐 Atualize estritamente a variável uidDonoDoPerfil dentro do arquivo local:
+        const parametrosUrl = new URLSearchParams(window.location.search);
+        const alvoUid = parametrosUrl.get("id"); // Captura o ID do amigo na barra de endereço
+
+        // Se houver ID na URL, o alvo é o amigo. Se não houver, o alvo é você mesmo!
+        const uidDonoDoPerfil = alvoUid || auth.currentUser?.uid;
+        const targetUID = uidDonoDoPerfil;
         const meuUID = usuario.uid;
 
         // 🔄 ESCUTA PERFIL EM TEMPO REAL VIA escutarPerfilComCapa
-        const unsubscribePerfil = escutarPerfilComCapa(targetUID);
+        const unsubscribePerfil = escutarPerfilComCapa(uidDonoDoPerfil);
 
         // 🛡️ APLICA A TRAVA DE SEGURANÇA DA VITRINE DE FAVORITOS
-        gerenciarVisibilidadeDoBotaoAdicionar(targetUID);
+        gerenciarVisibilidadeDoBotaoAdicionar(uidDonoDoPerfil);
 
         // 📸 GATILHO DA CÂMERA DO CELULAR (SELFIE) AO CLICAR NA FOTO
         if (containerAvatar && inputCamera) {

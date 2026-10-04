@@ -78,12 +78,14 @@ export function inicializarForum() {
             if (lblNome && dados.nome) lblNome.textContent = dados.nome;
             if (lblDesc && dados.descricao) lblDesc.textContent = dados.descricao;
             
-            // Atualiza o avatar da Tribo Viva
-            const fotoTribu = dados.capa_url || dados.foto_capa_url || "";
-            if (imgAvatarTribu && fotoTribu) {
-                imgAvatarTribu.src = fotoTribu;
+            // Onde o Firebase renderiza a foto da Tribu na tela, mude para:
+            const dadosDaTribu = dados;
+            const imgExibicao = imgAvatarTribu || document.getElementById("img-avatar-tribu-viva");
+            if (imgExibicao) {
+                imgExibicao.src = dadosDaTribu.capa_url || "img/saturno-logo.png";
             }
             if (lblEmblema) {
+                const fotoTribu = dadosDaTribu.capa_url || "";
                 if (fotoTribu) {
                     lblEmblema.innerHTML = `<img src="${escapeAttr(fotoTribu)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
                 } else if (dados.emblema) {

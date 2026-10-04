@@ -1789,6 +1789,91 @@ div.avatar-m {
   transform: scale(0.98);
 }
 
+/* 🪐 ENCANAMENTO SUPREMO: TORNA QUALQUER BARRA DE SCROLL INVISÍVEL */
+
+/* 1. Para a Navbar Deslizante Superior */
+.nav-scroll-central {
+    scrollbar-width: none; /* Esconde no Firefox */
+    -ms-overflow-style: none; /* Esconde no Internet Explorer/Edge */
+}
+.nav-scroll-central::-webkit-scrollbar {
+    display: none; /* Esconde no Chrome, Safari, Opera e em TODOS os celulares (Android/iOS) */
+}
+
+/* 2. Para a Fileira Horizontal de Stories */
+.stories-mural-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.stories-mural-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* 3. Para a Caixa de Mensagens do Messenger (Se quiser esconder o scroll vertical também) */
+.mensagens-area {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.mensagens-area::-webkit-scrollbar {
+    display: none;
+}
+
+/* 🪐 CARD DE LOGIN EM VIDRO FUMÊ CYBERPUNK - SEM CORTAR OS CIRCUITOS */
+.container-login-box {
+    /* 🌌 Fundo preto profundo semi-transparente (efeito fumê) */
+    background: rgba(11, 12, 16, 0.85); 
+    
+    /* 🌟 Efeito de desfoque no vidro para dar profundidade premium */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    /* 📐 Ajustes de tamanho e espaçamento */
+    width: 100%;
+    max-width: 420px;
+    padding: 35px;
+    border-radius: 24px;
+    box-sizing: border-box;
+    margin: 40px auto;
+    
+    /* 💥 O SEGREDO: Uma borda fina em degradê neon que combina com os robôs! */
+    border: 1px solid transparent;
+    border-image: linear-gradient(135deg, var(--ciano-neon, #00F0FF) 0%, var(--pink-magenta, #FF007F) 100%) 1;
+    
+    /* Sombra suave para o card flutuar no cenário */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+}
+
+/* 📝 Ajuste dos textos lá dentro para brilharem no breu */
+.container-login-box h3,
+.container-login-box h2 {
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* Botão de Entrar sutil e elegante */
+.btn-entrar-vibe {
+    background: linear-gradient(135deg, #00F0FF 0%, #FF007F 100%);
+    color: #FFFFFF;
+    border: none;
+    padding: 12px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-entrar-vibe:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+
+
 
 
 
