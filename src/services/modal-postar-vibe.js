@@ -313,15 +313,58 @@ function configurarEventosModal(triboId, callbackSucesso) {
 
     btnUploadVideo.onclick = () => inputVideo.click();
     inputVideo.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            dadoVibeAtivo = reader.result;
-            playerVideoPreview.src = reader.result;
-            previewVideoContainer.style.display = "block";
+        const arquivo = e.target.files[0];
+        if (!arquivo) return;
+
+        console.log(`Verificando metadados do arquivo: ${arquivo.name} (${(arquivo.size / 1024 / 1024).toFixed(2)} MB)`);
+
+        // 🎥 Cria um elemento de vídeo invisível na memória do navegador para ler o tempo real do arquivo
+        const videoInvisivel = document.createElement("video");
+        videoInvisivel.preload = "metadata";
+
+        videoInvisivel.onloadedmetadata = function() {
+            // Revoga a URL da memória para não vazar desempenho no celular
+            URL.revokeObjectURL(videoInvisivel.src);
+            
+            const duracaoExata = videoInvisivel.duration;
+            console.log(`Duração calculada do clipe: ${duracaoExata.toFixed(1)} segundos`);
+
+            // 🛡️ A BARREIRA DOS 30 SEGUNDOS: Corta e bloqueia na hora!
+            if (duracaoExata > 30) {
+                alert("❌ Vibe Cortada! O Tribbu'sVibe permite vídeos de no máximo 30 segundos para manter o feed ultra rápido e dinâmico. Edite seu clipe e tente novamente! 🪐🎥");
+                
+                // Reseta o campo de escolha de arquivo na marra para impedir o avanço pro Firebase
+                inputVideo.value = "";
+                dadoVibeAtivo = null;
+                previewVideoContainer.style.display = "none";
+                return;
+            }
+            
+            console.log("✨ Vídeo aprovado na auditoria de tempo! Pronto para decolar para o Storage.");
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                dadoVibeAtivo = reader.result;
+                playerVideoPreview.src = reader.result;
+                previewVideoContainer.style.display = "block";
+            };
+            reader.readAsDataURL(arquivo);
         };
-        reader.readAsDataURL(file);
+
+        videoInvisivel.onerror = function() {
+            URL.revokeObjectURL(videoInvisivel.src);
+            console.warn("Não foi possível pré-carregar metadados do vídeo, permitindo leitura padrão.");
+            const reader = new FileReader();
+            reader.onload = () => {
+                dadoVibeAtivo = reader.result;
+                playerVideoPreview.src = reader.result;
+                previewVideoContainer.style.display = "block";
+            };
+            reader.readAsDataURL(arquivo);
+        };
+
+        // Cria o link temporário para o leitor de metadados rodar a conta matemática
+        videoInvisivel.src = URL.createObjectURL(arquivo);
     };
 
     // Gravação com Câmera
@@ -364,8 +407,16 @@ function configurarEventosModal(triboId, callbackSucesso) {
                 reader.readAsDataURL(videoBlob);
             };
             gravadorVideo.start();
-            btnRecVideo.textContent = "⏹️ Parar Gravação";
+            btnRecVideo.textContent = "⏹️ Parar (Máx: 30s)";
             btnRecVideo.style.background = "#00F0FF";
+
+            // ⏱️ Auto-corte em 30 segundos exatos para vídeos gravados na hora
+            setTimeout(() => {
+                if (gravadorVideo && gravadorVideo.state === "recording") {
+                    console.log("Tempo limite de 30s atingido na gravação ao vivo. Encerrando gravação.");
+                    btnRecVideo.click();
+                }
+            }, 30000);
         }
     };
 

@@ -15,24 +15,25 @@ import {
 import { postarStoryComunidade, escutarStoriesAtivos } from "./firebase-stories.js";
 import { enviarRespostaTopico, escutarRespostasDoTopico } from "./firebase-respostas.js";
 
-// 🪐 Tribbu'sVibe - Trava de Visibilidade do Botão Participar
-// Encanamento para embutir no loop de visualização interna da Tribu na sua pasta local
-
-export function verificarBotaoParticipar(criadorUidDaTribu) {
-    const btnParticipar = document.getElementById("btn-participar-tribu") || document.getElementById("btn-entrar-tribo") || document.querySelector(".btn-participar");
-    const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
+// 🪐 Trava de Segurança: Oculta o botão de participação para o próprio Dono do bando
+export function regularVisibilidadeParticipar(criadorUidDaTribu) {
+    const btnParticipar = document.getElementById("btn-participar-tribu-dinamico");
+    const meuUID = auth?.currentUser?.uid;
 
     if (!btnParticipar) return;
 
-    // 🛡️ A BARREIRA DO FUNDADOR:
-    // Se o usuário logado no celular for o próprio criador da Tribu...
+    // 🛡️ Se o usuário logado for o dono da Tribu que está na tela...
     if (meuUID && criadorUidDaTribu && meuUID === criadorUidDaTribu) {
-        console.log("👑 Fundador na área! Ocultando botão 'Participar da Tribu' para o dono do bando.");
+        console.log("👑 Dono da Tribu detectado! Escondendo botão de participação.");
         btnParticipar.style.display = "none"; // O botão some para você!
     } else {
-        console.log("👽 Visitante na área! Liberando botão para o membro colar na Tribu.");
-        btnParticipar.style.display = "block"; // O botão aparece normal para os outros usuários!
+        console.log("👽 Visitante na área! Liberando o botão para o membro colar no bando.");
+        btnParticipar.style.display = "block"; // Aparece normal para os outros 20 testadores!
     }
+}
+
+export function verificarBotaoParticipar(criadorUidDaTribu) {
+    regularVisibilidadeParticipar(criadorUidDaTribu);
 }
 
 export function inicializarForum() {

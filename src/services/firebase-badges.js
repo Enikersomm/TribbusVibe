@@ -4,6 +4,25 @@
 import { collection, query, where, onSnapshot, doc, updateDoc, getDocs, writeBatch, addDoc } from "firebase/firestore";
 import { db } from "./tribbusFirebase.js";
 
+// 🪐 Tribbu'sVibe - Sincronizador de Emblema Vermelho no Ícone do Celular (App Badging)
+export function atualizarBolinhaVermelhaNoIconeDoCelular(totalNaoLidas) {
+    if ('setAppBadge' in navigator) {
+        if (totalNaoLidas > 0) {
+            console.log(`📱 Injetando emblema de [${totalNaoLidas}] mensagens direto no ícone do celular!`);
+            navigator.setAppBadge(totalNaoLidas).catch((err) => {
+                console.error("Erro ao aplicar bolinha vermelha no ícone:", err);
+            });
+        } else {
+            console.log("🧼 Chat limpo! Removendo bolinha vermelha do ícone.");
+            navigator.clearAppBadge().catch((err) => {
+                console.error("Erro ao limpar emblema do ícone:", err);
+            });
+        }
+    } else {
+        console.log("⚠️ Este aparelho ou navegador antigo não suporta notificações no ícone externo.");
+    }
+}
+
 /**
  * 🔄 ESCUTAR BADGES: Conta quantas notificações não lidas o usuário tem e atualiza o menu
  * @param {string} usuarioLogadoId - UID do usuário dono da sessão
@@ -29,6 +48,7 @@ export function escutarBadgesNotificacao(usuarioLogadoId, tipoNotificacao, callb
         // Ouve em tempo real. Se chegar mensagem, o tamanho do snapshot muda e o número sobe na hora!
         return onSnapshot(consultaBadges, (snapshot) => {
             const totalNaoLidas = snapshot.size;
+            atualizarBolinhaVermelhaNoIconeDoCelular(totalNaoLidas);
             if (typeof callbackAtualizarTela === "function") {
                 callbackAtualizarTela(totalNaoLidas, snapshot);
             }

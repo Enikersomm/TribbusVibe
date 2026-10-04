@@ -5,7 +5,7 @@ import { entrarNaTribo } from "./firebase-tribos.js";
 import { auth } from "./tribbusFirebase.js";
 
 function configurarBotaoParticipar() {
-    const btnEntrar = document.getElementById("btn-entrar-tribo");
+    const btnEntrar = document.getElementById("btn-participar-tribu-dinamico") || document.getElementById("btn-entrar-tribo");
     
     // Identificadores (usa URL ou tribo oficial)
     const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
