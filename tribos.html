@@ -191,7 +191,7 @@
     
     <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
     <div class="nav-logo-container" style="flex-shrink: 0;">
-        <img class="nav-logo-img" src="img/image_p_Y_em.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
     </div>
 
     <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
@@ -242,8 +242,31 @@
     <!-- HEADER DA TRIBO ATIVA -->
     <div class="tribo-header-card" style="display: flex; flex-direction: column; gap: 15px; align-items: stretch;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <div class="tribo-info-principal">
-                <div class="tribo-emblema" id="lbl-emblema-tribo">🪐</div>
+            <div class="tribo-info-principal" style="display: flex; align-items: center; gap: 15px;">
+                <!-- 🪐 CONTAINER DO AVATAR DA TRIBU: CLICÁVEL E PRONTO PARA TROCAR IMAGEM -->
+                <div class="avatar-tribu-container" id="container-avatar-tribu" style="position: relative; width: 80px; height: 80px; flex-shrink: 0; cursor: pointer;" title="Alterar foto da Tribu">
+                    <!-- Tag de Imagem dinâmica conectada ao Firebase (Carrega Saturno como Fallback) -->
+                    <img id="img-avatar-tribu-viva" src="img/saturno-logo.png" alt="Avatar da Tribu" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; border: 2px solid var(--ciano-neon, #00F0FF); box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);" onerror="this.onerror=null; this.src='img/saturno-logo.png';">
+
+                    <!-- Ícone discreto de câmera que aparece no Hover visual -->
+                    <div class="hover-camera-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s;">
+                        <i class="fas fa-camera" style="color: #FFF; font-size: 1.1rem;"></i>
+                    </div>
+
+                    <!-- 🔥 INPUT INVISÍVEL PARA CAPTURAR O ARQUIVO DO CELULAR/PC -->
+                    <input type="file" id="input-trocar-avatar-tribu" accept="image/*" style="display: none;">
+                </div>
+
+                <style>
+                    /* ✨ Efeito cyberpunk ao passar o mouse em cima do quadrado */
+                    .avatar-tribu-container:hover .hover-camera-overlay {
+                        opacity: 1 !important;
+                    }
+                    .avatar-tribu-container:hover img {
+                        border-color: var(--pink-magenta, #FF007F) !important;
+                        box-shadow: 0 0 15px var(--pink-magenta) !important;
+                    }
+                </style>
                 <div class="tribo-titulos">
                     <h1 id="lbl-nome-tribo">Tribbu's Oficial</h1>
                     <p id="lbl-desc-tribo">Comunidade principal para reunir todos os membros do Tribbu'sVibe.</p>

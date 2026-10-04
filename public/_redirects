@@ -2,6 +2,7 @@
 /login         /login.html         200
 /tribos        /tribos.html        200
 /perfil        /perfil.html        200
+/chat          /chat.html          200
 /forum         /forum.html         200
 /configuracoes /configuracoes.html 200
 /privacidade   /privacidade.html   200

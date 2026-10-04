@@ -4,10 +4,30 @@
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { db, auth } from "./tribbusFirebase.js";
-import { escutarScrapsDoPerfil, enviarScrapMural } from "./firebase-scraps.js";
+import { escutarScrapsDoPerfil, escutarMuralDoPerfilReal, enviarScrapMural } from "./firebase-scraps.js";
 import { escutarVitrineAmigos, adicionarAmigoNoTop, removerAmigoDoTop } from "./firebase-top-amigos.js";
 import { fazerUploadDeFoto } from "./firebase-storage.js";
 import { votarNoTermometroAmigo } from "./firebase-reputacao.js";
+
+// 🪐 Tribbu'sVibe - Trava de Segurança da Vitrine de Favoritos
+// Encanamento para embutir na função de renderização do perfil na sua pasta local
+
+export function gerenciarVisibilidadeDoBotaoAdicionar(uidDoPerfilVisitado) {
+    const btnAddFavorito = document.getElementById("btn-adicionar-favorito");
+    const meuUID = auth?.currentUser?.uid;
+
+    if (!btnAddFavorito) return;
+
+    // 🛡️ A BARREIRA DE PRIVACIDADE:
+    // Se o usuário logado for diferente do dono do perfil que ele está olhando...
+    if (meuUID !== uidDoPerfilVisitado) {
+        console.log("🔒 Visitante detectado! Escondendo botão de gerenciar favoritos da Maria Eduarda.");
+        btnAddFavorito.style.display = "none"; // O botão some da tela para o visitante!
+    } else {
+        console.log("🤠 Dono do perfil detectado! Liberando botão de gerenciar favoritos.");
+        btnAddFavorito.style.display = "block"; // O botão reaparece apenas para você mexer na sua lista!
+    }
+}
 
 /**
  * 🪐 Tribbu'sVibe - Sincronizador de Foto de Capa em Tempo Real
@@ -190,6 +210,9 @@ export function inicializarPerfilEmTempoReal() {
         // 🔄 ESCUTA PERFIL EM TEMPO REAL VIA escutarPerfilComCapa
         const unsubscribePerfil = escutarPerfilComCapa(targetUID);
 
+        // 🛡️ APLICA A TRAVA DE SEGURANÇA DA VITRINE DE FAVORITOS
+        gerenciarVisibilidadeDoBotaoAdicionar(targetUID);
+
         // 📸 GATILHO DA CÂMERA DO CELULAR (SELFIE) AO CLICAR NA FOTO
         if (containerAvatar && inputCamera) {
             containerAvatar.onclick = (e) => {
@@ -239,33 +262,39 @@ export function inicializarPerfilEmTempoReal() {
             };
         }
 
-        // 📥 ESCUTA O MURAL DE SCRAPS EM TEMPO REAL
+        // 📥 ESCUTA O MURAL DE SCRAPS/RECADOS EM TEMPO REAL (PÚBLICO)
         let unsubscribeScraps = () => {};
         if (containerScraps) {
-            unsubscribeScraps = escutarScrapsDoPerfil(meuUID, (scraps) => {
-                containerScraps.innerHTML = ""; // Limpa a lista antiga
-                
-                if(scraps.length === 0) {
-                    containerScraps.innerHTML = `<p style="font-size:0.85rem; color:#A5A2B8; font-style:italic;">Nenhum scrap por aqui ainda. Deixe o primeiro! 👇</p>`;
-                    return;
-                }
-
-                scraps.forEach((scrap) => {
-                    const div = document.createElement("div");
-                    div.className = "scrap-item";
-                    div.innerHTML = `
-                        <div class="scrap-topo"><strong>${scrap.remetente_nome || "@amigo"}</strong> <span>agora mesmo</span></div>
-                        <p class="scrap-texto">${escapeHTML(scrap.conteudo_texto || "")}</p>
-                    `;
-                    containerScraps.appendChild(div);
+            // Escuta o mural_recados do perfil que está sendo visitado (público)
+            const unsubMural = escutarMuralDoPerfilReal(targetUID, containerScraps);
+            if (unsubMural) {
+                unsubscribeScraps = unsubMural;
+            } else {
+                // Fallback de retrocompatibilidade
+                unsubscribeScraps = escutarScrapsDoPerfil(targetUID, (scraps) => {
+                    containerScraps.innerHTML = "";
+                    if(scraps.length === 0) {
+                        containerScraps.innerHTML = `<p style="font-size:0.85rem; color:#A5A2B8; font-style:italic;">Nenhum scrap por aqui ainda. Deixe o primeiro! 👇</p>`;
+                        return;
+                    }
+                    scraps.forEach((scrap) => {
+                        const div = document.createElement("div");
+                        div.className = "scrap-item";
+                        div.innerHTML = `
+                            <div class="scrap-topo"><strong>${scrap.remetente_nome || "@amigo"}</strong> <span>agora mesmo</span></div>
+                            <p class="scrap-texto">${escapeHTML(scrap.conteudo_texto || "")}</p>
+                        `;
+                        containerScraps.appendChild(div);
+                    });
                 });
-            });
+            }
         }
 
         // 🌟 ESCUTA A VITRINE DE AMIGOS FAVORITOS EM TEMPO REAL (SEM LIMITE)
         let unsubscribeAmigos = () => {};
         if (gradeTopAmigos) {
-            unsubscribeAmigos = escutarVitrineAmigos(meuUID, (amigos) => {
+            const ehDonoDoPerfil = (meuUID === targetUID);
+            unsubscribeAmigos = escutarVitrineAmigos(targetUID, (amigos) => {
                 if (contagemTopAmigos) {
                     contagemTopAmigos.textContent = String(amigos.length);
                 }
@@ -274,7 +303,7 @@ export function inicializarPerfilEmTempoReal() {
                 if (amigos.length === 0) {
                     gradeTopAmigos.innerHTML = `
                         <div style="grid-column: span 3; text-align: center; font-size: 0.75rem; color: #A5A2B8; padding: 10px 0; font-style: italic;">
-                            Nenhum amigo na vitrine ainda. Clique em + Adicionar! 🌟
+                            ${ehDonoDoPerfil ? "Nenhum amigo na vitrine ainda. Clique em + Adicionar! 🌟" : "Nenhum amigo favoritado nesta vitrine ainda. 🪐"}
                         </div>
                     `;
                     return;
@@ -284,20 +313,22 @@ export function inicializarPerfilEmTempoReal() {
                     const card = document.createElement("div");
                     card.className = "amigo-favorito-card";
                     card.innerHTML = `
-                        <button class="amigo-favorito-remover" title="Remover da vitrine" data-id="${amigo.id}">✕</button>
+                        ${ehDonoDoPerfil ? `<button class="amigo-favorito-remover" title="Remover da vitrine" data-id="${amigo.id}">✕</button>` : ""}
                         <img class="amigo-favorito-avatar" src="${escapeHTML(amigo.amigo_avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80')}" alt="${escapeHTML(amigo.amigo_nome)}" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'">
                         <span class="amigo-favorito-nome" title="${escapeHTML(amigo.amigo_nome)}">${escapeHTML(amigo.amigo_nome)}</span>
                     `;
 
-                    // Ação de remover
-                    const btnRemover = card.querySelector(".amigo-favorito-remover");
-                    if (btnRemover) {
-                        btnRemover.addEventListener("click", async (ev) => {
-                            ev.stopPropagation();
-                            if (confirm(`Remover ${amigo.amigo_nome} da sua vitrine?`)) {
-                                await removerAmigoDoTop(amigo.id);
-                            }
-                        });
+                    // Ação de remover (apenas se for dono do perfil)
+                    if (ehDonoDoPerfil) {
+                        const btnRemover = card.querySelector(".amigo-favorito-remover");
+                        if (btnRemover) {
+                            btnRemover.addEventListener("click", async (ev) => {
+                                ev.stopPropagation();
+                                if (confirm(`Remover ${amigo.amigo_nome} da sua vitrine?`)) {
+                                    await removerAmigoDoTop(amigo.id);
+                                }
+                            });
+                        }
                     }
 
                     gradeTopAmigos.appendChild(card);
@@ -359,7 +390,8 @@ export function inicializarPerfilEmTempoReal() {
 
                 txtScrapInput.value = ""; // Limpa a caixinha na hora
                 const handleFormatado = `@${meuNome.toLowerCase().replace(/\s+/g, '_')}`;
-                await enviarScrapMural(meuUID, handleFormatado, meuUID, texto); // Postando no próprio mural
+                // Posta no mural do perfil que está sendo visitado (targetUID)
+                await enviarScrapMural(meuUID, handleFormatado, targetUID, texto);
             };
         }
     });

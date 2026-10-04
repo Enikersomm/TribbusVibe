@@ -176,7 +176,7 @@
     
     <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
     <div class="nav-logo-container" style="flex-shrink: 0;">
-        <img class="nav-logo-img" src="img/image_p_Y_em.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
     </div>
 
     <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
@@ -224,29 +224,50 @@
     }
 </style>
 
-    <!-- 🌌 NOVO: FOTO DE CAPA HORIZONTAL SUPERIOR COM AVATAR FLUTUANTE EM ANEL CIANO NEON -->
-    <div class="capa-perfil-wrapper" style="max-width: 1100px; margin: 20px auto 0; padding: 0 20px; position: relative;">
-        <div id="img-capa-dinamica" style="width: 100%; height: 230px; border-radius: 24px; background: linear-gradient(135deg, #180c2e 0%, #0c1a2e 50%, #121214 100%); background-size: cover; background-position: center; position: relative; border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); overflow: visible;">
-            <div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11,12,16,0.85) 0%, rgba(18,18,20,0) 60%); border-radius: 24px;"></div>
+    <!-- 🪐 CONTAINER SUPREMO: SOBREPOSIÇÃO DE FOTO DE CAPA E AVATAR CYBERPUNK -->
+    <div class="perfil-header-container" style="position: relative; width: 100%; display: flex; flex-direction: column; margin-bottom: 50px; background: var(--preto-profundo, #0B0C10);">
+        
+        <!-- 🖼️ 1. FOTO DE CAPA RETANGULAR (outdoor do topo) -->
+        <div id="bloco-foto-capa" style="width: 100%; height: 260px; background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%); position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <!-- Imagem de Fundo Real (O JavaScript injeta o link do Firestore aqui) -->
+            <div id="img-capa-dinamica" style="width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat; opacity: 0.85;"></div>
             
-            <!-- 👤 FOTO DE PERFIL REDONDA COM ANEL LUMINOSO CIANO NEON & SELFIE AO CLICAR -->
-            <div id="btn-tirar-selfie" title="Clique para trocar sua foto ou tirar uma selfie! 📸" style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px var(--ciano-neon); overflow: hidden; background: #0B0C10; flex-shrink: 0; position: absolute; bottom: -35px; left: 35px; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <!-- Botão discreto de Editar Capa (Alinhado na direita igual ao seu print) -->
+            <button onclick="window.location.href='configuracoes.html'" style="position: absolute; bottom: 15px; right: 20px; background: rgba(18, 18, 20, 0.85); color: #FFF; border: 1px solid rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; z-index: 10;"><i class="fas fa-camera"></i> Editar foto de capa</button>
+        </div>
+
+        <!-- 👤 2. IDENTIDADE FLUTUANTE (Avatar cortando a borda da capa + Textos ao lado) -->
+        <div class="identidade-perfil-bloco" style="padding: 0 30px; display: flex; align-items: flex-end; gap: 20px; position: relative; margin-top: -55px; z-index: 5; flex-wrap: wrap;">
+            
+            <!-- 🔴 O Pequeno Círculo Flutuante com Anel Luminoso de LED Ciano -->
+            <div id="btn-tirar-selfie" title="Clique para trocar sua foto ou tirar uma selfie! 📸" style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--ciano-neon, #00F0FF); box-shadow: 0 0 15px var(--ciano-neon, #00F0FF); overflow: hidden; background: #0B0C10; flex-shrink: 0; position: relative; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                 <img id="img-avatar-perfil" src="" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;" onerror="this.style.display='none'; document.getElementById('lbl-perfil-avatar').style.display='block';">
                 <span id="lbl-perfil-avatar" style="font-size: 3.2rem; display: block; user-select: none;">👤</span>
                 <input type="file" id="input-camera-perfil" accept="image/*" style="display: none;">
             </div>
+
+            <!-- 💬 Dados do Dono (Ficam alinhados ao lado da foto redonda) -->
+            <div style="display: flex; flex-direction: column; padding-bottom: 8px; gap: 4px; min-width: 200px; flex: 1;">
+                <h2 id="lbl-perfil-nome" style="font-size: 1.45rem; font-weight: 800; color: #FFFFFF; margin: 0; letter-spacing: 0.5px;">Carregando...</h2>
+                <span id="lbl-perfil-status" style="font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); font-weight: 600; font-style: italic;">🪐 "Qual é a sua vibe de hoje?"</span>
+            </div>
+
+            <!-- 🎛️ Botões de Ação Direta na Direita (Seguindo a usabilidade do print) -->
+            <div style="display: flex; gap: 10px; padding-bottom: 8px; margin-left: auto;">
+                <button id="btn-adicionar-favorito" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F, #00F0FF)); color: #FFF; border: none; padding: 10px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); display: flex; align-items: center; gap: 6px;"><i class="fas fa-plus"></i> Adicionar à Vitrine</button>
+                <button onclick="window.location.href='configuracoes.html'" style="background: var(--cinza-card, #121214); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;"><i class="fas fa-pen"></i> Editar Perfil</button>
+            </div>
+
         </div>
+
     </div>
 
-    <div class="perfil-layout" style="margin-top: 50px;">
-        <!-- ESQUERDA: STATUS E FAVORITOS ILIMITADOS -->
+    <div class="perfil-layout" style="margin-top: 20px;">
+        <!-- ESQUERDA: REPUTAÇÃO E FAVORITOS ILIMITADOS -->
         <aside style="display: flex; flex-direction: column; gap: 20px;">
-            <div class="card-vibe perfil-esquerda">
-                <h2 id="lbl-perfil-nome" style="margin-top: 5px; font-size: 1.3rem;">Carregando...</h2>
-                <span class="status-tag" id="lbl-perfil-status"></span>
-                
+            <div class="card-vibe perfil-esquerda" style="padding: 15px;">
                 <!-- 🪐 COMPONENTE ATUALIZADO: TERMÔMETROS DE REPUTAÇÃO COM BOTÕES DE VOTAÇÃO MÚTUA -->
-                <div class="card-vibe reputacao-votos-box" style="background: var(--cinza-card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                <div class="card-vibe reputacao-votos-box" style="background: var(--cinza-card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 15px;">
                     
                     <h3 style="font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
                         <i class="fas fa-medal" style="color: var(--ciano-neon);"></i> Reputação da Tribo

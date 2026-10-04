@@ -4,6 +4,28 @@
 import { db, auth } from "./tribbusFirebase.js";
 import { collection, query, where, orderBy, onSnapshot, updateDoc, doc } from "firebase/firestore";
 
+// 🪐 Tribbu'sVibe - Sincronizador de Emblema Vermelho no Ícone do Celular (App Badging)
+// Código para embutir na escuta em tempo real do Firebase na sua pasta local
+
+export function atualizarBolinhaVermelhaNoIconeDoCelular(totalNaoLidas) {
+    // 🛡️ Checa se o celular do usuário suporta a API de Badging moderna
+    if ('setAppBadge' in navigator) {
+        if (totalNaoLidas > 0) {
+            console.log(`📱 Injetando emblema de [${totalNaoLidas}] mensagens direto no ícone do celular!`);
+            navigator.setAppBadge(totalNaoLidas).catch((err) => {
+                console.error("Erro ao aplicar bolinha vermelha no ícone:", err);
+            });
+        } else {
+            console.log("🧼 Chat limpo! Removendo bolinha vermelha do ícone.");
+            navigator.clearAppBadge().catch((err) => {
+                console.error("Erro ao limpar emblema do ícone:", err);
+            });
+        }
+    } else {
+        console.log("⚠️ Este aparelho ou navegador antigo não suporta notificações no ícone externo.");
+    }
+}
+
 export function inicializarSininhoDeNotificacoes() {
     const wrapper = document.querySelector(".nav-notificacoes-wrapper");
     const gaveta = document.getElementById("gaveta-sininho-lista");
@@ -18,9 +40,10 @@ export function inicializarSininhoDeNotificacoes() {
         const aberta = gaveta.style.display === "block";
         gaveta.style.display = aberta ? "none" : "block";
         
-        // Se abriu a gaveta, podemos zerar visualmente o contador
+        // Se abriu a gaveta, podemos zerar visualmente o contador e o badge do ícone
         if (!aberta) {
             badgeNum.style.display = "none";
+            atualizarBolinhaVermelhaNoIconeDoCelular(0);
         }
     });
 
@@ -48,6 +71,7 @@ export function inicializarSininhoDeNotificacoes() {
             if (snapshot.empty) {
                 containerItens.innerHTML = `<div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; padding: 10px 0;">Nenhum alerta por enquanto... ✨</div>`;
                 badgeNum.style.display = "none";
+                atualizarBolinhaVermelhaNoIconeDoCelular(0);
                 return;
             }
 
@@ -71,13 +95,16 @@ export function inicializarSininhoDeNotificacoes() {
                 containerItens.appendChild(itemAlerta);
             });
 
-            // Se houver alertas novos, faz a bolinha vermelha brilhar
+            // Se houver alertas novos, faz a bolinha vermelha brilhar no app e no ícone do celular
             if (naoLidasContador > 0) {
                 badgeNum.innerText = naoLidasContador;
                 badgeNum.style.display = "block";
             } else {
                 badgeNum.style.display = "none";
             }
+
+            // 📱 Atualiza o emblema físico no ícone do celular (PWA Badging)
+            atualizarBolinhaVermelhaNoIconeDoCelular(naoLidasContador);
         });
     });
 }

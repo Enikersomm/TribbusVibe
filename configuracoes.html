@@ -150,7 +150,7 @@
     
     <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
     <div class="nav-logo-container" style="flex-shrink: 0;">
-        <img class="nav-logo-img" src="img/image_p_Y_em.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
     </div>
 
     <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
@@ -201,106 +201,85 @@
     <div class="config-container">
         <main class="card-config">
             <h2><i class="fas fa-sliders-h"></i> Configurações da Minha Vibe</h2>
-            <form action="#" method="POST">
-                <div class="form-secao">
-                    <h3>Identidade & Visual</h3>
-                    <div class="grupo-campo">
-                        <label for="input-nome">Nome na Tribo</label>
-                        <input type="text" id="input-nome" class="input-config" placeholder="Seu nome ou apelido">
-                    </div>
-                    <div class="grupo-campo">
-                        <label for="input-status">Sua Vibe Atual</label>
-                        <input type="text" id="input-status" class="input-config" value="🪐 em órbita...">
-                    </div>
-                    <!-- Campo 1: Escolher arquivo de Foto de Capa real -->
-                    <div class="input-grupo" style="margin-top: 15px; margin-bottom: 10px;">
-                        <label style="color: var(--branco); font-size: 0.85rem; font-weight: bold; display: block; margin-bottom: 8px;">🖼️ Alterar Minha Foto de Capa</label>
-                        <input type="file" id="input-upload-capa" accept="image/*" style="background: var(--cinza-input); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; width: 100%; font-size: 0.85rem; cursor: pointer;">
-                        <span id="lbl-status-capa" style="font-size: 0.75rem; color: var(--texto-suave); display: block; margin-top: 4px;">Formatos aceitos: JPG, PNG, WebP.</span>
-                    </div>
+            <!-- 🪐 FORMULÁRIO DE CONFIGURAÇÕES CADASTRAIS (SEM SLIDERS DE REPUTAÇÃO) -->
+            <form id="form-configuracoes-vibe" style="display: flex; flex-direction: column; gap: 16px;">
+                
+                <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 0; font-weight: bold; letter-spacing: 0.5px;">🖼️ Identidade Visual</h4>
+
+                <!-- Alterar Foto de Capa -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">🖼️ Alterar Minha Foto de Capa</label>
+                    <input type="file" id="input-upload-capa" accept="image/*" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
                 </div>
 
-                <!-- Termômetros com os 3 Sliders alinhados aos IDs -->
-                <div class="form-secao">
-                    <h3>Termômetros</h3>
-                    
-                    <!-- 1: Confiável -->
-                    <div class="range-container" style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #FFF; font-weight: bold; margin-bottom: 4px;">
-                            <span>🧊 Confiabilidade</span>
-                            <span id="txt-val-confiavel-config" class="range-valor" style="color: var(--ciano-neon);">85%</span>
-                        </div>
-                        <input type="range" id="range-confiavel" class="range-input range-confiavel" min="0" max="100" value="85" style="width: 100%; accent-color: var(--ciano-neon);">
-                    </div>
+                <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 20px 0 0 0; font-weight: bold; letter-spacing: 0.5px;">👤 Dados Pessoais do Perfil</h4>
 
-                    <!-- 2: Nível Legal -->
-                    <div class="range-container" style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #FFF; font-weight: bold; margin-bottom: 4px;">
-                            <span>❤️ Nível Legal</span>
-                            <span id="txt-val-legal-config" class="range-valor" style="color: var(--pink-magenta);">50%</span>
-                        </div>
-                        <input type="range" id="range-legal" class="range-input range-legal" min="0" max="100" value="50" style="width: 100%; accent-color: var(--pink-magenta);">
-                    </div>
-
-                    <!-- 3: Energia Vibe -->
-                    <div class="range-container" style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #FFF; font-weight: bold; margin-bottom: 4px;">
-                            <span>🌟 Energia Vibe</span>
-                            <span id="txt-val-vibe-config" class="range-valor" style="color: #FFD700;">100%</span>
-                        </div>
-                        <input type="range" id="range-vibe" class="range-input range-vibe" min="0" max="100" value="100" style="width: 100%; accent-color: #FFD700);">
-                    </div>
+                <!-- Nome do Fundador -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">📛 Nome do Fundador</label>
+                    <input type="text" id="input-nome" placeholder="Seu nome na Tribu" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
                 </div>
 
-                <!-- 🪐 SEÇÃO ATUALIZADA: DADOS PESSOAIS DO FUNDADOR -->
-                <div class="modulo-config-pessoais" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 16px;">
-                    
-                    <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 0; font-weight: bold; letter-spacing: 0.5px;">👤 Dados Pessoais do Perfil</h4>
+                <!-- Frase de Status -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">💬 Frase de Status (Aparece no Feed)</label>
+                    <input type="text" id="input-status" placeholder="Qual é a sua vibe de hoje?" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
 
-                    <!-- Cidade Atual -->
-                    <div class="input-grupo">
-                        <label style="color: var(--branco, #FFF); font-size: 0.8rem; display: block; margin-bottom: 4px;">📍 Cidade onde mora atual</label>
-                        <input type="text" id="input-cidade-atual" placeholder="Ex: Palmas - TO" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
-                    </div>
+                <!-- Cidade Atual -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">📍 Cidade onde mora atual</label>
+                    <input type="text" id="input-cidade-atual" placeholder="Ex: Palmas - TO" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
 
-                    <!-- Cidade de Nascimento -->
-                    <div class="input-grupo">
-                        <label style="color: var(--branco, #FFF); font-size: 0.8rem; display: block; margin-bottom: 4px;">👶 Cidade de nascimento</label>
-                        <input type="text" id="input-cidade-natal" placeholder="Ex: Goiânia - GO" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
-                    </div>
+                <!-- Cidade de Nascimento -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">👶 Cidade de nascimento</label>
+                    <input type="text" id="input-cidade-natal" placeholder="Ex: Goiânia - GO" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
 
-                    <!-- Data de Nascimento -->
-                    <div class="input-grupo">
-                        <label style="color: var(--branco, #FFF); font-size: 0.8rem; display: block; margin-bottom: 4px;">📅 Data de nascimento</label>
-                        <input type="date" id="input-data-nascimento" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem; color-scheme: dark;">
-                    </div>
-
-                    <div style="display: flex; gap: 15px; width: 100%;">
-                        <!-- Estado Civil -->
-                        <div class="input-grupo" style="flex: 1;">
-                            <label style="color: var(--branco, #FFF); font-size: 0.8rem; display: block; margin-bottom: 4px;">❤️ Estado civil</label>
-                            <select id="select-estado-civil" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
-                                <option value="Solteiro(a)">Solteiro(a)</option>
-                                <option value="Namorando">Namorando</option>
-                                <option value="Noivo(a)">Noivo(a)</option>
-                                <option value="Casado(a)">Casado(a)</option>
-                                <option value="Na vibe da Tribu">Na vibe da Tribu 🪐</option>
-                            </select>
-                        </div>
-
-                        <!-- Sexo -->
-                        <div class="input-grupo" style="flex: 1;">
-                            <label style="color: var(--branco, #FFF); font-size: 0.8rem; display: block; margin-bottom: 4px;">🧬 Sexo</label>
-                            <select id="select-sexo" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
-                                <option value="Masculino">Masculino</option>
-                                <option value="Feminino">Feminino</option>
-                                <option value="Não informado">Não informado</option>
-                            </select>
+                <!-- Data de Nascimento (Garante o bloqueio de menores de 13 anos) -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">📅 Data de nascimento</label>
+                    <input type="date" id="input-data-nascimento" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem; color-scheme: dark; transition: border-color 0.3s ease, box-shadow 0.3s ease;">
+                    <!-- 🚫 Alerta Visual Customizado de Idade Mínima -->
+                    <div id="alerta-idade-vibe" style="display: none; margin-top: 8px; padding: 10px 14px; border-radius: 8px; background: rgba(255, 0, 127, 0.12); border: 1px solid var(--pink-magenta, #FF007F); box-shadow: 0 0 12px rgba(255, 0, 127, 0.2); animation: pulsarAlerta 1.5s infinite alternate;">
+                        <div style="display: flex; align-items: flex-start; gap: 8px;">
+                            <span style="font-size: 1.1rem; line-height: 1;">🚫</span>
+                            <div style="font-size: 0.8rem; color: #FFF; line-height: 1.4;">
+                                <strong style="color: var(--pink-magenta, #FF007F); display: block; margin-bottom: 2px;">Acesso Não Permitido (Menor de 13 Anos)</strong>
+                                Para participar da rede social Tribbu'sVibe, é obrigatório ter no mínimo <strong>13 anos de idade completos</strong>. Por favor, ajuste a sua data de nascimento.
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-salvar-config">Salvar Minha Nova Vibe</button>
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <!-- Estado Civil -->
+                    <div class="input-grupo" style="flex: 1;">
+                        <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">❤️ Estado civil</label>
+                        <select id="select-estado-civil" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                            <option value="Solteiro(a)">Solteiro(a)</option>
+                            <option value="Namorando">Namorando</option>
+                            <option value="Noivo(a)">Noivo(a)</option>
+                            <option value="Casado(a)">Casado(a)</option>
+                            <option value="Na vibe da Tribu 🪐">Na vibe da Tribu 🪐</option>
+                        </select>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div class="input-grupo" style="flex: 1;">
+                        <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">🧬 Sexo</label>
+                        <select id="select-sexo" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Não informado">Não informado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Botão de Salvar -->
+                <button type="submit" class="btn-salvar-config" style="background: var(--gradient-supremo); color: #FFF; border: none; padding: 12px; border-radius: 50px; font-weight: bold; font-size: 0.9rem; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,0,127,0.3);">Salvar Configurações</button>
             </form>
 
             <!-- 🚨 SEÇÃO DE SEGURANÇA: EXCLUSÃO PERMANENTE DA CONTA -->

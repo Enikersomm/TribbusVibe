@@ -103,6 +103,31 @@
         }
 
         /* 3. PARTÍCULAS E POEIRA ESTELAR NA ÓRBITA */
+        .cosmic-dust-stream {
+            position: absolute;
+            width: 380px;
+            height: 140px;
+            border-radius: 50%;
+            transform: rotateX(65deg) rotateY(-15deg);
+            animation: orbitarViaLactea1 12s linear infinite;
+            pointer-events: none;
+        }
+
+        .cosmic-dust-stream.stream-2 {
+            width: 340px;
+            height: 125px;
+            transform: rotateX(65deg) rotateY(25deg);
+            animation: orbitarViaLactea2 16s linear infinite reverse;
+        }
+
+        .dust-mote {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 8px currentColor, 0 0 14px currentColor;
+            animation: cintilarPoeira 2.2s ease-in-out infinite alternate;
+        }
+
         .star-dust {
             position: absolute;
             width: 6px;
@@ -116,6 +141,8 @@
         .dust-2 { bottom: 20%; right: 18%; animation: pulsarEstrela 1.7s ease-in-out infinite 0.6s; }
         .dust-3 { top: 28%; right: 22%; animation: pulsarEstrela 2.4s ease-in-out infinite 1.1s; width: 4px; height: 4px; }
         .dust-4 { bottom: 25%; left: 22%; animation: pulsarEstrela 1.9s ease-in-out infinite 0.3s; width: 5px; height: 5px; }
+        .dust-5 { top: 48%; left: 8%; width: 4px; height: 4px; animation: pulsarEstrela 2.6s ease-in-out infinite 0.8s; }
+        .dust-6 { top: 45%; right: 8%; width: 5px; height: 5px; animation: pulsarEstrela 2.0s ease-in-out infinite 1.4s; }
 
         /* 4. A LOGO EM PNG SEM FUNDO COM PULSO NEON */
         .logo-transparent {
@@ -216,11 +243,27 @@
             <div class="orbit-ring ring-1"></div>
             <div class="orbit-ring ring-2"></div>
 
+            <!-- Fluxos de Poeira Cósmica em Órbita 3D -->
+            <div class="cosmic-dust-stream">
+                <span class="dust-mote" style="width: 7px; height: 7px; color: #00F0FF; background: #00F0FF; top: 2px; left: 35px; animation-delay: 0.2s;"></span>
+                <span class="dust-mote" style="width: 6px; height: 6px; color: #FF007F; background: #FF007F; bottom: 4px; left: 55px; animation-delay: 0.8s;"></span>
+                <span class="dust-mote" style="width: 8px; height: 8px; color: #FFD700; background: #FFD700; top: 6px; right: 45px; animation-delay: 1.4s;"></span>
+                <span class="dust-mote" style="width: 5px; height: 5px; color: #00FF7F; background: #00FF7F; bottom: 3px; right: 65px; animation-delay: 0.5s;"></span>
+            </div>
+
+            <div class="cosmic-dust-stream stream-2">
+                <span class="dust-mote" style="width: 6px; height: 6px; color: #8A2BE2; background: #8A2BE2; top: 5px; left: 60px; animation-delay: 0.4s;"></span>
+                <span class="dust-mote" style="width: 7px; height: 7px; color: #00F0FF; background: #00F0FF; bottom: 3px; left: 80px; animation-delay: 1.1s;"></span>
+                <span class="dust-mote" style="width: 6px; height: 6px; color: #FF007F; background: #FF007F; top: 4px; right: 55px; animation-delay: 1.8s;"></span>
+            </div>
+
             <!-- Poeira Cósmica Cintilante -->
             <div class="star-dust dust-1"></div>
             <div class="star-dust dust-2"></div>
             <div class="star-dust dust-3"></div>
             <div class="star-dust dust-4"></div>
+            <div class="star-dust dust-5"></div>
+            <div class="star-dust dust-6"></div>
 
             <!-- Sua Logo Oficial Adicionada Manualmente -->
             <img src="/logo.png" 

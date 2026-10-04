@@ -169,48 +169,39 @@ export function inicializarChatPrivado() {
                 const classeBalao = msg.remetente_id === meuUID ? "enviado" : "recebido";
 
                 if (msg.is_atencao) {
-                    areaMensagens.innerHTML += `
-                        <div class="balao atencao-msg" style="background: rgba(255, 0, 127, 0.15); color: var(--pink-magenta); border: 1px solid var(--pink-magenta); text-align: center; font-weight: bold; padding: 6px; border-radius: 8px; margin: 10px 0; box-shadow: 0 0 10px rgba(255, 0, 127, 0.2); animation: pulsarLogo 1s infinite;">
-                            ⚠️ CHAMOU A ATENÇÃO! ⚠️
-                        </div>
-                    `;
-
+                    areaMensagens.innerHTML += `<div class="balao atencao-msg" style="background: rgba(255, 0, 127, 0.15); color: var(--pink-magenta); border: 1px solid var(--pink-magenta); text-align: center; font-weight: bold; padding: 6px; border-radius: 8px; margin: 10px 0; box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);">⚠️ CHAMOU A ATENÇÃO! ⚠️</div>`;
+                    
+                    // Se a mensagem veio do seu amigo nesta conversa ativa
                     if (msg.remetente_id !== meuUID) {
-                        // 📱 1. Vibração física do celular
-                        if ("vibrate" in navigator) {
-                            navigator.vibrate([300, 100, 300, 100, 500]);
-                        }
+                        
+                        // 📱 1. VIBRAÇÃO NO APARELHO
+                        if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
 
-                        // 🔊 2. Efeito sonoro retrô do MSN via Web Audio
+                        // 🔊 2. BIPE SONORO NATIVO DO NAVEGADOR
                         try {
                             const contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
                             const oscilador = contextoAudio.createOscillator();
                             const ganho = contextoAudio.createGain();
-
-                            oscilador.type = "sine";
+                            oscilador.type = 'sine';
                             oscilador.frequency.setValueAtTime(880, contextoAudio.currentTime);
                             ganho.gain.setValueAtTime(0.3, contextoAudio.currentTime);
-
                             oscilador.connect(ganho);
                             ganho.connect(contextoAudio.destination);
-
                             oscilador.start();
                             oscilador.stop(contextoAudio.currentTime + 0.4);
-                        } catch (erroAudio) {
-                            console.warn("Navegador bloqueou áudio por falta de interação prévia:", erroAudio);
-                        }
+                        } catch (e) { console.warn(e); }
 
-                        // 🎬 3. Chacoalhar visual da janela do chat
-                        if (janelaChat) {
-                            janelaChat.style.animation = "tremerBalaao 0.1s ease infinite";
-                            janelaChat.style.boxShadow = "0 0 30px var(--pink-magenta)";
-
-                            setTimeout(() => {
-                                if (janelaChat) {
-                                    janelaChat.style.animation = "none";
-                                    janelaChat.style.boxShadow = "none";
+                        // 🎬 3. TREMEDEIRA DINÂMICA (Foca na areaMensagens da conversa aberta, tirando a dependência de IDs fixos!)
+                        if (areaMensagens) {
+                            areaMensagens.style.animation = "tremerBalaao 0.1s ease infinite";
+                            areaMensagens.style.border = "1px solid var(--pink-magenta)";
+                            
+                            setTimeout(() => { 
+                                if (areaMensagens) {
+                                    areaMensagens.style.animation = "none"; 
+                                    areaMensagens.style.border = "none";
                                 }
-                            }, 1000);
+                            }, 1000); // Chacoalha a caixa de texto daquela conversa por 1 segundo inteiro
                         }
                     }
                 } else {

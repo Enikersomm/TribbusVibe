@@ -229,7 +229,7 @@
     
     <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
     <div class="nav-logo-container" style="flex-shrink: 0;">
-        <img class="nav-logo-img" src="img/image_p_Y_em.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
     </div>
 
     <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
@@ -285,8 +285,9 @@
                 
                 <!-- CARD 1: CRIAR STORY (TRAVADO EM 110PX DE LARGURA E 175PX DE ALTURA) -->
                 <div class="card-story-vertical btn-abrir-seletor" title="Criar novo Story (Foto, Música, Vídeo ou Texto)">
-                    <div style="height: 65%; width: 100%; position: relative; overflow: hidden; background: #1a1a24;">
-                        <img id="story-criar-preview-img" src="img/image_1gVwMG.png" alt="Prévia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src='img/avatar-fallback.png';" />
+                    <div style="height: 65%; width: 100%; position: relative; overflow: hidden; background: #1a1a24; display: flex; align-items: center; justify-content: center;">
+                        <img id="story-criar-preview-img" src="/logo.png" alt="Prévia" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                        <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 2rem;">👤</div>
                     </div>
                     <div style="height: 35%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; background: var(--cinza-card, #121214);">
                         <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #FF007F, #00F0FF); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid #121214; position: absolute; top: -14px; box-shadow: 0 0 8px var(--ciano-neon);">

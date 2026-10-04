@@ -30,6 +30,28 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* 🪐 PLANO DE FUNDO SUPREMO E LIMPO PARA A TELA DE LOGIN */
+        body.tela-login-vibe {
+            background: #0B0C10 url('img/fundo-cyber-circuitos.png') center center no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        /* ⚡ CAMADA DE LUZES VIVAS NOS CIRCUITOS E PONTOS BRILHANTES */
+        #circuit-fx-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         body {
             background-color: var(--preto-profundo);
             color: var(--branco);
@@ -48,6 +70,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            z-index: 5;
         }
 
         .logo-aura-container {
@@ -153,6 +177,7 @@
             padding: 45px;
             border-radius: 28px;
             position: relative;
+            z-index: 5;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
 
@@ -318,7 +343,10 @@
         }
     </style>
 </head>
-<body>
+<body class="tela-login-vibe">
+
+    <!-- ⚡ EFEITO VIVO: PONTOS BRILHANTES ACENDENDO E LUZES PERCORRENDO OS CIRCUITOS -->
+    <canvas id="circuit-fx-canvas"></canvas>
 
     <!-- Topo Centralizado com a Logo Oficial Tribbu'sVibe e Feixe de Luz Circulando -->
     <div class="header-container">
@@ -458,6 +486,231 @@
                 }
             });
         }
+
+        // ⚡ CIRCUITO ELETRÔNICO VIVO: PONTOS BRILHANTES E FEIXES DE LUZ NOS TRILHOS
+        (function initCircuitFX() {
+            const canvas = document.getElementById('circuit-fx-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+
+            function onResize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                generateGrid();
+            }
+            window.addEventListener('resize', onResize);
+
+            // Nós / Pontos brilhantes nos cruzamentos dos circuitos
+            const nodes = [
+                // Topo superior esquerdo e direito
+                { relX: 0.12, relY: 0.14, color: '#00F0FF', radius: 4.5, phase: 0.0, speed: 0.035, maxGlow: 26 },
+                { relX: 0.20, relY: 0.10, color: '#00FF80', radius: 3.5, phase: 1.2, speed: 0.040, maxGlow: 20 },
+                { relX: 0.25, relY: 0.22, color: '#00F0FF', radius: 5.0, phase: 2.1, speed: 0.030, maxGlow: 28 },
+                { relX: 0.32, relY: 0.12, color: '#00E5FF', radius: 3.8, phase: 0.7, speed: 0.045, maxGlow: 22 },
+                { relX: 0.44, relY: 0.08, color: '#00FF80', radius: 4.2, phase: 3.0, speed: 0.032, maxGlow: 24 },
+                { relX: 0.56, relY: 0.08, color: '#00F0FF', radius: 4.5, phase: 1.8, speed: 0.038, maxGlow: 25 },
+                { relX: 0.68, relY: 0.12, color: '#00E5FF', radius: 4.0, phase: 2.6, speed: 0.034, maxGlow: 22 },
+                { relX: 0.75, relY: 0.20, color: '#00FF80', radius: 5.2, phase: 0.4, speed: 0.042, maxGlow: 28 },
+                { relX: 0.82, relY: 0.11, color: '#00F0FF', radius: 3.8, phase: 1.5, speed: 0.036, maxGlow: 20 },
+                { relX: 0.88, relY: 0.18, color: '#00FF80', radius: 4.2, phase: 2.9, speed: 0.039, maxGlow: 24 },
+
+                // Laterais esquerda e direita
+                { relX: 0.08, relY: 0.32, color: '#00F0FF', radius: 4.0, phase: 0.8, speed: 0.041, maxGlow: 22 },
+                { relX: 0.14, relY: 0.42, color: '#00FF80', radius: 4.8, phase: 2.4, speed: 0.033, maxGlow: 26 },
+                { relX: 0.09, relY: 0.58, color: '#00E5FF', radius: 3.6, phase: 1.1, speed: 0.037, maxGlow: 20 },
+                { relX: 0.15, relY: 0.68, color: '#00FF80', radius: 5.0, phase: 3.4, speed: 0.043, maxGlow: 27 },
+
+                { relX: 0.92, relY: 0.32, color: '#00FF80', radius: 4.0, phase: 1.9, speed: 0.035, maxGlow: 22 },
+                { relX: 0.86, relY: 0.44, color: '#00F0FF', radius: 4.8, phase: 0.3, speed: 0.042, maxGlow: 26 },
+                { relX: 0.91, relY: 0.60, color: '#00E5FF', radius: 3.8, phase: 2.8, speed: 0.038, maxGlow: 21 },
+                { relX: 0.84, relY: 0.70, color: '#00FF80', radius: 5.0, phase: 1.3, speed: 0.031, maxGlow: 28 },
+
+                // Fundo inferior esquerdo, centro e direito
+                { relX: 0.18, relY: 0.82, color: '#00F0FF', radius: 4.5, phase: 0.5, speed: 0.036, maxGlow: 25 },
+                { relX: 0.28, relY: 0.88, color: '#00FF80', radius: 4.0, phase: 2.2, speed: 0.044, maxGlow: 22 },
+                { relX: 0.42, relY: 0.91, color: '#00F0FF', radius: 4.8, phase: 1.6, speed: 0.032, maxGlow: 26 },
+                { relX: 0.58, relY: 0.91, color: '#00FF80', radius: 4.6, phase: 3.1, speed: 0.037, maxGlow: 25 },
+                { relX: 0.72, relY: 0.87, color: '#00F0FF', radius: 4.2, phase: 0.9, speed: 0.040, maxGlow: 24 },
+                { relX: 0.82, relY: 0.82, color: '#00FF80', radius: 4.5, phase: 2.5, speed: 0.034, maxGlow: 25 }
+            ];
+
+            // Trilhos fixos que seguem as linhas e ângulos do circuito eletrônico
+            let tracks = [];
+            let pulses = [];
+
+            function generateGrid() {
+                tracks = [
+                    // Trilhos superiores contornando em direção ao centro
+                    [ { x: 0.05*w, y: 0.14*h }, { x: 0.22*w, y: 0.14*h }, { x: 0.28*w, y: 0.22*h }, { x: 0.42*w, y: 0.22*h } ],
+                    [ { x: 0.15*w, y: 0.06*h }, { x: 0.28*w, y: 0.06*h }, { x: 0.35*w, y: 0.16*h }, { x: 0.48*w, y: 0.16*h } ],
+                    [ { x: 0.52*w, y: 0.08*h }, { x: 0.62*w, y: 0.08*h }, { x: 0.68*w, y: 0.18*h }, { x: 0.82*w, y: 0.18*h } ],
+                    [ { x: 0.95*w, y: 0.12*h }, { x: 0.78*w, y: 0.12*h }, { x: 0.72*w, y: 0.22*h }, { x: 0.58*w, y: 0.22*h } ],
+
+                    // Trilhos verticais e laterais
+                    [ { x: 0.08*w, y: 0.25*h }, { x: 0.08*w, y: 0.48*h }, { x: 0.14*w, y: 0.56*h }, { x: 0.14*w, y: 0.78*h } ],
+                    [ { x: 0.92*w, y: 0.25*h }, { x: 0.92*w, y: 0.50*h }, { x: 0.86*w, y: 0.58*h }, { x: 0.86*w, y: 0.78*h } ],
+
+                    // Trilho hexagonal central (contorno que envolve o centro da placa)
+                    [ 
+                        { x: 0.18*w, y: 0.35*h }, { x: 0.26*w, y: 0.30*h }, { x: 0.74*w, y: 0.30*h }, 
+                        { x: 0.82*w, y: 0.35*h }, { x: 0.85*w, y: 0.65*h }, { x: 0.77*w, y: 0.72*h }, 
+                        { x: 0.23*w, y: 0.72*h }, { x: 0.15*w, y: 0.65*h }, { x: 0.18*w, y: 0.35*h } 
+                    ],
+
+                    // Trilhos inferiores
+                    [ { x: 0.10*w, y: 0.84*h }, { x: 0.25*w, y: 0.84*h }, { x: 0.32*w, y: 0.76*h }, { x: 0.46*w, y: 0.76*h } ],
+                    [ { x: 0.90*w, y: 0.84*h }, { x: 0.75*w, y: 0.84*h }, { x: 0.68*w, y: 0.76*h }, { x: 0.54*w, y: 0.76*h } ],
+                    [ { x: 0.28*w, y: 0.92*h }, { x: 0.45*w, y: 0.92*h }, { x: 0.50*w, y: 0.86*h }, { x: 0.65*w, y: 0.86*h } ]
+                ];
+
+                // Criando pulsos elétricos nos trilhos
+                pulses = [];
+                for (let i = 0; i < tracks.length; i++) {
+                    const trk = tracks[i];
+                    // Calcula tamanho total do trilho
+                    let totalLen = 0;
+                    for (let s = 0; s < trk.length - 1; s++) {
+                        const dx = trk[s+1].x - trk[s].x;
+                        const dy = trk[s+1].y - trk[s].y;
+                        totalLen += Math.sqrt(dx*dx + dy*dy);
+                    }
+                    
+                    const isCyan = i % 2 === 0;
+                    pulses.push({
+                        trackIdx: i,
+                        totalLen: totalLen,
+                        distance: (i * 140) % totalLen,
+                        speed: 1.8 + Math.random() * 1.6,
+                        length: 35 + Math.random() * 30,
+                        color: isCyan ? '#00F0FF' : '#00FF80',
+                        colorRgb: isCyan ? '0, 240, 255' : '0, 255, 128',
+                        headSize: 3.0 + Math.random() * 1.5
+                    });
+
+                    // Segundo pulso no trilho hexagonal central e trilhos longos
+                    if (trk.length > 5 || i === 0 || i === 3) {
+                        pulses.push({
+                            trackIdx: i,
+                            totalLen: totalLen,
+                            distance: (totalLen * 0.5 + i * 80) % totalLen,
+                            speed: 2.0 + Math.random() * 1.2,
+                            length: 40 + Math.random() * 25,
+                            color: isCyan ? '#00FF80' : '#00F0FF',
+                            colorRgb: isCyan ? '0, 255, 128' : '0, 240, 255',
+                            headSize: 3.5
+                        });
+                    }
+                }
+            }
+
+            generateGrid();
+
+            // Pega coordenadas ao longo dos segmentos de um trilho
+            function getPointAtDistance(track, dist) {
+                let accumulated = 0;
+                for (let i = 0; i < track.length - 1; i++) {
+                    const p1 = track[i];
+                    const p2 = track[i + 1];
+                    const dx = p2.x - p1.x;
+                    const dy = p2.y - p1.y;
+                    const segLen = Math.sqrt(dx * dx + dy * dy);
+                    if (accumulated + segLen >= dist) {
+                        const remain = dist - accumulated;
+                        const t = remain / (segLen || 1);
+                        return { x: p1.x + dx * t, y: p1.y + dy * t };
+                    }
+                    accumulated += segLen;
+                }
+                return track[track.length - 1];
+            }
+
+            // Loop de Renderização Contínua
+            let animId;
+            function loop() {
+                ctx.clearRect(0, 0, w, h);
+
+                // 1. PONTOS BRILHANTES (Acendendo e Apagando nos nós do circuito)
+                for (let i = 0; i < nodes.length; i++) {
+                    const n = nodes[i];
+                    n.phase += n.speed;
+                    // Oscilação suave senoidal de 0 a 1 com brilho
+                    const intensity = (Math.sin(n.phase) + 1) / 2; // 0..1
+                    const currentRadius = n.radius * (0.8 + intensity * 0.6);
+                    const px = n.relX * w;
+                    const py = n.relY * h;
+
+                    ctx.save();
+                    // Halo de luz difuso externo
+                    const gradient = ctx.createRadialGradient(px, py, 1, px, py, n.maxGlow * (0.4 + intensity * 0.7));
+                    gradient.addColorStop(0, n.color);
+                    gradient.addColorStop(0.35, n.color === '#00F0FF' ? 'rgba(0, 240, 255, 0.4)' : 'rgba(0, 255, 128, 0.4)');
+                    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(px, py, n.maxGlow, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Núcleo branco incandescente do nó
+                    ctx.beginPath();
+                    ctx.arc(px, py, currentRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.shadowColor = n.color;
+                    ctx.shadowBlur = 12 * intensity + 4;
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // 2. LUZES PERCORRENDO OS TRILHOS (Feixes elétricos / pulsos nos caminhos)
+                for (let i = 0; i < pulses.length; i++) {
+                    const p = pulses[i];
+                    const track = tracks[p.trackIdx];
+                    if (!track || p.totalLen === 0) continue;
+
+                    p.distance += p.speed;
+                    if (p.distance > p.totalLen) {
+                        p.distance = 0;
+                    }
+
+                    const headPos = getPointAtDistance(track, p.distance);
+
+                    // Desenha o rastro luminoso atrás da cabeça
+                    const steps = 14;
+                    for (let s = steps; s >= 0; s--) {
+                        const trailDist = p.distance - (s / steps) * p.length;
+                        if (trailDist >= 0) {
+                            const trailPos = getPointAtDistance(track, trailDist);
+                            const alpha = (1 - s / steps) * 0.85;
+                            const lineWidth = (1 - s / steps) * 2.8 + 0.8;
+
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.arc(trailPos.x, trailPos.y, lineWidth, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(${p.colorRgb}, ${alpha})`;
+                            ctx.shadowColor = p.color;
+                            ctx.shadowBlur = 8 * alpha;
+                            ctx.fill();
+                            ctx.restore();
+                        }
+                    }
+
+                    // Cabeça do pulso elétrico ultra brilhante
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(headPos.x, headPos.y, p.headSize, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 16;
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                animId = requestAnimationFrame(loop);
+            }
+
+            loop();
+        })();
     </script>
 </body>
 </html>

@@ -249,6 +249,8 @@
             flex-direction: column;
             gap: 12px;
             background: radial-gradient(circle at top right, rgba(148, 0, 211, 0.05), transparent 70%);
+            height: calc(100vh - 140px - env(safe-area-inset-bottom));
+            padding-bottom: 20px;
         }
 
         .balao {
@@ -306,6 +308,21 @@
 
         .tremer-tela {
             animation: tremerBalao 0.4s ease infinite;
+        }
+
+        /* 🪐 ATUALIZAÇÃO DE DESIGN PARA A BARRA DE DIGITAÇÃO DO MESSENGER */
+        .chat-footer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--cinza-card, #121214);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            
+            /* 🔥 O SEGREDO RESPONSIVO: Adiciona folga para a barra de navegação do celular e o teclado */
+            padding: 10px 15px calc(10px + env(safe-area-inset-bottom)); 
+            box-sizing: border-box;
+            z-index: 10;
         }
 
         /* BARRA DE INPUT */
@@ -452,7 +469,7 @@
             </div>
 
             <!-- BARRA DE INPUT E BOTÕES -->
-            <div class="chat-input-bar">
+            <div class="chat-input-bar chat-footer-container">
                 <button type="button" class="btn-atencao" title="Chamar Atenção! (Treme a tela)">
                     <i class="fas fa-exclamation-triangle"></i> Atenção
                 </button>

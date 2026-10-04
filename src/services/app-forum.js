@@ -2,8 +2,10 @@
 // Arquivo: app-forum.js
 
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "./tribbusFirebase.js";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { auth, db, storage } from "./tribbusFirebase.js";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { redimensionarEComprimirImagem } from "./firebase-storage.js";
 import { 
   obterDadosTribo, 
   escutarTopicosDaTribo, 
@@ -13,6 +15,26 @@ import {
 import { postarStoryComunidade, escutarStoriesAtivos } from "./firebase-stories.js";
 import { enviarRespostaTopico, escutarRespostasDoTopico } from "./firebase-respostas.js";
 
+// 🪐 Tribbu'sVibe - Trava de Visibilidade do Botão Participar
+// Encanamento para embutir no loop de visualização interna da Tribu na sua pasta local
+
+export function verificarBotaoParticipar(criadorUidDaTribu) {
+    const btnParticipar = document.getElementById("btn-participar-tribu") || document.getElementById("btn-entrar-tribo") || document.querySelector(".btn-participar");
+    const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
+
+    if (!btnParticipar) return;
+
+    // 🛡️ A BARREIRA DO FUNDADOR:
+    // Se o usuário logado no celular for o próprio criador da Tribu...
+    if (meuUID && criadorUidDaTribu && meuUID === criadorUidDaTribu) {
+        console.log("👑 Fundador na área! Ocultando botão 'Participar da Tribu' para o dono do bando.");
+        btnParticipar.style.display = "none"; // O botão some para você!
+    } else {
+        console.log("👽 Visitante na área! Liberando botão para o membro colar na Tribu.");
+        btnParticipar.style.display = "block"; // O botão aparece normal para os outros usuários!
+    }
+}
+
 export function inicializarForum() {
     // Parâmetro de URL para tribo customizada se houver
     const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
@@ -21,6 +43,9 @@ export function inicializarForum() {
     const lblNome = document.getElementById("lbl-nome-tribo");
     const lblDesc = document.getElementById("lbl-desc-tribo");
     const lblEmblema = document.getElementById("lbl-emblema-tribo");
+    const imgAvatarTribu = document.getElementById("img-avatar-tribu-viva");
+    const containerAvatarTribu = document.getElementById("container-avatar-tribu");
+    const inputTrocarAvatarTribu = document.getElementById("input-trocar-avatar-tribu");
     const btnParticipar = document.getElementById("btn-entrar-tribo");
     const listaTodasTribos = document.getElementById("lista-todas-tribos");
     
@@ -44,20 +69,112 @@ export function inicializarForum() {
     let unsubscribeRespostasAtivo = null;
     let topicoAtivoId = null;
 
+    let dadosTriboAtual = null;
+
     // 1. Carrega dados da Tribo Ativa
     obterDadosTribo(triboId).then((dados) => {
         if (dados) {
+            dadosTriboAtual = dados;
             if (lblNome && dados.nome) lblNome.textContent = dados.nome;
             if (lblDesc && dados.descricao) lblDesc.textContent = dados.descricao;
+            
+            // Atualiza o avatar da Tribo Viva
+            const fotoTribu = dados.capa_url || dados.foto_capa_url || "";
+            if (imgAvatarTribu && fotoTribu) {
+                imgAvatarTribu.src = fotoTribu;
+            }
             if (lblEmblema) {
-                if (dados.capa_url) {
-                    lblEmblema.innerHTML = `<img src="${escapeAttr(dados.capa_url)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
+                if (fotoTribu) {
+                    lblEmblema.innerHTML = `<img src="${escapeAttr(fotoTribu)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
                 } else if (dados.emblema) {
                     lblEmblema.textContent = dados.emblema;
                 }
             }
+
+            // 🛡️ Inicializa a trava de segurança de troca de foto com o UID do Criador
+            configurarTrocaAvatarTribu(triboId, dados.criador_uid);
+
+            // 🛡️ Trava de visibilidade do Botão Participar (Fundador vs Visitante)
+            verificarBotaoParticipar(dados.criador_uid);
         }
     });
+
+    /**
+     * 🪐 Tribbu'sVibe - Sistema de Troca de Foto de Perfil de Comunidades
+     * Com trava de segurança exclusiva para o Fundador da Tribu.
+     */
+    function configurarTrocaAvatarTribu(tribuIdAtual, criadorUidDaTribu) {
+        const container = document.querySelector(".avatar-tribu-container") || containerAvatarTribu;
+        const inputArquivo = document.getElementById("input-trocar-avatar-tribu") || inputTrocarAvatarTribu;
+        const imgExibicao = document.getElementById("img-avatar-tribu-viva") || imgAvatarTribu;
+
+        if (!container || !inputArquivo || !imgExibicao) return;
+
+        // 👆 1. Clique no quadrado abre a escolha de arquivos nativa do celular/PC
+        container.onclick = (e) => {
+            if (e.target === inputArquivo) return;
+
+            const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
+            
+            // 🛡️ TRAVA DE SEGURANÇA: Só o dono/criador da Tribu pode mudar a foto dela!
+            // Para a tribo_oficial, criadorUidDaTribu pode não existir ou ser restrito
+            if (criadorUidDaTribu && meuUID !== criadorUidDaTribu) {
+                alert("⚠️ Ops! Apenas o Fundador oficial desta Tribu pode alterar a identidade visual dela.");
+                return;
+            }
+            
+            inputArquivo.click();
+        };
+
+        // 🔄 2. Escuta quando o usuário escolhe a nova foto
+        inputArquivo.onchange = async () => {
+            if (!inputArquivo.files || inputArquivo.files.length === 0) return;
+
+            const arquivo = inputArquivo.files[0];
+            imgExibicao.style.opacity = "0.5"; // Feedback visual de carregando
+
+            try {
+                console.log(`Subindo nova identidade da Tribu [${tribuIdAtual}] para o Storage...`);
+                let urlDownload = "";
+
+                try {
+                    // Grava a foto na pasta de capas de tribos com o ID único da comunidade
+                    const fotoRef = ref(storage, `capas_tribos/avatar_${tribuIdAtual}.png`);
+                    await uploadBytes(fotoRef, arquivo);
+                    urlDownload = await getDownloadURL(fotoRef);
+                } catch (stErr) {
+                    console.warn("[TriboAvatar] Upload direto indisponível, usando fallback:", stErr);
+                    urlDownload = await redimensionarEComprimirImagem(arquivo, 1080, 0.72);
+                }
+
+                if (urlDownload) {
+                    // Atualiza no Firestore se não for a oficial estática
+                    if (tribuIdAtual !== "tribo_oficial" && db) {
+                        const tribuRef = doc(db, "tribos", tribuIdAtual);
+                        await updateDoc(tribuRef, {
+                            capa_url: urlDownload
+                        }).catch(() => {});
+
+                        // Espelha também em comunidades
+                        await setDoc(doc(db, "comunidades", tribuIdAtual), {
+                            capa_url: urlDownload
+                        }, { merge: true }).catch(() => {});
+                    }
+
+                    // Atualiza a imagem na tela na mesma hora sem precisar dar F5
+                    imgExibicao.src = urlDownload;
+                    alert("🎉 Sucesso! A identidade visual da sua Tribu foi atualizada no universo.");
+                }
+
+            } catch (error) {
+                console.error("Erro ao trocar foto da Tribu:", error);
+                alert("⚠️ Não foi possível atualizar a foto da Tribu no momento.");
+            } finally {
+                imgExibicao.style.opacity = "1";
+                inputArquivo.value = "";
+            }
+        };
+    }
 
     // 🪐 1.1 Explorador: Escuta e lista todas as Tribos criadas no Firebase
     if (listaTodasTribos && db) {
@@ -213,7 +330,10 @@ export function inicializarForum() {
         const meuUID = usuario?.uid || "convidado_" + Date.now();
         const meuNome = usuario?.displayName || usuario?.email?.split("@")[0] || "Membro da Tribo";
 
-        // Botão Participar é gerenciado por app-forum-actions.js
+        // Verifica a barreira do criador da tribo com base no usuário logado
+        if (dadosTriboAtual?.criador_uid) {
+            verificarBotaoParticipar(dadosTriboAtual.criador_uid);
+        }
 
         // Lançar Tópico
         if (btnLancar && txtTitulo) {

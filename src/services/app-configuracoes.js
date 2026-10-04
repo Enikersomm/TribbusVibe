@@ -24,6 +24,8 @@ export function configurarFormularioSalvar() {
     const txtValVibe = document.getElementById("txt-val-vibe-config");
     const inputNome = document.getElementById("input-nome");
     const inputStatus = document.getElementById("input-status");
+    const inputUploadAvatar = document.getElementById("input-upload-avatar");
+    const lblStatusAvatar = document.getElementById("lbl-status-avatar");
     const inputUploadCapa = document.getElementById("input-upload-capa");
     const lblStatusCapa = document.getElementById("lbl-status-capa");
 
@@ -51,6 +53,15 @@ export function configurarFormularioSalvar() {
         rangeVibe.addEventListener("input", (e) => {
             const val = `${e.target.value}%`;
             if (txtValVibe) txtValVibe.textContent = val;
+        });
+    }
+
+    if (inputUploadAvatar && lblStatusAvatar) {
+        inputUploadAvatar.addEventListener("change", (e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                lblStatusAvatar.innerHTML = `<span style="color: var(--ciano-neon);"><i class="fas fa-user-check"></i> Foto de perfil: <b>${file.name}</b></span>`;
+            }
         });
     }
 
@@ -103,11 +114,74 @@ export function configurarFormularioSalvar() {
             }
             if (selectEstadoCivil && dados.estado_civil) selectEstadoCivil.value = dados.estado_civil;
             if (selectSexo && dados.sexo) selectSexo.value = dados.sexo;
+            
+            // Valida na carga se o perfil já possuir data
+            if (inputDataNascimento?.value) {
+                validarIdadeMinima(inputDataNascimento.value);
+            }
         }
     });
 
+    /**
+     * 🛡️ Validação de Idade Mínima (13 Anos)
+     */
+    function validarIdadeMinima(dataString) {
+        const alertaIdade = document.getElementById("alerta-idade-vibe");
+        if (!dataString) {
+            if (alertaIdade) alertaIdade.style.display = "none";
+            if (inputDataNascimento) {
+                inputDataNascimento.style.borderColor = "rgba(255,255,255,0.1)";
+                inputDataNascimento.style.boxShadow = "none";
+            }
+            return true;
+        }
+
+        const dataNasc = new Date(dataString);
+        const hoje = new Date();
+
+        if (isNaN(dataNasc.getTime())) {
+            return true;
+        }
+
+        // Calcula a idade exata considerando dia e mês
+        let idade = hoje.getFullYear() - dataNasc.getFullYear();
+        const diferencaMes = hoje.getMonth() - dataNasc.getMonth();
+        if (diferencaMes < 0 || (diferencaMes === 0 && hoje.getDate() < dataNasc.getDate())) {
+            idade--;
+        }
+
+        if (idade < 13 || dataNasc > hoje) {
+            if (alertaIdade) alertaIdade.style.display = "block";
+            if (inputDataNascimento) {
+                inputDataNascimento.style.borderColor = "#FF007F";
+                inputDataNascimento.style.boxShadow = "0 0 10px rgba(255, 0, 127, 0.4)";
+            }
+            return false;
+        } else {
+            if (alertaIdade) alertaIdade.style.display = "none";
+            if (inputDataNascimento) {
+                inputDataNascimento.style.borderColor = "rgba(0, 240, 255, 0.4)";
+                inputDataNascimento.style.boxShadow = "0 0 8px rgba(0, 240, 255, 0.2)";
+            }
+            return true;
+        }
+    }
+
+    if (inputDataNascimento) {
+        inputDataNascimento.addEventListener("input", (e) => validarIdadeMinima(e.target.value));
+        inputDataNascimento.addEventListener("change", (e) => validarIdadeMinima(e.target.value));
+    }
+
     form.onsubmit = async (e) => {
         e.preventDefault();
+
+        // 🛡️ Bloqueio rigoroso de menores de 13 anos
+        const dataNascInputVal = inputDataNascimento?.value || "";
+        if (dataNascInputVal && !validarIdadeMinima(dataNascInputVal)) {
+            inputDataNascimento?.focus();
+            return;
+        }
+
         const meuUID = auth.currentUser?.uid;
         if (!meuUID) return;
 
@@ -131,8 +205,23 @@ export function configurarFormularioSalvar() {
             const estadoCivilInput = selectEstadoCivil?.value || "Solteiro(a)";
             const sexoInput = selectSexo?.value || "Não informado";
             
+            const arquivoAvatar = document.getElementById("input-upload-avatar")?.files?.[0];
             const arquivoCapa = document.getElementById("input-upload-capa")?.files?.[0];
+            let avatarUrlFinal = null;
             let capaUrlFinal = null;
+
+            // 👤 SE O USUÁRIO SELECIONOU UMA FOTO DE PERFIL REAL
+            if (arquivoAvatar) {
+                console.log("Subindo foto de perfil para as nuvens...");
+                try {
+                    const avatarRef = ref(storage, `avatares_usuarios/${meuUID}_avatar.png`);
+                    await uploadBytes(avatarRef, arquivoAvatar);
+                    avatarUrlFinal = await getDownloadURL(avatarRef);
+                } catch (storageErr) {
+                    console.warn("Storage direto indisponível para avatar, usando fallback:", storageErr);
+                    avatarUrlFinal = await fazerUploadDeFoto(arquivoAvatar);
+                }
+            }
 
             // 🖼️ SE O USUÁRIO SELECIONOU UMA FOTO DE CAPA REAL, FAZ O UPLOAD NO STORAGE
             if (arquivoCapa) {
@@ -151,18 +240,21 @@ export function configurarFormularioSalvar() {
             const dadosAtualizados = {
                 nome: nomeInput || "Membro da Tribo",
                 frase_status: statusInput || "🪐 em órbita...",
-                medidor_confiavel: valConfiavel,
-                medidor_legal: valLegal,
-                medidor_vibe: valVibe,
                 
                 // 🔥 NOVAS CHAVES DE DADOS PESSOAIS UNIFICADAS
-                cidade_atual: document.getElementById("input-cidade-atual")?.value?.trim() || "",
-                cidade_natal: document.getElementById("input-cidade-natal")?.value?.trim() || "",
-                data_nascimento: document.getElementById("input-data-nascimento")?.value || "",
-                estado_civil: document.getElementById("select-estado-civil")?.value || "Solteiro(a)",
-                sexo: document.getElementById("select-sexo")?.value || "Não informado",
+                cidade_atual: cidadeAtualInput,
+                cidade_natal: cidadeNatalInput,
+                data_nascimento: dataNascInput,
+                estado_civil: estadoCivilInput,
+                sexo: sexoInput,
                 ultima_atualizacao: new Date().toISOString()
             };
+
+            // Se um novo avatar foi processado, anexa ao documento e atualiza cache local
+            if (avatarUrlFinal) {
+                dadosAtualizados.avatar_url = avatarUrlFinal;
+                localStorage.setItem("tribbus_user_avatar_url", avatarUrlFinal);
+            }
 
             // Se uma nova capa foi processada, anexa ao documento
             if (capaUrlFinal) {
@@ -172,7 +264,7 @@ export function configurarFormularioSalvar() {
             // Atualiza direto na gaveta de usuários do Firestore (setDoc com merge para garantir persistência)
             await setDoc(doc(db, "usuarios", meuUID), dadosAtualizados, { merge: true });
             
-            alert("✨ Sucesso! Suas configurações, termômetros e capa foram salvos na rede.");
+            alert("✨ Sucesso! Suas configurações e dados foram salvos na rede.");
             window.location.href = "perfil.html";
 
         } catch (error) {

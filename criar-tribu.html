@@ -92,7 +92,7 @@
     <header class="navbar" style="background-color: var(--cinza-card); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo) 1; position: sticky; top: 0; z-index: 100; min-height: 55px; flex-wrap: wrap; gap: 10px;">
         <div class="nav-logo-container">
             <a href="feed.html">
-                <img src="img/image_1gVwMG.png" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));" onerror="this.src='img/image_p_Y_em.png'" alt="Tribbu'sVibe Logo">
+                <img src="/logo.png" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));" alt="Tribbu'sVibe Logo">
             </a>
         </div>
         <div class="nav-scroll-central" style="display: flex; align-items: center; gap: 15px; overflow-x: auto; max-width: 100%; padding: 5px 0; scrollbar-width: none; -webkit-overflow-scrolling: touch;">
@@ -144,8 +144,9 @@
     <!-- 📡 ENCANAMENTO JAVASCRIPT EM TEMPO REAL INTEGRADO COM O FIRESTORE E STORAGE -->
     <script type="module">
         import { auth, db, storage } from "./src/services/tribbusFirebase.js";
-        import { collection, addDoc } from "firebase/firestore";
+        import { collection, addDoc, doc, setDoc } from "firebase/firestore";
         import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+        import { redimensionarEComprimirImagem } from "./src/services/firebase-storage.js";
 
         const form = document.getElementById("form-cadastro-tribu");
         const btnLancar = document.getElementById("btn-lancar-tribu");
@@ -166,14 +167,8 @@
 
         form.onsubmit = async (e) => {
             e.preventDefault();
-            const meuUID = auth?.currentUser?.uid;
-            const meuNome = auth?.currentUser?.displayName || "Fundador Solitário";
-
-            if (!meuUID) {
-                alert("⚠️ Por favor, faça login para fundar a sua Tribu.");
-                window.location.href = "login.html";
-                return;
-            }
+            const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session") || "membro_" + Date.now();
+            const meuNome = auth?.currentUser?.displayName || localStorage.getItem("tribbus_user_nome") || "Fundador Solitário";
 
             // Trava o botão para evitar cliques duplos que gastam cota do Firebase
             btnLancar.disabled = true;
@@ -192,28 +187,48 @@
                 }
 
                 const arquivo = arquivoInput.files[0];
+                let capaUrlFinal = "";
 
-                console.log("Subindo imagem de capa da comunidade para as nuvens do Google...");
-                // 1. Upload do arquivo real no Storage com carimbo de tempo único
-                const timestampUnico = Date.now();
-                const capaRef = ref(storage, `capas_tribos/tribu_${timestampUnico}_${meuUID}.png`);
-                await uploadBytes(capaRef, arquivo);
-                const capaUrlFinal = await getDownloadURL(capaRef);
+                // Upload com fallback automático
+                try {
+                    console.log("Subindo imagem de capa da comunidade para as nuvens do Google...");
+                    const timestampUnico = Date.now();
+                    const capaRef = ref(storage, `capas_tribos/tribu_${timestampUnico}_${meuUID}.png`);
+                    await uploadBytes(capaRef, arquivo);
+                    capaUrlFinal = await getDownloadURL(capaRef);
+                } catch (storageErr) {
+                    console.warn("Storage direto indisponível, ativando fallback ultrarrápido otimizado:", storageErr);
+                    capaUrlFinal = await redimensionarEComprimirImagem(arquivo, 1080, 0.72);
+                }
 
                 console.log("Gravando documento na coleção de tribos do Firestore...");
-                // 2. Grava o documento completo unificado com o UID real do criador
-                await addDoc(collection(db, "tribos"), {
+                const payloadTribo = {
                     nome: nomeTribu,
                     descricao: descricaoTribu,
                     capa_url: capaUrlFinal,
+                    emblema: "🪐",
                     criador_uid: meuUID,
                     criador_nome: meuNome,
                     membros_contador: 1,
+                    membros: [meuUID],
                     data_criacao: new Date().toISOString()
-                });
+                };
+
+                // 1. Grava na coleção 'tribos'
+                const docRef = await addDoc(collection(db, "tribos"), payloadTribo);
+
+                // 2. Espelha na coleção 'comunidades'
+                try {
+                    await setDoc(doc(db, "comunidades", docRef.id), {
+                        id: docRef.id,
+                        ...payloadTribo
+                    });
+                } catch (espelhoErr) {
+                    console.warn("[CriarTribu] Espelho de comunidades:", espelhoErr);
+                }
 
                 alert("🎉 Vitória! Sua Tribu foi fundada com sucesso na rede!");
-                window.location.href = "tribos.html";
+                window.location.href = `tribos.html?id=${docRef.id}`;
 
             } catch (err) {
                 console.error("Erro ao fundar Tribu:", err);
