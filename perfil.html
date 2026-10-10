@@ -312,12 +312,13 @@
                     </div>
 
                     <!-- 2. GRADE DE BOTÕES DE VOTAÇÃO (PARA OS AMIGOS CLICAREM) -->
-                    <div class="votos-acoes-area" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; width: 100%;">
-                        <p style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; margin: 0;">Avalie a vibe deste amigo:</p>
-                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%;">
-                            <button type="button" class="btn-voto-neon" data-termometro="medidor_confiavel" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--ciano-neon); padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">+1 🧊 Confiável</button>
-                            <button type="button" class="btn-voto-neon" data-termometro="medidor_legal" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--pink-magenta); padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">+1 ❤️ Legal</button>
-                            <button type="button" class="btn-voto-neon" data-termometro="medidor_vibe" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid #FFD700; padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">+1 🌟 Vibe</button>
+                    <!-- 🪐 CONTAINER DOS BOTÕES DE VOTO: Envelopado para o JavaScript controlar a privacidade -->
+                    <div id="bloco-votacao-privado" style="margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); display: none; flex-direction: column; gap: 8px; width: 100%;">
+                        <p style="font-size: 0.72rem; color: var(--texto-suave, #9AA0A6); font-style: italic; text-align: center; margin: 0 0 4px 0;">Avalie a vibe deste amigo:</p>
+                        <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; width: 100%;">
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_confiavel" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--ciano-neon, #00F0FF); padding: 5px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: bold; cursor: pointer;">+1 🧊</button>
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_legal" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--pink-magenta, #FF007F); padding: 5px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: bold; cursor: pointer;">+1 ❤️</button>
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_vibe" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid #FFD700; padding: 5px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: bold; cursor: pointer;">+1 🌟</button>
                         </div>
                     </div>
                 </div>

@@ -28,12 +28,33 @@ export function configurarFormularioSalvar() {
     const lblStatusAvatar = document.getElementById("lbl-status-avatar");
     const inputUploadCapa = document.getElementById("input-upload-capa");
     const lblStatusCapa = document.getElementById("lbl-status-capa");
+    const rangePosicao = document.getElementById("range-posicao-capa");
+    const imgPrevia = document.getElementById("img-previa-capa-dinamica");
+    const txtPorcentagem = document.getElementById("txt-posicao-porcentagem");
+    const inputCapa = document.getElementById("input-upload-capa");
+    const txtLegendaPrevia = document.getElementById("txt-legenda-previa-capa");
 
-    const inputCidadeAtual = document.getElementById("input-cidade-atual");
-    const inputCidadeNatal = document.getElementById("input-cidade-natal");
-    const inputDataNascimento = document.getElementById("input-data-nascimento");
-    const selectEstadoCivil = document.getElementById("select-estado-civil");
-    const selectSexo = document.getElementById("select-sexo");
+    let posicaoYEscolhida = "0%";
+
+    // 🔄 1. Atualiza o espelho visual da foto de capa em tempo real nas configurações
+    if (rangePosicao && imgPrevia && txtPorcentagem) {
+        rangePosicao.oninput = () => {
+            posicaoYEscolhida = `${rangePosicao.value}%`;
+            txtPorcentagem.innerText = posicaoYEscolhida;
+            imgPrevia.style.backgroundPosition = `center ${posicaoYEscolhida}`;
+        };
+    }
+
+    // 🔄 2. Troca a imagem da prévia assim que o usuário seleciona um arquivo novo
+    if (inputCapa && imgPrevia) {
+        inputCapa.onchange = (e) => {
+            if (!e.target.files || e.target.files.length === 0) return;
+            const urlTemporaria = URL.createObjectURL(e.target.files[0]);
+            imgPrevia.style.backgroundImage = `url('${urlTemporaria}')`;
+            imgPrevia.style.opacity = "1";
+            if (txtLegendaPrevia) txtLegendaPrevia.style.display = "none";
+        };
+    }
 
     if (rangeConfiavel) {
         rangeConfiavel.addEventListener("input", (e) => {
@@ -61,15 +82,6 @@ export function configurarFormularioSalvar() {
             const file = e.target.files?.[0];
             if (file) {
                 lblStatusAvatar.innerHTML = `<span style="color: var(--ciano-neon);"><i class="fas fa-user-check"></i> Foto de perfil: <b>${file.name}</b></span>`;
-            }
-        });
-    }
-
-    if (inputUploadCapa && lblStatusCapa) {
-        inputUploadCapa.addEventListener("change", (e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-                lblStatusCapa.innerHTML = `<span style="color: var(--ciano-neon);"><i class="fas fa-image"></i> Imagem pronta: <b>${file.name}</b></span>`;
             }
         });
     }
@@ -102,8 +114,26 @@ export function configurarFormularioSalvar() {
                 rangeVibe.value = dados.medidor_vibe;
                 if (txtValVibe) txtValVibe.textContent = `${dados.medidor_vibe}%`;
             }
-            if (dados.foto_capa_url && lblStatusCapa) {
-                lblStatusCapa.innerHTML = `<span style="color: #00FF7F;"><i class="fas fa-check-circle"></i> Foto de capa já configurada!</span>`;
+            if (dados.foto_capa_url) {
+                if (lblStatusCapa) {
+                    lblStatusCapa.innerHTML = `<span style="color: #00FF7F;"><i class="fas fa-check-circle"></i> Foto de capa já configurada!</span>`;
+                }
+                if (imgPrevia) {
+                    imgPrevia.style.backgroundImage = `url('${dados.foto_capa_url}')`;
+                    imgPrevia.style.opacity = "1";
+                    if (txtLegendaPrevia) txtLegendaPrevia.style.display = "none";
+                }
+            }
+
+            const posicaoCarregada = dados.capa_posicao_y || (typeof dados.foto_capa_posicao === "number" ? `${dados.foto_capa_posicao}%` : null);
+            if (posicaoCarregada) {
+                posicaoYEscolhida = posicaoCarregada.includes("%") ? posicaoCarregada : `${posicaoCarregada}%`;
+                const valorNum = parseInt(posicaoYEscolhida, 10) || 0;
+                if (rangePosicao) rangePosicao.value = valorNum;
+                if (txtPorcentagem) txtPorcentagem.textContent = posicaoYEscolhida;
+                if (imgPrevia) {
+                    imgPrevia.style.backgroundPosition = `center ${posicaoYEscolhida}`;
+                }
             }
 
             // Dados Pessoais
@@ -225,9 +255,10 @@ export function configurarFormularioSalvar() {
 
             // 🖼️ SE O USUÁRIO SELECIONOU UMA FOTO DE CAPA REAL, FAZ O UPLOAD NO STORAGE
             if (arquivoCapa) {
-                console.log("Subindo foto de capa real para as nuvens do Google...");
+                console.log("Detectada nova foto de capa! Iniciando decolagem para o Storage...");
                 try {
-                    const capaRef = ref(storage, `capas_usuarios/${meuUID}_capa.png`);
+                    // Referência oficial na pasta de capas de perfil
+                    const capaRef = ref(storage, `capas_perfis/capa_${meuUID}.png`);
                     await uploadBytes(capaRef, arquivoCapa);
                     capaUrlFinal = await getDownloadURL(capaRef);
                 } catch (storageErr) {
@@ -236,17 +267,22 @@ export function configurarFormularioSalvar() {
                 }
             }
 
+            // Posição de alinhamento vertical da capa
+            const posicaoCapaValor = rangePosicaoCapa ? Number(rangePosicaoCapa.value) : 50;
+
             // Monte o documento com as chaves exatas e unificadas que o perfil vai ler
             const dadosAtualizados = {
-                nome: nomeInput || "Membro da Tribo",
+                nome: nomeInput || "Membro da Tribu",
                 frase_status: statusInput || "🪐 em órbita...",
                 
                 // 🔥 NOVAS CHAVES DE DADOS PESSOAIS UNIFICADAS
-                cidade_atual: cidadeAtualInput,
-                cidade_natal: cidadeNatalInput,
-                data_nascimento: dataNascInput,
-                estado_civil: estadoCivilInput,
-                sexo: sexoInput,
+                cidade_atual: cidadeAtualInput || "Não informado",
+                cidade_natal: cidadeNatalInput || "Não informado",
+                data_nascimento: dataNascInput || "",
+                estado_civil: estadoCivilInput || "Solteiro(a)",
+                sexo: sexoInput || "Não informado",
+                capa_posicao_y: posicaoYEscolhida || "0%",
+                foto_capa_posicao: parseInt(posicaoYEscolhida, 10) || 0,
                 ultima_atualizacao: new Date().toISOString()
             };
 
@@ -256,20 +292,21 @@ export function configurarFormularioSalvar() {
                 localStorage.setItem("tribbus_user_avatar_url", avatarUrlFinal);
             }
 
-            // Se uma nova capa foi processada, anexa ao documento
+            // Se uma nova capa foi processada, anexa ao documento e salva em foto_capa_url
             if (capaUrlFinal) {
                 dadosAtualizados.foto_capa_url = capaUrlFinal;
             }
 
-            // Atualiza direto na gaveta de usuários do Firestore (setDoc com merge para garantir persistência)
-            await setDoc(doc(db, "usuarios", meuUID), dadosAtualizados, { merge: true });
+            // Atualiza direto no Firestore (setDoc com merge para garantir persistência)
+            const usuarioRef = doc(db, "usuarios", meuUID);
+            await setDoc(usuarioRef, dadosAtualizados, { merge: true });
             
-            alert("✨ Sucesso! Suas configurações e dados foram salvos na rede.");
+            alert("🎉 Sucesso! Suas configurações foram salvas no universo do Tribbu'sVibe!");
             window.location.href = "perfil.html";
 
         } catch (error) {
-            console.error("Erro ao gravar configurações:", error);
-            alert("⚠️ Erro ao salvar dados no Firebase. Tente novamente.");
+            console.error("Erro crítico ao salvar configurações:", error);
+            alert(`⚠️ Erro ao salvar dados no Firebase: ${error.message}`);
         } finally {
             if (btnSalvar) {
                 btnSalvar.disabled = false;
@@ -279,6 +316,10 @@ export function configurarFormularioSalvar() {
     };
 
     inicializarBotaoExcluirConta();
+}
+
+export function inicializarFormularioConfiguracoes() {
+    configurarFormularioSalvar();
 }
 
 /**

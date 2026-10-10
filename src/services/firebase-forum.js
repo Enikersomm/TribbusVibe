@@ -102,7 +102,12 @@ export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
     const snap = await getDoc(docRef);
 
     if (snap.exists()) {
-      return { id: snap.id, ...snap.data() };
+      const data = snap.data();
+      return { 
+        id: snap.id, 
+        ...data,
+        criador_uid: data.criador_uid || data.criador_id || (triboId === TRIBO_PADRAO_ID ? "oficial" : null)
+      };
     }
 
     // 2. Se não achou em comunidades, busca na coleção tribos (onde novas tribos são fundadas)
@@ -116,8 +121,10 @@ export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
           nome: tData.nome || "Tribbu",
           descricao: tData.descricao || "Comunidade do Tribbu'sVibe.",
           capa_url: tData.capa_url || "",
-          emblema: "🪐",
-          membros_count: tData.membros_contador || 1
+          emblema: tData.emblema || tData.icone_emoji || "🪐",
+          membros_count: tData.membros_contador || tData.membros_count || 1,
+          criador_uid: tData.criador_uid || tData.criador_id || null,
+          criador_id: tData.criador_id || tData.criador_uid || null
         };
       }
     }
@@ -129,6 +136,8 @@ export async function obterDadosTribo(triboId = TRIBO_PADRAO_ID) {
       membros_count: 1,
       membros: [],
       categoria: "Geral",
+      criador_uid: "oficial",
+      criador_id: "oficial",
       data_criacao: new Date().toISOString()
     };
 

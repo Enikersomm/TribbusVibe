@@ -12,21 +12,38 @@ import { votarNoTermometroAmigo } from "./firebase-reputacao.js";
 // 🪐 Tribbu'sVibe - Trava de Segurança da Vitrine de Favoritos
 // Encanamento para embutir na função de renderização do perfil na sua pasta local
 
+// 🛡️ CONTROLADOR DE PRIVACIDADE DO TERMÔMETRO
+export function gerenciarVisibilidadeDaVotacao(uidDoPerfilVisitado) {
+    const blocoVoto = document.getElementById("bloco-votacao-privado");
+    const meuUID = auth?.currentUser?.uid;
+
+    if (!blocoVoto) return;
+
+    // Se o usuário logado for DIFERENTE do dono do perfil, exibe o bloco de votação completo
+    if (meuUID && meuUID !== uidDoPerfilVisitado) {
+        blocoVoto.style.display = "flex"; 
+    } else {
+        blocoVoto.style.display = "none"; // Some tudo se for o próprio dono olhando a tela!
+    }
+}
+
 export function gerenciarVisibilidadeDoBotaoAdicionar(uidDoPerfilVisitado) {
     const btnAddFavorito = document.getElementById("btn-adicionar-favorito");
     const meuUID = auth?.currentUser?.uid;
 
-    if (!btnAddFavorito) return;
-
-    // 🛡️ A BARREIRA DE PRIVACIDADE:
-    // Se o usuário logado for diferente do dono do perfil que ele está olhando...
-    if (meuUID !== uidDoPerfilVisitado) {
-        console.log("🔒 Visitante detectado! Escondendo botão de gerenciar favoritos da Maria Eduarda.");
-        btnAddFavorito.style.display = "none"; // O botão some da tela para o visitante!
-    } else {
-        console.log("🤠 Dono do perfil detectado! Liberando botão de gerenciar favoritos.");
-        btnAddFavorito.style.display = "block"; // O botão reaparece apenas para você mexer na sua lista!
+    if (btnAddFavorito) {
+        // 🛡️ A BARREIRA DE PRIVACIDADE:
+        // Se o usuário logado for diferente do dono do perfil que ele está olhando...
+        if (meuUID && uidDoPerfilVisitado && meuUID !== uidDoPerfilVisitado) {
+            console.log("🔒 Visitante detectado! Escondendo botão de gerenciar favoritos.");
+            btnAddFavorito.style.display = "none";
+        } else {
+            console.log("🤠 Dono do perfil detectado! Liberando botão de gerenciar favoritos.");
+            btnAddFavorito.style.display = "block";
+        }
     }
+
+    gerenciarVisibilidadeDaVotacao(uidDoPerfilVisitado);
 }
 
 /**
@@ -76,6 +93,7 @@ export function escutarPerfilComCapa(meuUID) {
         let statusExibir = "🪐 em órbita...";
         let avatarExibir = auth.currentUser?.photoURL || localStorage.getItem("tribbus_user_avatar_url") || "";
         let capaExibir = "";
+        let capaPosicao = 50;
 
         if (docSnap.exists()) {
             const dados = docSnap.data();
@@ -83,6 +101,11 @@ export function escutarPerfilComCapa(meuUID) {
             statusExibir = dados.frase_status || dados.status_vibe || statusExibir;
             avatarExibir = dados.avatar_url || dados.avatar || auth.currentUser?.photoURL || localStorage.getItem("tribbus_user_avatar_url") || avatarExibir;
             capaExibir = dados.foto_capa_url || capaExibir; // 🖼️ Puxa a capa real do banco!
+            if (dados.capa_posicao_y) {
+                capaPosicao = parseInt(dados.capa_posicao_y, 10) || 50;
+            } else if (typeof dados.foto_capa_posicao === "number") {
+                capaPosicao = dados.foto_capa_posicao;
+            }
 
             const valConfiavel = dados.medidor_confiavel ?? 85;
             const valLegal = dados.medidor_legal ?? 50;
@@ -142,9 +165,9 @@ export function escutarPerfilComCapa(meuUID) {
             if (imgAvatar) imgAvatar.style.display = "none";
         }
         
-        // Aplica a nova capa com estilo de cobertura do Facebook
+        // Aplica a nova capa com estilo de cobertura do Facebook e posição vertical calibrada
         if (imgCapaDinamica && capaExibir) {
-            imgCapaDinamica.style.background = `url('${capaExibir}') center/cover no-repeat`;
+            imgCapaDinamica.style.background = `url('${capaExibir}') center ${capaPosicao}% / cover no-repeat`;
         }
     }, (err) => {
         console.warn("Aviso ao carregar órbita do perfil:", err);
@@ -359,9 +382,9 @@ export function inicializarPerfilEmTempoReal() {
 
         // 🗳️ VOTAÇÃO MÚTUA DE TERMÔMETROS DE REPUTAÇÃO
         if (btnsVotoNeon && btnsVotoNeon.length > 0) {
-            // Verifica se está visualizando o perfil de outro membro via URL (?uid=...)
+            // Verifica se está visualizando o perfil de outro membro via URL (?id= ou ?uid=)
             const urlParams = new URLSearchParams(window.location.search);
-            const alvoUID = urlParams.get("uid") || meuUID;
+            const alvoUID = urlParams.get("id") || urlParams.get("uid") || targetUID;
 
             btnsVotoNeon.forEach((btn) => {
                 btn.onclick = async () => {
@@ -370,7 +393,7 @@ export function inicializarPerfilEmTempoReal() {
 
                     btn.disabled = true;
                     const textoOriginal = btn.innerHTML;
-                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Votando...`;
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
 
                     const res = await votarNoTermometroAmigo(meuUID, alvoUID, tipoTermometro);
                     

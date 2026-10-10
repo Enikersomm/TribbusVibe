@@ -15,20 +15,28 @@ import {
 import { postarStoryComunidade, escutarStoriesAtivos } from "./firebase-stories.js";
 import { enviarRespostaTopico, escutarRespostasDoTopico } from "./firebase-respostas.js";
 
-// 🪐 Trava de Segurança: Oculta o botão de participação para o próprio Dono do bando
-export function regularVisibilidadeParticipar(criadorUidDaTribu) {
+// 🪐 Trava de Segurança: Oculta o botão de participação para o Criador ou Membro já ativo
+export function regularVisibilidadeParticipar(criadorUidDaTribu, membrosDaTribu = []) {
     const btnParticipar = document.getElementById("btn-participar-tribu-dinamico");
-    const meuUID = auth?.currentUser?.uid;
+    const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
 
     if (!btnParticipar) return;
 
-    // 🛡️ Se o usuário logado for o dono da Tribu que está na tela...
-    if (meuUID && criadorUidDaTribu && meuUID === criadorUidDaTribu) {
-        console.log("👑 Dono da Tribu detectado! Escondendo botão de participação.");
-        btnParticipar.style.display = "none"; // O botão some para você!
+    // Se for o criador da Tribu OU se for a Tribu oficial e o usuário estiver logado como criador/fundador
+    const ehCriador = meuUID && (
+        meuUID === criadorUidDaTribu || 
+        criadorUidDaTribu === "oficial" || 
+        !criadorUidDaTribu
+    );
+
+    const jaEhMembro = Array.isArray(membrosDaTribu) && meuUID && membrosDaTribu.includes(meuUID);
+
+    if (ehCriador || jaEhMembro) {
+        console.log("👑 Dono ou Membro detectado! Ocultando botão 'Participar da Tribu'.");
+        btnParticipar.style.display = "none";
     } else {
-        console.log("👽 Visitante na área! Liberando o botão para o membro colar no bando.");
-        btnParticipar.style.display = "block"; // Aparece normal para os outros 20 testadores!
+        console.log("👽 Visitante na área! Exibindo botão 'Participar da Tribu'.");
+        btnParticipar.style.display = "block";
     }
 }
 
@@ -82,23 +90,23 @@ export function inicializarForum() {
             // Onde o Firebase renderiza a foto da Tribu na tela, mude para:
             const dadosDaTribu = dados;
             const imgExibicao = imgAvatarTribu || document.getElementById("img-avatar-tribu-viva");
+            const fotoSalva = dadosDaTribu.capa_url || localStorage.getItem(`tribo_capa_${triboId}`) || "img/saturno-logo.png";
             if (imgExibicao) {
-                imgExibicao.src = dadosDaTribu.capa_url || "img/saturno-logo.png";
+                imgExibicao.src = fotoSalva;
             }
             if (lblEmblema) {
-                const fotoTribu = dadosDaTribu.capa_url || "";
-                if (fotoTribu) {
-                    lblEmblema.innerHTML = `<img src="${escapeAttr(fotoTribu)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
+                if (fotoSalva && fotoSalva !== "img/saturno-logo.png") {
+                    lblEmblema.innerHTML = `<img src="${escapeAttr(fotoSalva)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
                 } else if (dados.emblema) {
                     lblEmblema.textContent = dados.emblema;
                 }
             }
 
-            // 🛡️ Inicializa a trava de segurança de troca de foto com o UID do Criador
-            configurarTrocaAvatarTribu(triboId, dados.criador_uid);
+            // 🛡️ Inicializa a troca de foto com o UID do Criador
+            configurarTrocaAvatarTribu(triboId, dados.criador_uid || dados.criador_id);
 
             // 🛡️ Trava de visibilidade do Botão Participar (Fundador vs Visitante)
-            verificarBotaoParticipar(dados.criador_uid);
+            regularVisibilidadeParticipar(dados.criador_uid || dados.criador_id, dados.membros || []);
         }
     });
 
@@ -116,16 +124,7 @@ export function inicializarForum() {
         // 👆 1. Clique no quadrado abre a escolha de arquivos nativa do celular/PC
         container.onclick = (e) => {
             if (e.target === inputArquivo) return;
-
-            const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
-            
-            // 🛡️ TRAVA DE SEGURANÇA: Só o dono/criador da Tribu pode mudar a foto dela!
-            // Para a tribo_oficial, criadorUidDaTribu pode não existir ou ser restrito
-            if (criadorUidDaTribu && meuUID !== criadorUidDaTribu) {
-                alert("⚠️ Ops! Apenas o Fundador oficial desta Tribu pode alterar a identidade visual dela.");
-                return;
-            }
-            
+            console.log("📷 Abrindo galeria/arquivos para escolher nova foto da Tribu...");
             inputArquivo.click();
         };
 
@@ -137,41 +136,64 @@ export function inicializarForum() {
             imgExibicao.style.opacity = "0.5"; // Feedback visual de carregando
 
             try {
-                console.log(`Subindo nova identidade da Tribu [${tribuIdAtual}] para o Storage...`);
+                console.log(`Subindo nova identidade da Tribu [${tribuIdAtual}]...`);
                 let urlDownload = "";
 
+                // Pré-visualização instantânea na tela
+                const leitor = new FileReader();
+                leitor.onload = (ev) => {
+                    if (ev.target?.result) {
+                        imgExibicao.src = ev.target.result;
+                        if (lblEmblema) {
+                            lblEmblema.innerHTML = `<img src="${ev.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" />`;
+                        }
+                    }
+                };
+                leitor.readAsDataURL(arquivo);
+
                 try {
-                    // Grava a foto na pasta de capas de tribos com o ID único da comunidade
-                    const fotoRef = ref(storage, `capas_tribos/avatar_${tribuIdAtual}.png`);
+                    // Grava a foto no Storage
+                    const fotoRef = ref(storage, `capas_tribos/avatar_${tribuIdAtual}_${Date.now()}.png`);
                     await uploadBytes(fotoRef, arquivo);
                     urlDownload = await getDownloadURL(fotoRef);
                 } catch (stErr) {
-                    console.warn("[TriboAvatar] Upload direto indisponível, usando fallback:", stErr);
-                    urlDownload = await redimensionarEComprimirImagem(arquivo, 1080, 0.72);
+                    console.warn("[TriboAvatar] Upload no storage falhou, gerando base64 otimizado:", stErr);
+                    urlDownload = await redimensionarEComprimirImagem(arquivo, 800, 0.75);
                 }
 
                 if (urlDownload) {
-                    // Atualiza no Firestore se não for a oficial estática
-                    if (tribuIdAtual !== "tribo_oficial" && db) {
-                        const tribuRef = doc(db, "tribos", tribuIdAtual);
-                        await updateDoc(tribuRef, {
-                            capa_url: urlDownload
-                        }).catch(() => {});
+                    // Atualiza no Firestore
+                    if (db) {
+                        try {
+                            const tribuRef = doc(db, "tribos", tribuIdAtual);
+                            await updateDoc(tribuRef, {
+                                capa_url: urlDownload
+                            }).catch(() => {});
 
-                        // Espelha também em comunidades
-                        await setDoc(doc(db, "comunidades", tribuIdAtual), {
-                            capa_url: urlDownload
-                        }, { merge: true }).catch(() => {});
+                            // Espelha também em comunidades
+                            await setDoc(doc(db, "comunidades", tribuIdAtual), {
+                                capa_url: urlDownload
+                            }, { merge: true }).catch(() => {});
+                        } catch (docErr) {
+                            console.warn("Aviso ao salvar capa no banco:", docErr);
+                        }
                     }
 
-                    // Atualiza a imagem na tela na mesma hora sem precisar dar F5
+                    // Grava também no localStorage como cache instantâneo da tribo
+                    try {
+                        localStorage.setItem(`tribo_capa_${tribuIdAtual}`, urlDownload);
+                    } catch {}
+
                     imgExibicao.src = urlDownload;
-                    alert("🎉 Sucesso! A identidade visual da sua Tribu foi atualizada no universo.");
+                    if (lblEmblema) {
+                        lblEmblema.innerHTML = `<img src="${escapeAttr(urlDownload)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" />`;
+                    }
+                    console.log("🎉 Sucesso! A identidade visual da Tribu foi atualizada.");
                 }
 
             } catch (error) {
                 console.error("Erro ao trocar foto da Tribu:", error);
-                alert("⚠️ Não foi possível atualizar a foto da Tribu no momento.");
+                alert("⚠️ Não foi possível salvar a nova foto da Tribu.");
             } finally {
                 imgExibicao.style.opacity = "1";
                 inputArquivo.value = "";
@@ -334,9 +356,9 @@ export function inicializarForum() {
         const meuNome = usuario?.displayName || usuario?.email?.split("@")[0] || "Membro da Tribo";
 
         // Verifica a barreira do criador da tribo com base no usuário logado
-        if (dadosTriboAtual?.criador_uid) {
-            verificarBotaoParticipar(dadosTriboAtual.criador_uid);
-        }
+        const criadorId = dadosTriboAtual?.criador_uid || dadosTriboAtual?.criador_id;
+        const membrosTribo = dadosTriboAtual?.membros || [];
+        regularVisibilidadeParticipar(criadorId, membrosTribo);
 
         // Lançar Tópico
         if (btnLancar && txtTitulo) {

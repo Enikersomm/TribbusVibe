@@ -252,11 +252,44 @@
 
         </main>
 
-        <!-- COLUNA DIREITA: MEMBROS DA TRIBO -->
-        <aside class="card-vibe coluna-membros">
-            <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;" id="lbl-contagem-membros">Membros</h3>
-            <div class="membros-grade" id="grade-membros-tribo">
-                <p style="color: var(--texto-suave); font-size: 0.8rem; grid-column: span 3; text-align: center; padding: 10px 0;">Membros sincronizados em tempo real.</p>
+        <!-- COLUNA DIREITA: PRÓXIMOS ROLÊS & MEMBROS DA TRIBO -->
+        <aside class="coluna-membros" style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- 🪐 CARTÃO CYBERPUNK: PRÓXIMOS ROLÊS DA TRIBU -->
+            <div class="card-vibe roles-box" style="background: var(--cinza-card, #121214); padding: 25px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 16px;">
+                
+                <h3 style="font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-map-marker-alt" style="color: var(--pink-magenta, #FF007F);"></i> Próximos Rolês
+                </h3>
+
+                <!-- Caixa de Informações do Evento Ativo -->
+                <div id="bloco-role-ativo" style="background: var(--cinza-input, #18181b); padding: 14px; border-radius: 12px; border-left: 3px solid var(--ciano-neon, #00F0FF);">
+                    <strong id="role-titulo" style="font-size: 0.9rem; color: #FFF; display: block; margin-bottom: 4px;">Resenha dos Fundadores 🥤🍕</strong>
+                    <span id="role-data" style="font-size: 0.78rem; color: var(--texto-suave, #9AA0A6); display: block; margin-bottom: 2px;"><i class="far fa-clock"></i> Sábado, 17/10 às 20:00h</span>
+                    <span id="role-local" style="font-size: 0.78rem; color: var(--texto-suave, #9AA0A6); display: block;"><i class="fas fa-map-marked-alt"></i> Local: Praça dos Girassóis</span>
+                </div>
+
+                <!-- Botão Interativo de Presença -->
+                <button id="btn-vou-colar" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)); color: #FFFFFF; border: none; padding: 10px; border-radius: 50px; font-size: 0.82rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.25); display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.2s;">
+                    <i class="fas fa-rocket"></i> Vou Colar!
+                </button>
+
+                <!-- Contador e Lista de Avatares Dinâmicos -->
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; margin-top: 4px;">
+                    <span style="color: var(--texto-suave, #9AA0A6);"><strong id="lbl-total-confirmados" style="color: #FFF;">0</strong> Confirmados</span>
+                    
+                    <!-- Gradezinha onde o JS vai brotar os mini-avatares redondos dos confirmados -->
+                    <div id="mini-avatares-confirmados" style="display: flex; align-items: center; margin-left: auto; position: relative;">
+                        <!-- Injetado dinamicamente via Firebase -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloco de Membros -->
+            <div class="card-vibe" style="padding: 25px; border-radius: 24px; background: var(--cinza-card, #121214); border: 1px solid rgba(255, 255, 255, 0.03);">
+                <h3 style="font-size:1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin: 0 0 10px 0;" id="lbl-contagem-membros">Membros</h3>
+                <div class="membros-grade" id="grade-membros-tribo">
+                    <p style="color: var(--texto-suave); font-size: 0.8rem; grid-column: span 3; text-align: center; padding: 10px 0;">Membros sincronizados em tempo real.</p>
+                </div>
             </div>
         </aside>
     </div>
@@ -287,6 +320,12 @@
     <script type="module" src="./src/services/app-forum.js"></script>
     <script type="module" src="./src/services/app-forum-actions.js"></script>
     <script type="module" src="./src/services/app-mural-vibes.js"></script>
+    <script type="module">
+        import { inicializarRolesTribu } from "./src/services/app-roles.js";
+        const urlParams = new URLSearchParams(window.location.search);
+        const triboIdAtual = urlParams.get("id") || "tribo_oficial";
+        inicializarRolesTribu(triboIdAtual);
+    </script>
     <script type="module">
         import { realizarLogout } from "./src/services/firebase-auth-login.js";
 

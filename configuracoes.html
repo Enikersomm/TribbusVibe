@@ -206,10 +206,25 @@
                 
                 <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 0; font-weight: bold; letter-spacing: 0.5px;">🖼️ Identidade Visual</h4>
 
-                <!-- Alterar Foto de Capa -->
-                <div class="input-grupo">
-                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">🖼️ Alterar Minha Foto de Capa</label>
-                    <input type="file" id="input-upload-capa" accept="image/*" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                <!-- 🖼️ MODULO DE PRÉVIA CYBERPUNK COM AJUSTE DE POSIÇÃO DA CAPA -->
+                <div class="input-grupo" style="margin-bottom: 24px; width: 100%;">
+                    <label style="color: #FFF; font-size: 0.85rem; display: block; margin-bottom: 8px; font-weight: bold;">🖼️ Alterar Minha Foto de Capa</label>
+                    
+                    <!-- Caixa de Prévia Espelho (Mostra como vai ficar na hora) -->
+                    <div id="container-previa-capa" style="width: 100%; height: 140px; background: #18181b; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; overflow: hidden; position: relative; margin-bottom: 10px;">
+                        <div id="img-previa-capa-dinamica" style="width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80') center 0% / cover no-repeat; opacity: 0.85; transition: background-position 0.1s ease;"></div>
+                        <span id="txt-legenda-previa-capa" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 0.75rem; color: var(--texto-suave, #9AA0A6); pointer-events: none; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">Arraste o controle abaixo para alinhar 📐</span>
+                    </div>
+
+                    <!-- 🎛️ CONTROLE DESLIZANTE DE ALINHAMENTO VERTICAL -->
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <i class="fas fa-arrows-alt-v" style="color: var(--ciano-neon, #00F0FF); font-size: 0.85rem;"></i>
+                        <input type="range" id="range-posicao-capa" min="0" max="100" value="50" style="flex: 1; accent-color: var(--ciano-neon, #00F0FF); cursor: pointer;">
+                        <span id="txt-posicao-porcentagem" style="font-size: 0.75rem; color: var(--ciano-neon, #00F0FF); min-width: 35px; text-align: right;">50%</span>
+                    </div>
+
+                    <!-- Input de Arquivo Oculto Bonito -->
+                    <input type="file" id="input-upload-capa" accept="image/*" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 0.85rem;">
                 </div>
 
                 <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 20px 0 0 0; font-weight: bold; letter-spacing: 0.5px;">👤 Dados Pessoais do Perfil</h4>
