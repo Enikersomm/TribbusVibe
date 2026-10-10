@@ -77,6 +77,22 @@ export function escutarPerfilComCapa(meuUID) {
 
     console.log("Conectando cano em tempo real com a órbita do perfil...");
 
+    // ⚡ PASSO DE MESTRE: Tenta ler instantaneamente o cache gravado no celular para carregar sem delay!
+    const capaCacheada = localStorage.getItem(`cache_capa_url_${meuUID}`);
+    const posicaoCacheada = localStorage.getItem(`cache_capa_pos_${meuUID}`);
+    const avatarCacheado = localStorage.getItem(`cache_avatar_url_${meuUID}`);
+
+    if (capaCacheada && imgCapaDinamica) {
+        const pos = posicaoCacheada || "center";
+        const posFinal = pos.includes("%") ? pos : `${pos}%`;
+        imgCapaDinamica.style.background = `url('${capaCacheada}') center ${posFinal} / cover no-repeat`;
+    }
+    if (avatarCacheado && imgAvatar) {
+        imgAvatar.src = avatarCacheado;
+        imgAvatar.style.display = "block";
+        if (lblAvatar) lblAvatar.style.display = "none";
+    }
+
     // 🚀 Fallback instantâneo: se o campo estiver com Carregando, preenche com dados locais da sessão
     const meuNomeFallback = auth.currentUser?.displayName || auth.currentUser?.email?.split("@")[0] || "Membro da Tribo";
     if (txtNome && txtNome.innerText.includes("Carregando")) {
@@ -105,6 +121,15 @@ export function escutarPerfilComCapa(meuUID) {
                 capaPosicao = parseInt(dados.capa_posicao_y, 10) || 50;
             } else if (typeof dados.foto_capa_posicao === "number") {
                 capaPosicao = dados.foto_capa_posicao;
+            }
+
+            // 💾 Salva na memória do celular para o próximo clique abrir instantaneamente de graça
+            if (capaExibir) {
+                localStorage.setItem(`cache_capa_url_${meuUID}`, capaExibir);
+                localStorage.setItem(`cache_capa_pos_${meuUID}`, `${capaPosicao}%`);
+            }
+            if (avatarExibir) {
+                localStorage.setItem(`cache_avatar_url_${meuUID}`, avatarExibir);
             }
 
             const valConfiavel = dados.medidor_confiavel ?? 85;

@@ -8,6 +8,9 @@ import { db, auth, storage } from "./tribbusFirebase.js";
 import { buscarDadosConfiguracao } from "./firebase-configuracoes.js";
 import { fazerUploadDeFoto } from "./firebase-storage.js";
 
+// 🪐 Variável de escopo global do arquivo para segurar o valor do slider da capa
+let posicaoYEscolhida = "0%";
+
 export function configurarFormularioSalvar() {
     const form = document.querySelector("form");
     const btnSalvar = document.querySelector(".btn-salvar-config");
@@ -34,14 +37,12 @@ export function configurarFormularioSalvar() {
     const inputCapa = document.getElementById("input-upload-capa");
     const txtLegendaPrevia = document.getElementById("txt-legenda-previa-capa");
 
-    let posicaoYEscolhida = "0%";
-
     // 🔄 1. Atualiza o espelho visual da foto de capa em tempo real nas configurações
     if (rangePosicao && imgPrevia && txtPorcentagem) {
         rangePosicao.oninput = () => {
             posicaoYEscolhida = `${rangePosicao.value}%`;
-            txtPorcentagem.innerText = posicaoYEscolhida;
-            imgPrevia.style.backgroundPosition = `center ${posicaoYEscolhida}`;
+            if (txtPorcentagem) txtPorcentagem.innerText = posicaoYEscolhida;
+            if (imgPrevia) imgPrevia.style.backgroundPosition = `center ${posicaoYEscolhida}`;
         };
     }
 
