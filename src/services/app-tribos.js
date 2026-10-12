@@ -38,20 +38,22 @@ export function escutarEListarTribosGerais(containerAlvo) {
             // 📐 Define o botão de ação correto com base em quem está olhando a tela
             let htmlBotaoAcao = "";
             if (souOCriador) {
-                // Se eu sou o fundador, o botão rosa nem nasce! Ganhamos a tag de dono
-                htmlBotaoAcao = `<span style="font-size: 0.72rem; color: var(--ciano-neon, #00F0FF); font-weight: bold; font-style: italic; padding: 8px 12px; background: rgba(0, 240, 255, 0.05); border-radius: 50px; border: 1px solid rgba(0, 240, 255, 0.2);">👑 Fundador</span>`;
+                // Se eu sou o fundador, botão direto para gerenciar a órbita privada
+                htmlBotaoAcao = `<button onclick="window.location.href='sua-tribo.html?id=${tribuId}'" style="font-size: 0.75rem; color: var(--ciano-neon, #00F0FF); font-weight: bold; padding: 8px 14px; background: rgba(0, 240, 255, 0.08); border-radius: 50px; border: 1px solid rgba(0, 240, 255, 0.3); cursor: pointer;">👑 Fundador ➔</button>`;
             } else if (jaSouMembro) {
-                // Se eu sou um visitante que já entrou na comunidade antes
-                htmlBotaoAcao = `<span style="font-size: 0.72rem; color: var(--pink-magenta, #FF007F); font-weight: bold; padding: 8px 12px; background: rgba(255, 0, 127, 0.05); border-radius: 50px; border: 1px solid rgba(255, 0, 127, 0.2);"><i class="fas fa-check"></i> Membro</span>`;
+                // Se eu já sou membro, botão direto para entrar na comunidade privada
+                htmlBotaoAcao = `<button onclick="window.location.href='sua-tribo.html?id=${tribuId}'" style="font-size: 0.75rem; color: #FFF; font-weight: bold; padding: 8px 14px; background: rgba(0, 240, 255, 0.15); border-radius: 50px; border: 1px solid var(--ciano-neon, #00F0FF); cursor: pointer;"><i class="fas fa-sign-in-alt"></i> Entrar na Tribu</button>`;
             } else {
-                // Se for a Malu ou outro visitante novo, o botão nasce FIXO e Firme!
+                // Se for visitante novo, botão rosa choque de entrada
                 htmlBotaoAcao = `<button class="btn-participar-tribbu-action" data-tribu-id="${tribuId}" style="background: var(--pink-magenta, #FF007F); color: #FFF; border: none; padding: 8px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 10px rgba(255, 0, 127, 0.25);">Participar da Tribbu</button>`;
             }
 
+            const destinoClique = (jaSouMembro || souOCriador) ? `sua-tribo.html?id=${tribuId}` : `tribos.html?id=${tribuId}`;
+
             // Injeta a estrutura completa do bando
             cardItem.innerHTML = `
-                <img src="${dadosTribu.capa_url || 'img/saturno-logo.png'}" style="width: 48px; height: 48px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05); cursor: pointer;" onclick="window.location.href='tribos.html?id=${tribuId}'">
-                <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; cursor: pointer;" onclick="window.location.href='tribos.html?id=${tribuId}'">
+                <img src="${dadosTribu.capa_url || 'img/saturno-logo.png'}" style="width: 48px; height: 48px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05); cursor: pointer;" onclick="window.location.href='${destinoClique}'">
+                <div style="display: flex-direction: column; gap: 2px; flex: 1; cursor: pointer;" onclick="window.location.href='${destinoClique}'">
                     <strong style="color: #FFFFFF; font-size: 0.88rem; letter-spacing: 0.3px;">${dadosTribu.nome}</strong>
                     <span style="color: var(--texto-suave, #9AA0A6); font-size: 0.75rem; line-height: 1.3; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${dadosTribu.descricao || 'Sem manifesto cadastrado.'}</span>
                 </div>
@@ -81,6 +83,7 @@ export function escutarEListarTribosGerais(containerAlvo) {
                             membros: arrayUnion(meuUID)
                         });
                         alert("🎉 Sucesso! Você agora faz parte desta Tribu no universo! 🪐");
+                        window.location.href = `sua-tribo.html?id=${tribuId}`;
                     } catch (err) {
                         console.error("Erro ao colar na Tribu:", err);
                         botaoCriado.disabled = false;

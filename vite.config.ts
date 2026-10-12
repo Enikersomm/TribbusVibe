@@ -30,6 +30,7 @@ export default defineConfig(() => {
           splash: path.resolve(__dirname, 'splash.html'),
           criarTribu: path.resolve(__dirname, 'criar-tribu.html'),
           criarTribo: path.resolve(__dirname, 'criar-tribo.html'),
+          suaTribo: path.resolve(__dirname, 'sua-tribo.html'),
         },
       },
     },

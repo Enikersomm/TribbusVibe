@@ -3,7 +3,7 @@
 
 import { doc, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { onAuthStateChanged, deleteUser, signOut } from "firebase/auth";
+import { onAuthStateChanged, deleteUser, signOut, updateProfile } from "firebase/auth";
 import { db, auth, storage } from "./tribbusFirebase.js";
 import { buscarDadosConfiguracao } from "./firebase-configuracoes.js";
 import { fazerUploadDeFoto } from "./firebase-storage.js";
@@ -232,13 +232,13 @@ export function configurarFormularioSalvar() {
 
         try {
             // 🛡️ Captura segura com fallback para string vazia se o elemento não existir
-            const nomeInput = document.getElementById("input-nome")?.value.trim() || "Membro da Tribu";
+            const nomeInput = document.getElementById("input-nome")?.value.trim() || "";
             const statusInput = document.getElementById("input-status")?.value.trim() || "";
-            const cidadeAtualInput = document.getElementById("input-cidade-atual")?.value.trim() || "Não informado";
-            const cityNatalInput = document.getElementById("input-cidade-natal")?.value.trim() || "Não informado";
+            const cidadeAtualInput = document.getElementById("input-cidade-atual")?.value.trim() || "";
+            const cityNatalInput = document.getElementById("input-cidade-natal")?.value.trim() || "";
             const nascimentoInput = document.getElementById("input-data-nascimento")?.value || "";
-            const estadoCivilInput = document.getElementById("select-estado-civil")?.value || "Solteiro(a)";
-            const sexoInput = document.getElementById("select-sexo")?.value || "Não informado";
+            const estadoCivilInput = document.getElementById("select-estado-civil")?.value || "";
+            const sexoInput = document.getElementById("select-sexo")?.value || "";
 
             // Coleta a posição Y do slider de capa que salvamos ontem (global do arquivo)
             const rPosicao = document.getElementById("range-posicao-capa");
@@ -266,41 +266,42 @@ export function configurarFormularioSalvar() {
                 ultima_atualizacao: new Date().toISOString()
             };
 
-            // Se o usuário selecionou avatar novo
+            // Se o usuário selecionou avatar novo (Processa instantâneo com compressão)
             const inputAvatar = document.getElementById("input-upload-avatar");
             if (inputAvatar && inputAvatar.files && inputAvatar.files.length > 0) {
                 const arquivoAvatar = inputAvatar.files[0];
                 try {
-                    const avatarRef = ref(storage, `avatares_usuarios/${meuUID}_avatar.png`);
-                    await uploadBytes(avatarRef, arquivoAvatar);
-                    const urlAvatarFinal = await getDownloadURL(avatarRef);
-                    dadosAtualizar.avatar_url = urlAvatarFinal;
-                    localStorage.setItem("tribbus_user_avatar_url", urlAvatarFinal);
-                } catch (storageErr) {
-                    console.warn("Storage direto indisponível para avatar, usando fallback:", storageErr);
-                    const fallbackUrl = await fazerUploadDeFoto(arquivoAvatar);
-                    if (fallbackUrl) {
-                        dadosAtualizar.avatar_url = fallbackUrl;
-                        localStorage.setItem("tribbus_user_avatar_url", fallbackUrl);
+                    const urlAvatarFinal = await fazerUploadDeFoto(arquivoAvatar);
+                    if (urlAvatarFinal) {
+                        dadosAtualizar.avatar_url = urlAvatarFinal;
+                        localStorage.setItem("tribbus_user_avatar_url", urlAvatarFinal);
                     }
+                } catch (errAvatar) {
+                    console.warn("Aviso ao processar foto de avatar:", errAvatar);
                 }
             }
 
-            // Se o usuário upou uma foto de capa nova
+            // Se o usuário upou uma foto de capa nova (Processa instantâneo sem travar o Storage)
             const inputCapa = document.getElementById("input-upload-capa");
             if (inputCapa && inputCapa.files && inputCapa.files.length > 0) {
                 const arquivoCapa = inputCapa.files[0];
                 try {
-                    const capaRef = ref(storage, `capas_perfis/capa_${meuUID}.png`);
-                    await uploadBytes(capaRef, arquivoCapa);
-                    const urlCapaFinal = await getDownloadURL(capaRef);
-                    dadosAtualizar.foto_capa_url = urlCapaFinal;
-                } catch (storageErr) {
-                    console.warn("Storage direto indisponível para capa, usando fallback:", storageErr);
-                    const fallbackCapaUrl = await fazerUploadDeFoto(arquivoCapa);
-                    if (fallbackCapaUrl) {
-                        dadosAtualizar.foto_capa_url = fallbackCapaUrl;
+                    const urlCapaFinal = await fazerUploadDeFoto(arquivoCapa);
+                    if (urlCapaFinal) {
+                        dadosAtualizar.foto_capa_url = urlCapaFinal;
+                        localStorage.setItem(`cache_capa_url_${meuUID}`, urlCapaFinal);
                     }
+                } catch (errCapa) {
+                    console.warn("Aviso ao processar foto de capa:", errCapa);
+                }
+            }
+
+            // Atualiza também o displayName no Firebase Authentication
+            if (auth.currentUser && nomeInput) {
+                try {
+                    await updateProfile(auth.currentUser, { displayName: nomeInput });
+                } catch (authProfErr) {
+                    console.warn("Aviso ao sincronizar displayName no Auth:", authProfErr);
                 }
             }
 
@@ -309,9 +310,6 @@ export function configurarFormularioSalvar() {
             const usuarioRef = doc(db, "usuarios", meuUID);
             await setDoc(usuarioRef, dadosAtualizar, { merge: true });
 
-            if (dadosAtualizar.foto_capa_url) {
-                localStorage.setItem(`cache_capa_url_${meuUID}`, dadosAtualizar.foto_capa_url);
-            }
             localStorage.setItem(`cache_capa_pos_${meuUID}`, posY);
 
             alert("🎉 Sucesso! Seus dados cadastrais e alinhamento de capa foram salvos!");
