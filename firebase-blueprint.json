@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "Usuario": {
+      "title": "Usuario",
+      "description": "Perfil de membro do TribbusVibe com status, reputação e vibe.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "UID do Firebase Auth" },
+        "nome": { "type": "string", "description": "Nome ou apelido do usuário" },
+        "email": { "type": "string", "format": "email", "description": "E-mail do usuário" },
+        "data_nascimento": { "type": "string", "description": "Data de nascimento" },
+        "status_vibe": { "type": "string", "description": "Frase de status do perfil" },
+        "bio": { "type": "string", "description": "Texto 'Quem sou eu'" },
+        "avatar_url": { "type": "string", "description": "URL da foto de perfil" },
+        "medidor_confiavel": { "type": "number", "description": "Porcentagem Confiável (0-100)" },
+        "medidor_legal": { "type": "number", "description": "Porcentagem Legal (0-100)" },
+        "medidor_vibe": { "type": "number", "description": "Porcentagem Vibe (0-100)" },
+        "ultima_atualizacao": { "type": "string", "description": "Data e hora ISO da última atualização" }
+      },
+      "required": ["id", "nome", "email"]
+    },
+    "Comunidade": {
+      "title": "Comunidade",
+      "description": "Tribo temática antialgoritmo.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID da comunidade" },
+        "nome": { "type": "string", "description": "Nome da tribo" },
+        "descricao": { "type": "string", "description": "Descrição da tribo" },
+        "icone_emoji": { "type": "string", "description": "Emoji temático do ícone" },
+        "criador_id": { "type": "string", "description": "UID do criador" },
+        "membros_contador": { "type": "number", "description": "Total de membros" },
+        "data_criacao": { "type": "string", "description": "Timestamp de criação" }
+      },
+      "required": ["nome", "descricao", "criador_id"]
+    },
+    "FeedPost": {
+      "title": "FeedPost",
+      "description": "Micro-vibe ou publicação do feed cronológico.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID do post" },
+        "autor_id": { "type": "string", "description": "UID do autor" },
+        "autor_nome": { "type": "string", "description": "Nome do autor" },
+        "autor_avatar": { "type": "string", "description": "Avatar do autor" },
+        "comunidade_id": { "type": "string", "description": "ID da comunidade ou null para feed geral" },
+        "conteudo_texto": { "type": "string", "description": "Texto da postagem" },
+        "imagem_url": { "type": "string", "description": "URL opcional de imagem" },
+        "curtidas_contador": { "type": "number", "description": "Total de curtidas" },
+        "data_postagem": { "type": "string", "description": "Timestamp da postagem" }
+      },
+      "required": ["autor_id", "conteudo_texto"]
+    },
+    "Evento": {
+      "title": "Evento",
+      "description": "Encontros e rolês de tribos.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID do evento" },
+        "comunidade_id": { "type": "string", "description": "ID da comunidade anfitriã" },
+        "titulo": { "type": "string", "description": "Título do evento" },
+        "data_hora": { "type": "string", "description": "Data e hora do evento" },
+        "local": { "type": "string", "description": "Local físico ou virtual" },
+        "confirmados_contador": { "type": "number", "description": "Total de presenças confirmadas" }
+      },
+      "required": ["titulo", "local"]
+    },
+    "ChatPrivado": {
+      "title": "ChatPrivado",
+      "description": "Mensagens privadas do chat em tempo real com suporte a Chamar Atenção (efeito MSN).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID gerado da mensagem" },
+        "remetente_id": { "type": "string", "description": "UID de quem envia a mensagem" },
+        "destinatario_id": { "type": "string", "description": "UID de quem recebe a mensagem" },
+        "conteudo_texto": { "type": "string", "description": "Texto da mensagem privada" },
+        "is_atencao": { "type": "boolean", "description": "Se true, ativa o efeito chamar atenção (tremer tela)" },
+        "data_envio": { "type": "string", "description": "Timestamp ISO da data de envio" }
+      },
+      "required": ["remetente_id", "destinatario_id", "conteudo_texto", "data_envio"]
+    },
+    "NotificacaoUsuario": {
+      "title": "NotificacaoUsuario",
+      "description": "Badges de notificação em tempo real (chat, scrap, etc.)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID da notificação" },
+        "destinatario_id": { "type": "string", "description": "UID do usuário destinatário" },
+        "remetente_id": { "type": "string", "description": "UID ou identificador do remetente" },
+        "tipo": { "type": "string", "description": "Tipo de notificação (chat ou scrap)" },
+        "texto": { "type": "string", "description": "Texto ou prévia da notificação" },
+        "lida": { "type": "boolean", "description": "Se a notificação já foi visualizada" },
+        "criado_em": { "type": "string", "description": "Data e hora de criação" }
+      },
+      "required": ["destinatario_id", "tipo", "lida"]
+    },
+    "TopAmigo": {
+      "title": "TopAmigo",
+      "description": "Amigos favoritados na vitrine do perfil do usuário",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID do favorito" },
+        "usuario_id": { "type": "string", "description": "UID do dono do perfil que favoritou" },
+        "amigo_id": { "type": "string", "description": "UID do amigo favoritado" },
+        "amigo_nome": { "type": "string", "description": "Nome de exibição do amigo" },
+        "amigo_avatar": { "type": "string", "description": "Foto ou avatar do amigo" },
+        "data_favoritado": { "type": "string", "description": "Timestamp ISO do momento da inclusão" }
+      },
+      "required": ["usuario_id", "amigo_id", "amigo_nome", "amigo_avatar"]
+    },
+    "ComunidadeStory": {
+      "title": "ComunidadeStory",
+      "description": "Stories efêmeros de comunidades com duração de 24 horas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID do story" },
+        "autor_id": { "type": "string", "description": "UID do autor do story" },
+        "comunidade_id": { "type": "string", "description": "ID da tribo/comunidade onde o story foi publicado" },
+        "media_url": { "type": "string", "description": "URL da imagem da vibe" },
+        "data_criacao": { "type": "string", "description": "Timestamp ISO da criação" },
+        "expires_at": { "type": "string", "description": "Timestamp ISO de expiração (24h)" }
+      },
+      "required": ["autor_id", "comunidade_id", "media_url", "data_criacao"]
+    },
+    "StoryComentario": {
+      "title": "StoryComentario",
+      "description": "Comentários e reações em tempo real deixados em um story",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID do comentário" },
+        "autor_id": { "type": "string", "description": "UID do autor do comentário" },
+        "autor_name": { "type": "string", "description": "Nome ou handle do autor" },
+        "conteudo_texto": { "type": "string", "description": "Texto do comentário na vibe" },
+        "criado_em": { "type": "string", "description": "Timestamp ISO do comentário" }
+      },
+      "required": ["autor_id", "conteudo_texto"]
+    },
+    "FeedComentario": {
+      "title": "FeedComentario",
+      "description": "Comentários em tempo real nas postagens de micro-vibe do feed principal",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID do comentário" },
+        "post_id": { "type": "string", "description": "ID do post original que recebeu o comentário" },
+        "autor_id": { "type": "string", "description": "UID do autor do comentário" },
+        "autor_name": { "type": "string", "description": "Nome de exibição do autor" },
+        "conteudo_texto": { "type": "string", "description": "Conteúdo textual da resposta" },
+        "data_envio": { "type": "string", "description": "Timestamp ISO cronológico do envio" }
+      },
+      "required": ["post_id", "autor_id", "autor_name", "conteudo_texto", "data_envio"]
+    }
+  },
+  "firestore": {
+    "/usuarios/{userId}": {
+      "schema": "Usuario",
+      "description": "Perfis dos membros do TribbusVibe"
+    },
+    "/comunidades/{comunidadeId}": {
+      "schema": "Comunidade",
+      "description": "Comunidades / Tribos temáticas"
+    },
+    "/comunidades_stories/{storyId}": {
+      "schema": "ComunidadeStory",
+      "description": "Stories efêmeros de 24h das comunidades"
+    },
+    "/comunidades_stories/{storyId}/comentarios/{comentarioId}": {
+      "schema": "StoryComentario",
+      "description": "Comentários em tempo real da vibe do story"
+    },
+    "/feed_posts/{postId}": {
+      "schema": "FeedPost",
+      "description": "Publicações e micro-vibes do feed cronológico"
+    },
+    "/feed_comentarios/{comentarioId}": {
+      "schema": "FeedComentario",
+      "description": "Comentários das publicações do feed principal"
+    },
+    "/eventos/{eventoId}": {
+      "schema": "Evento",
+      "description": "Eventos de tribos"
+    },
+    "/chats_privados/{mensagemId}": {
+      "schema": "ChatPrivado",
+      "description": "Mensagens privadas do chat em tempo real com comando de chamar atenção"
+    },
+    "/notificacoes_usuario/{notificacaoId}": {
+      "schema": "NotificacaoUsuario",
+      "description": "Notificações e badges em tempo real"
+    },
+    "/top_amigos/{favoritoId}": {
+      "schema": "TopAmigo",
+      "description": "Vitrine de amigos favoritos sem limites do perfil"
+    }
+  }
+}

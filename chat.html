@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Messenger</title>
+    
+    <!-- Ícone e Font Awesome -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilo Cyberpunk Dark Supremo do Tribbu'sVibe -->
+    <style>
+        :root {
+            --fundo-principal: #0A0A0C;
+            --cinza-card: #121214;
+            --cinza-input: #1A1A1E;
+            --cinza-hover: #222228;
+            --pink-magenta: #FF007F;
+            --ciano-neon: #00F0FF;
+            --roxo-vibe: #9400D3;
+            --amarelo-alerta: #FFD700;
+            --texto-branco: #FFFFFF;
+            --texto-suave: #9AA0A6;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+            --fonte-principal: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--fonte-principal);
+        }
+
+        body {
+            background-color: var(--fundo-principal);
+            color: var(--texto-branco);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-supremo) 1;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 65px;
+        }
+
+        .nav-logo-container {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-logo-img {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--texto-suave);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--texto-branco);
+        }
+
+        .btn-criar-nav {
+            background: var(--gradient-supremo);
+            color: var(--texto-branco);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-criar-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 240, 255, 0.4);
+        }
+
+        /* LAYOUT DO CHAT */
+        .chat-layout {
+            max-width: 1200px;
+            width: 95%;
+            margin: 25px auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            height: calc(100vh - 120px);
+            min-height: 520px;
+        }
+
+        .card-vibe {
+            background-color: var(--cinza-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR DE CONTATOS */
+        .sidebar-chat-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-chat-header h3 {
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--ciano-neon);
+        }
+
+        .contatos-lista {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .contato-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--cinza-input);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .contato-item:hover {
+            background: var(--cinza-hover);
+            border-color: rgba(0, 240, 255, 0.2);
+            transform: translateX(3px);
+        }
+
+        .contato-item.ativo {
+            background: linear-gradient(90deg, rgba(255, 0, 127, 0.15), rgba(0, 240, 255, 0.15));
+            border-color: var(--pink-magenta);
+        }
+
+        .contato-item img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ciano-neon);
+        }
+
+        .contato-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .contato-info strong {
+            font-size: 0.9rem;
+            color: var(--texto-branco);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .contato-info span {
+            font-size: 0.75rem;
+            color: var(--texto-suave);
+        }
+
+        /* JANELA PRINCIPAL DO CHAT */
+        .janela-chat {
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 15px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(18, 18, 20, 0.95);
+        }
+
+        .amigo-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-bolinha {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00FF88;
+            box-shadow: 0 0 8px #00FF88;
+        }
+
+        .chat-header strong {
+            font-size: 1.1rem;
+            color: var(--texto-branco);
+        }
+
+        /* ÁREA DE MENSAGENS */
+        .mensagens-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: radial-gradient(circle at top right, rgba(148, 0, 211, 0.05), transparent 70%);
+            height: calc(100vh - 140px - env(safe-area-inset-bottom));
+            padding-bottom: 20px;
+        }
+
+        .balao {
+            max-width: 68%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.92rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .balao.enviado {
+            align-self: flex-end;
+            background: var(--gradient-supremo);
+            color: #FFFFFF;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.35);
+        }
+
+        .balao.recebido {
+            align-self: flex-start;
+            background: var(--cinza-input);
+            color: var(--texto-branco);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ANIMAÇÃO DE CHAMAR ATENÇÃO (MSN STYLE) */
+        .balao.atencao-msg {
+            align-self: center;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px dashed var(--amarelo-alerta);
+            color: var(--amarelo-alerta);
+            font-weight: bold;
+            text-align: center;
+            padding: 8px 20px;
+            border-radius: 50px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
+        }
+
+        @keyframes tremerBalao {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        @keyframes tremerBalaão {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .tremer-tela {
+            animation: tremerBalao 0.4s ease infinite;
+        }
+
+        /* 🪐 ATUALIZAÇÃO DE DESIGN PARA A BARRA DE DIGITAÇÃO DO MESSENGER */
+        .chat-footer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--cinza-card, #121214);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            
+            /* 🔥 O SEGREDO RESPONSIVO: Adiciona folga para a barra de navegação do celular e o teclado */
+            padding: 10px 15px calc(10px + env(safe-area-inset-bottom)); 
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        /* BARRA DE INPUT */
+        .chat-input-bar {
+            padding: 15px 20px;
+            background: var(--cinza-card);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-atencao {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid var(--amarelo-alerta);
+            color: var(--amarelo-alerta);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-atencao:hover {
+            background: var(--amarelo-alerta);
+            color: #000;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+        }
+
+        .input-chat-texto {
+            flex: 1;
+            background: var(--cinza-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--texto-branco);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-chat-texto:focus {
+            border-color: var(--ciano-neon);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .btn-enviar-chat {
+            background: var(--gradient-supremo);
+            border: none;
+            color: #FFF;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3);
+        }
+
+        .btn-enviar-chat:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 240, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 16px;
+            }
+            .chat-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .conversas-sidebar {
+                max-height: 200px;
+            }
+            .janela-chat {
+                height: 520px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🪐 NAVBAR SUPREMA CYBERPUNK COM SCROLL HORIZONTAl DESLIZANTE PARA CELULAR -->
+    <header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: auto; min-height: 55px; flex-wrap: wrap; gap: 10px;">
+        
+        <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
+        <div class="nav-logo-container" style="flex-shrink: 0;">
+            <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+        </div>
+
+        <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
+        <div class="nav-scroll-central" style="display: flex; align-items: center; gap: 15px; overflow-x: auto; max-width: 100%; padding: 5px 0; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+            
+            <!-- Componente do Sininho de Alertas -->
+            <div class="nav-notificacoes-wrapper" style="position: relative; display: flex; align-items: center; cursor: pointer; flex-shrink: 0;">
+                <i class="fas fa-bell id-icone-sininho" style="color: var(--texto-suave, #9AA0A6); font-size: 1.15rem; transition: color 0.2s, filter 0.2s;"></i>
+                <span id="badge-notificacoes-num" style="display: none; position: absolute; top: -6px; right: -6px; background: var(--pink-magenta, #FF007F); color: #FFF; font-size: 0.6rem; font-weight: 900; padding: 2px 5px; border-radius: 50%;">0</span>
+                
+                <!-- 📂 GAVETA DE NOTIFICAÇÕES ESCONDIDA (Abre ao clicar no sininho) -->
+                <div id="gaveta-sininho-lista" style="display: none; position: absolute; top: 35px; right: -10px; width: 280px; background: var(--cinza-card, #121214); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); padding: 12px; z-index: 200; max-height: 350px; overflow-y: auto;">
+                    <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Últimas Interações</h5>
+                    <div id="sininho-itens-acumulados" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; padding: 10px 0;">Nenhum alerta por enquanto... ✨</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Links de Navegação (Ficam todos na mesma linha sem quebrar ou sumir!) -->
+            <nav class="nav-links" style="display: flex; gap: 18px; align-items: center; flex-shrink: 0;">
+                <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Feed</a>
+                <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Tribos</a>
+                <a href="chat.html" class="active" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Messenger</a>
+                <a href="perfil.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Meu Perfil</a>
+                <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Configurações</a>
+                <a href="#" onclick="executarSaidaSuprema(event)" id="btn-sair-vibe" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: bold; font-size: 0.88rem; white-space: nowrap; filter: drop-shadow(0 0 3px var(--pink-magenta));">Sair</a>
+            </nav>
+
+            <!-- Botão de Fundar Nova Tribu -->
+            <button onclick="window.location.href='./criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
+                <i class="fas fa-plus-circle"></i> Fundar Tribu
+            </button>
+        </div>
+    </header>
+
+    <style>
+        /* 🚫 Esconde totalmente a barra de rolagem cinza feia do navegador para manter o visual limpo */
+        .nav-scroll-central::-webkit-scrollbar {
+            display: none;
+        }
+        .nav-notificacoes-wrapper:hover .id-icone-sininho {
+            color: var(--ciano-neon, #00F0FF);
+            filter: drop-shadow(0 0 5px var(--ciano-neon));
+        }
+    </style>
+
+    <!-- PALCO DO CHAT PRIVADO -->
+    <div class="chat-layout">
+        <!-- SIDEBAR DE CONTATOS -->
+        <aside class="conversas-sidebar card-vibe">
+            <div class="sidebar-chat-header">
+                <h3><i class="fas fa-comments"></i> Conversas</h3>
+            </div>
+            <div id="lista-contatos" class="contatos-lista">
+                <!-- Preenchido em tempo real pelo app-chat.js -->
+            </div>
+        </aside>
+
+        <!-- JANELA DE CONVERSA ATIVA -->
+        <main class="janela-chat card-vibe">
+            <div class="chat-header">
+                <div class="amigo-info">
+                    <span id="status-bolinha" class="status-bolinha"></span>
+                    <strong id="chat-nome-amigo">Tribbu's Messenger</strong>
+                </div>
+            </div>
+
+            <!-- ÁREA DE MENSAGENS EM TEMPO REAL -->
+            <div class="mensagens-area">
+                <div style="text-align: center; color: var(--texto-suave); font-size: 0.85rem; padding: 30px;">
+                    <i class="fas fa-comments" style="font-size: 2.2rem; color: var(--ciano-neon); margin-bottom: 12px; display: block;"></i>
+                    Selecione uma conversa ao lado para bater papo em tempo real na vibe!
+                </div>
+            </div>
+
+            <!-- BARRA DE INPUT E BOTÕES -->
+            <div class="chat-input-bar chat-footer-container">
+                <button type="button" class="btn-atencao" title="Chamar Atenção! (Treme a tela)">
+                    <i class="fas fa-exclamation-triangle"></i> Atenção
+                </button>
+                <input type="text" class="input-chat-texto" placeholder="Digite uma mensagem na vibe...">
+                <button type="button" class="btn-enviar-chat" title="Enviar mensagem">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Oficial Conectado sem dependência fantasma -->
+    <script type="module" src="./src/services/app-sininho.js"></script>
+    <script type="module" src="./src/services/app-chat.js"></script>
+</body>
+</html>

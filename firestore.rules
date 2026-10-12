@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      // ⚠️ MODO DE DESENVOLVIMENTO:
+      // Permissões abertas para leitura e escrita por tempo indeterminado durante esta fase.
+      // Substitui o limite padrão de teste de 30 dias (request.time < timestamp.date(...)).
+      // LEMBRE-SE: Antes de ir para produção, configure regras com autenticação (request.auth != null).
+      allow read, write: if true;
+    }
+  }
+}

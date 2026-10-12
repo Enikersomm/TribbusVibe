@@ -1,0 +1,12 @@
+# 🪐 Tribbu'sVibe - Arquivo .gitignore
+# Serve para o Git não subir arquivos pesados ou chaves secretas para a internet!
+
+node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+*.log
+.env
+.env*
+!.env.example

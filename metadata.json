@@ -1,0 +1,6 @@
+{
+  "name": "OrkuVibe",
+  "description": "Tribbu'sVibe — Conectando pessoas de verdade. Rede social antialgoritmo híbrida para a Geração Z com Dark Mode Cyber-Pop, feed cronológico, termômetros de reputação, mural de scraps e comunidades em tempo real.",
+  "requestFramePermissions": ["microphone", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

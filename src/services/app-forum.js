@@ -1,0 +1,550 @@
+// 🪐 Tribbu'sVibe - Encanamento do Fórum da Tribo (Tempo Real)
+// Arquivo: app-forum.js
+
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db, storage } from "./tribbusFirebase.js";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { redimensionarEComprimirImagem } from "./firebase-storage.js";
+import { 
+  obterDadosTribo, 
+  escutarTopicosDaTribo, 
+  lancarNovoTopico, 
+  alternarParticipacaoTribo 
+} from "./firebase-forum.js";
+import { postarStoryComunidade, escutarStoriesAtivos } from "./firebase-stories.js";
+import { enviarRespostaTopico, escutarRespostasDoTopico } from "./firebase-respostas.js";
+// 🔍 CORREÇÃO CIRÚRGICA DA LINHA 17: Força a leitura do arquivo na mesma pasta services
+import { configurarPainelDeCriacaoDeRoles } from "./app-roles.js";
+
+export function inicializarVisualizacaoDoForum(tribuIdAtual, dadosDaTribu) {
+    if (!tribuIdAtual || !dadosDaTribu) return;
+
+    console.log("🏛️ Inicializando fórum e conectando o painel de mídias e eventos...");
+
+    const criadorUidDaTribu = dadosDaTribu.criador_uid || dadosDaTribu.usuario_id || dadosDaTribu.criador_id;
+    
+    // Dispara a nossa central real de rolês legítimos conectada ao Firebase
+    if (criadorUidDaTribu) {
+        configurarPainelDeCriacaoDeRoles(criadorUidDaTribu, tribuIdAtual);
+    }
+}
+
+// 🪐 Trava de Segurança: Estiliza o botão de participação conforme o papel (Fundador, Membro ou Visitante)
+export function regularVisibilidadeParticipar(criadorUidDaTribu, membrosDaTribu = []) {
+    const btnParticipar = document.getElementById("btn-participar-tribu-dinamico") || document.getElementById("btn-entrar-tribo");
+    const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
+
+    if (!btnParticipar) return;
+
+    // Se for o criador real da Tribu (não confundir com 'oficial' da comunidade padrão)
+    const ehCriador = Boolean(meuUID && criadorUidDaTribu && criadorUidDaTribu !== "oficial" && meuUID === criadorUidDaTribu);
+
+    const jaEhMembro = Array.isArray(membrosDaTribu) && Boolean(meuUID && membrosDaTribu.includes(meuUID));
+
+    if (ehCriador) {
+        console.log("👑 Dono da Tribu detectado! Exibindo selo de Fundador.");
+        btnParticipar.style.display = "inline-flex";
+        btnParticipar.style.background = "rgba(0, 240, 255, 0.08)";
+        btnParticipar.style.color = "var(--ciano-neon, #00F0FF)";
+        btnParticipar.style.border = "1px solid rgba(0, 240, 255, 0.3)";
+        btnParticipar.style.cursor = "default";
+        btnParticipar.innerHTML = "👑 Fundador";
+        btnParticipar.disabled = true;
+    } else if (jaEhMembro) {
+        console.log("✓ Membro ativo detectado! Exibindo selo de membro.");
+        btnParticipar.style.display = "inline-flex";
+        btnParticipar.style.background = "rgba(255, 0, 127, 0.1)";
+        btnParticipar.style.color = "var(--pink-magenta, #FF007F)";
+        btnParticipar.style.border = "1px solid rgba(255, 0, 127, 0.3)";
+        btnParticipar.style.cursor = "default";
+        btnParticipar.innerHTML = '<i class="fas fa-check"></i> Membro';
+        btnParticipar.disabled = true;
+    } else {
+        console.log("👽 Visitante na área! Exibindo botão 'Participar da Tribbu'.");
+        btnParticipar.style.display = "inline-flex";
+        btnParticipar.style.background = "var(--pink-magenta, #FF007F)";
+        btnParticipar.style.color = "#FFFFFF";
+        btnParticipar.style.border = "none";
+        btnParticipar.style.cursor = "pointer";
+        btnParticipar.innerHTML = "Participar da Tribbu";
+        btnParticipar.disabled = false;
+    }
+}
+
+export function verificarBotaoParticipar(criadorUidDaTribu) {
+    regularVisibilidadeParticipar(criadorUidDaTribu);
+}
+
+export function inicializarForum() {
+    // Parâmetro de URL para tribo customizada se houver
+    const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const triboId = params?.get("id") || "tribo_oficial";
+
+    const lblNome = document.getElementById("lbl-nome-tribo");
+    const lblDesc = document.getElementById("lbl-desc-tribo");
+    const lblEmblema = document.getElementById("lbl-emblema-tribo");
+    const imgAvatarTribu = document.getElementById("img-avatar-tribu-viva");
+    const containerAvatarTribu = document.getElementById("container-avatar-tribu");
+    const inputTrocarAvatarTribu = document.getElementById("input-trocar-avatar-tribu");
+    const btnParticipar = document.getElementById("btn-participar-tribu-dinamico") || document.getElementById("btn-entrar-tribo");
+    const listaTodasTribos = document.getElementById("lista-todas-tribos");
+    
+    const txtTitulo = document.getElementById("txt-titulo-topico");
+    const txtCorpo = document.getElementById("txt-corpo-topico");
+    const btnLancar = document.getElementById("btn-lançar-topico");
+    const containerTopicos = document.getElementById("container-topicos-forum");
+    const muralStories = document.getElementById("mural-stories-tribo");
+
+    // Elementos do Modal de Discussão
+    const modalDiscussao = document.getElementById("modal-discussao-topico");
+    const btnFecharModal = document.getElementById("btn-fechar-modal-discussao");
+    const modalTitulo = document.getElementById("modal-topico-titulo");
+    const modalAutor = document.getElementById("modal-topico-autor");
+    const modalConteudo = document.getElementById("modal-topico-conteudo");
+    const modalRespostasLista = document.getElementById("modal-respostas-lista");
+    const txtNovaResposta = document.getElementById("txt-nova-resposta");
+    const btnEnviarResposta = document.getElementById("btn-enviar-resposta");
+
+    let usuarioAtual = null;
+    let unsubscribeRespostasAtivo = null;
+    let topicoAtivoId = null;
+
+    let dadosTriboAtual = null;
+
+    // 1. Carrega dados da Tribo Ativa
+    obterDadosTribo(triboId).then((dados) => {
+        if (dados) {
+            dadosTriboAtual = dados;
+            if (lblNome && dados.nome) lblNome.textContent = dados.nome;
+            if (lblDesc && dados.descricao) lblDesc.textContent = dados.descricao;
+            
+            // Onde o Firebase renderiza a foto da Tribu na tela, mude para:
+            const dadosDaTribu = dados;
+            const imgExibicao = imgAvatarTribu || document.getElementById("img-avatar-tribu-viva");
+            const fotoSalva = dadosDaTribu.capa_url || localStorage.getItem(`tribo_capa_${triboId}`) || "img/saturno-logo.png";
+            if (imgExibicao) {
+                imgExibicao.src = fotoSalva;
+            }
+            if (lblEmblema) {
+                if (fotoSalva && fotoSalva !== "img/saturno-logo.png") {
+                    lblEmblema.innerHTML = `<img src="${escapeAttr(fotoSalva)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" onerror="this.parentElement.innerText='🪐';" />`;
+                } else if (dados.emblema) {
+                    lblEmblema.textContent = dados.emblema;
+                }
+            }
+
+            // 🛡️ Inicializa a troca de foto com o UID do Criador
+            configurarTrocaAvatarTribu(triboId, dados.criador_uid || dados.criador_id);
+
+            // 🛡️ Trava de visibilidade do Botão Participar (Fundador vs Visitante)
+            const membrosTribo = dados.membros_ids || dados.membros || [];
+            regularVisibilidadeParticipar(dados.criador_uid || dados.criador_id, membrosTribo);
+
+            // 🔍 Plugando painel de criação de Rolês legítimos para o Fundador
+            inicializarVisualizacaoDoForum(triboId, dados);
+        }
+    });
+
+    // 🤝 Conexão do Clique no Botão Participar da Tribbu
+    if (btnParticipar) {
+        btnParticipar.onclick = async (e) => {
+            if (e) e.preventDefault();
+            const meuUID = auth?.currentUser?.uid || localStorage.getItem("tribbus_user_session");
+            if (!meuUID) {
+                alert("Você precisa estar logado na rede para participar da Tribu!");
+                return;
+            }
+
+            btnParticipar.disabled = true;
+            btnParticipar.innerHTML = "⏳ Entrando na Tribu...";
+
+            try {
+                const res = await alternarParticipacaoTribo(triboId, meuUID);
+                if (res && res.sucesso) {
+                    if (res.participando) {
+                        alert("🎉 Parabéns! Você agora faz parte desta Tribu!");
+                        if (dadosTriboAtual) {
+                            dadosTriboAtual.membros = [...(dadosTriboAtual.membros || []), meuUID];
+                            dadosTriboAtual.membros_ids = [...(dadosTriboAtual.membros_ids || []), meuUID];
+                        }
+                        regularVisibilidadeParticipar(dadosTriboAtual?.criador_uid, dadosTriboAtual?.membros || [meuUID]);
+                    } else {
+                        alert("Você saiu da Tribu.");
+                        if (dadosTriboAtual && Array.isArray(dadosTriboAtual.membros)) {
+                            dadosTriboAtual.membros = dadosTriboAtual.membros.filter(id => id !== meuUID);
+                        }
+                        regularVisibilidadeParticipar(dadosTriboAtual?.criador_uid, dadosTriboAtual?.membros || []);
+                    }
+                } else {
+                    alert("⚠️ Não foi possível processar sua participação. Tente novamente.");
+                    const mem = dadosTriboAtual?.membros_ids || dadosTriboAtual?.membros || [];
+                    regularVisibilidadeParticipar(dadosTriboAtual?.criador_uid, mem);
+                }
+            } catch (err) {
+                console.error("Erro ao participar da tribo:", err);
+                const mem = dadosTriboAtual?.membros_ids || dadosTriboAtual?.membros || [];
+                regularVisibilidadeParticipar(dadosTriboAtual?.criador_uid, mem);
+            }
+        };
+    }
+
+    /**
+     * 🪐 Tribbu'sVibe - Sistema de Troca de Foto de Perfil de Comunidades
+     * Com trava de segurança exclusiva para o Fundador da Tribu.
+     */
+    function configurarTrocaAvatarTribu(tribuIdAtual, criadorUidDaTribu) {
+        const container = document.querySelector(".avatar-tribu-container") || containerAvatarTribu;
+        const inputArquivo = document.getElementById("input-trocar-avatar-tribu") || inputTrocarAvatarTribu;
+        const imgExibicao = document.getElementById("img-avatar-tribu-viva") || imgAvatarTribu;
+
+        if (!container || !inputArquivo || !imgExibicao) return;
+
+        // 👆 1. Clique no quadrado abre a escolha de arquivos nativa do celular/PC
+        container.onclick = (e) => {
+            if (e.target === inputArquivo) return;
+            console.log("📷 Abrindo galeria/arquivos para escolher nova foto da Tribu...");
+            inputArquivo.click();
+        };
+
+        // 🔄 2. Escuta quando o usuário escolhe a nova foto
+        inputArquivo.onchange = async () => {
+            if (!inputArquivo.files || inputArquivo.files.length === 0) return;
+
+            const arquivo = inputArquivo.files[0];
+            imgExibicao.style.opacity = "0.5"; // Feedback visual de carregando
+
+            try {
+                console.log(`Subindo nova identidade da Tribu [${tribuIdAtual}]...`);
+                let urlDownload = "";
+
+                // Pré-visualização instantânea na tela
+                const leitor = new FileReader();
+                leitor.onload = (ev) => {
+                    if (ev.target?.result) {
+                        imgExibicao.src = ev.target.result;
+                        if (lblEmblema) {
+                            lblEmblema.innerHTML = `<img src="${ev.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" />`;
+                        }
+                    }
+                };
+                leitor.readAsDataURL(arquivo);
+
+                try {
+                    // Grava a foto no Storage
+                    const fotoRef = ref(storage, `capas_tribos/avatar_${tribuIdAtual}_${Date.now()}.png`);
+                    await uploadBytes(fotoRef, arquivo);
+                    urlDownload = await getDownloadURL(fotoRef);
+                } catch (stErr) {
+                    console.warn("[TriboAvatar] Upload no storage falhou, gerando base64 otimizado:", stErr);
+                    urlDownload = await redimensionarEComprimirImagem(arquivo, 800, 0.75);
+                }
+
+                if (urlDownload) {
+                    // Atualiza no Firestore
+                    if (db) {
+                        try {
+                            const tribuRef = doc(db, "tribos", tribuIdAtual);
+                            await updateDoc(tribuRef, {
+                                capa_url: urlDownload
+                            }).catch(() => {});
+
+                            // Espelha também em comunidades
+                            await setDoc(doc(db, "comunidades", tribuIdAtual), {
+                                capa_url: urlDownload
+                            }, { merge: true }).catch(() => {});
+                        } catch (docErr) {
+                            console.warn("Aviso ao salvar capa no banco:", docErr);
+                        }
+                    }
+
+                    // Grava também no localStorage como cache instantâneo da tribo
+                    try {
+                        localStorage.setItem(`tribo_capa_${tribuIdAtual}`, urlDownload);
+                    } catch {}
+
+                    imgExibicao.src = urlDownload;
+                    if (lblEmblema) {
+                        lblEmblema.innerHTML = `<img src="${escapeAttr(urlDownload)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;" />`;
+                    }
+                    console.log("🎉 Sucesso! A identidade visual da Tribu foi atualizada.");
+                }
+
+            } catch (error) {
+                console.error("Erro ao trocar foto da Tribu:", error);
+                alert("⚠️ Não foi possível salvar a nova foto da Tribu.");
+            } finally {
+                imgExibicao.style.opacity = "1";
+                inputArquivo.value = "";
+            }
+        };
+    }
+
+    // 🪐 1.1 Explorador: Escuta e lista todas as Tribos criadas no Firebase
+    if (listaTodasTribos && db) {
+        try {
+            const qTribos = query(collection(db, "tribos"), orderBy("data_criacao", "desc"));
+            onSnapshot(qTribos, (snap) => {
+                let htmlTribos = `
+                    <div onclick="window.location.href='tribos.html'" style="display: flex; align-items: center; gap: 8px; background: ${triboId === 'tribo_oficial' ? 'rgba(0, 240, 255, 0.2)' : 'var(--cinza-input)'}; border: 1px solid ${triboId === 'tribo_oficial' ? 'var(--ciano-neon)' : 'rgba(255,255,255,0.06)'}; padding: 8px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0;">
+                        <span style="font-size: 1.2rem;">🪐</span>
+                        <div>
+                            <strong style="font-size: 0.82rem; color: #FFF; display: block;">Tribbu's Oficial</strong>
+                            <small style="font-size: 0.7rem; color: var(--texto-suave);">Comunidade Raiz</small>
+                        </div>
+                    </div>
+                `;
+
+                snap.forEach((docSnap) => {
+                    const t = docSnap.data();
+                    const isAtiva = triboId === docSnap.id;
+                    const capa = t.capa_url ? `<img src="${escapeAttr(t.capa_url)}" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover;" onerror="this.parentElement.innerHTML='🪐';" />` : `<span style="font-size: 1.1rem;">🪐</span>`;
+
+                    htmlTribos += `
+                        <div onclick="window.location.href='tribos.html?id=${docSnap.id}'" style="display: flex; align-items: center; gap: 8px; background: ${isAtiva ? 'rgba(255, 0, 127, 0.2)' : 'var(--cinza-input)'}; border: 1px solid ${isAtiva ? 'var(--pink-magenta)' : 'rgba(255,255,255,0.06)'}; padding: 8px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='scale(1)';">
+                            <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 6px;">
+                                ${capa}
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.82rem; color: #FFF; display: block; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHTML(t.nome || "Tribbu")}</strong>
+                                <small style="font-size: 0.7rem; color: var(--texto-suave);">${t.membros_contador || 1} membros</small>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                listaTodasTribos.innerHTML = htmlTribos;
+            }, (err) => {
+                console.warn("[Tribos] Erro ao listar tribos:", err);
+            });
+        } catch (e) {
+            console.warn("[Tribos] Falha ao conectar explorador:", e);
+        }
+    }
+
+    function fecharModal() {
+        if (modalDiscussao) modalDiscussao.style.display = "none";
+        if (unsubscribeRespostasAtivo) {
+            unsubscribeRespostasAtivo();
+            unsubscribeRespostasAtivo = null;
+        }
+        topicoAtivoId = null;
+    }
+
+    if (btnFecharModal) {
+        btnFecharModal.onclick = fecharModal;
+    }
+    if (modalDiscussao) {
+        modalDiscussao.onclick = (e) => {
+            if (e.target === modalDiscussao) fecharModal();
+        };
+    }
+
+    function abrirTopico(topico) {
+        if (!modalDiscussao) return;
+        topicoAtivoId = topico.id;
+
+        const titulo = topico.titulo_topico || topico.titulo || "Discussão";
+        const autor = topico.autor_name || topico.autor_nome || "@membro";
+        const corpo = topico.conteudo_inicial || topico.corpo || "(Sem mensagem inicial)";
+        const tempo = formatarTempo(topico.data_criacao);
+
+        if (modalTitulo) modalTitulo.textContent = titulo;
+        if (modalAutor) modalAutor.textContent = `Por ${autor} • ${tempo}`;
+        if (modalConteudo) modalConteudo.textContent = corpo;
+        if (txtNovaResposta) txtNovaResposta.value = "";
+
+        modalDiscussao.style.display = "flex";
+
+        if (unsubscribeRespostasAtivo) unsubscribeRespostasAtivo();
+
+        if (modalRespostasLista) {
+            modalRespostasLista.innerHTML = `<div style="color:var(--texto-suave); font-size:0.85rem; text-align:center; padding:15px;">Carregando respostas em tempo real...</div>`;
+        }
+
+        unsubscribeRespostasAtivo = escutarRespostasDoTopico(topico.id, (respostas) => {
+            if (!modalRespostasLista) return;
+            if (!respostas || respostas.length === 0) {
+                modalRespostasLista.innerHTML = `<div style="color:var(--texto-suave); font-size:0.85rem; text-align:center; padding:20px;">Nenhuma resposta ainda. Seja o primeiro a debater! 💬</div>`;
+                return;
+            }
+
+            modalRespostasLista.innerHTML = respostas.map((r) => {
+                const tempoResp = formatarTempo(r.data_envio);
+                return `
+                    <div style="background:var(--cinza-input); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--texto-suave); margin-bottom:4px;">
+                            <strong style="color:#00BFFF;">${escapeHTML(r.autor_name || "@membro")}</strong>
+                            <span>${tempoResp}</span>
+                        </div>
+                        <div style="font-size:0.9rem; color:#FFFFFF;">${escapeHTML(r.conteudo_texto || "")}</div>
+                    </div>
+                `;
+            }).join("");
+
+            modalRespostasLista.scrollTop = modalRespostasLista.scrollHeight;
+        });
+    }
+
+    // 2. Escuta tópicos em tempo real
+    if (containerTopicos) {
+        escutarTopicosDaTribo(triboId, (topicos) => {
+            if (!topicos || topicos.length === 0) {
+                containerTopicos.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #A5A2B8; font-style: italic; background: var(--cinza-input); border-radius: 16px;">
+                        Nenhum tópico aberto ainda nesta Tribo. Seja o pioneiro e lance o primeiro debate acima! 🚀
+                    </div>
+                `;
+                return;
+            }
+
+            containerTopicos.innerHTML = topicos.map((topico) => {
+                const tempoRelativo = formatarTempo(topico.data_criacao);
+                const titulo = topico.titulo_topico || topico.titulo || "Discussão sem título";
+                const autor = topico.autor_name || topico.autor_nome || "@membro";
+                const respostas = topico.respostas_contador ?? topico.respostas_count ?? 0;
+                const corpo = topico.conteudo_inicial || topico.corpo || "";
+
+                return `
+                    <div class="topico-linha" data-id="${topico.id}" title="Clique para abrir e debater!">
+                        <div class="topico-info">
+                            <h4>${escapeHTML(titulo)}</h4>
+                            <span>Criado por ${escapeHTML(autor)} • ${tempoRelativo}</span>
+                        </div>
+                        <div class="topico-stats">${respostas} respostas 💬</div>
+                    </div>
+                `;
+            }).join("");
+
+            // Adiciona ouvinte de clique nas linhas do fórum
+            const linhas = containerTopicos.querySelectorAll(".topico-linha");
+            linhas.forEach((linha) => {
+                linha.addEventListener("click", () => {
+                    const id = linha.getAttribute("data-id");
+                    const topico = topicos.find(t => t.id === id);
+                    if (topico) abrirTopico(topico);
+                });
+            });
+        });
+    }
+
+    // 3. Monitor de Autenticação
+    const unsubscribeAuth = onAuthStateChanged(auth, (usuario) => {
+        usuarioAtual = usuario;
+        const meuUID = usuario?.uid || "convidado_" + Date.now();
+        const meuNome = usuario?.displayName || usuario?.email?.split("@")[0] || "Membro da Tribo";
+
+        // Verifica a barreira do criador da tribo com base no usuário logado
+        const criadorId = dadosTriboAtual?.criador_uid || dadosTriboAtual?.criador_id;
+        const membrosTribo = dadosTriboAtual?.membros_ids || dadosTriboAtual?.membros || [];
+        regularVisibilidadeParticipar(criadorId, membrosTribo);
+
+        // Lançar Tópico
+        if (btnLancar && txtTitulo) {
+            btnLancar.onclick = async (e) => {
+                if (e) e.preventDefault();
+                const titulo = txtTitulo.value.trim();
+                const corpo = txtCorpo ? txtCorpo.value.trim() : "";
+
+                if (!titulo) {
+                    alert("Digite o título da sua discussão antes de lançar! ✍️");
+                    txtTitulo.focus();
+                    return;
+                }
+
+                btnLancar.disabled = true;
+                btnLancar.textContent = "Lançando...";
+
+                const autorFormatado = `@${meuNome.toLowerCase().replace(/\s+/g, '_')}`;
+                const res = await lancarNovoTopico(triboId, meuUID, autorFormatado, titulo, corpo);
+
+                btnLancar.disabled = false;
+                btnLancar.textContent = "Lançar Tópico";
+
+                if (res && res.sucesso) {
+                    txtTitulo.value = "";
+                    if (txtCorpo) txtCorpo.value = "";
+                } else {
+                    alert("Não foi possível publicar seu tópico agora. Tente novamente.");
+                }
+            };
+        }
+
+        // Enviar Resposta no Tópico Ativo
+        if (btnEnviarResposta && txtNovaResposta) {
+            btnEnviarResposta.onclick = async () => {
+                const texto = txtNovaResposta.value.trim();
+                if (!texto) {
+                    alert("Digite algo para comentar!");
+                    txtNovaResposta.focus();
+                    return;
+                }
+                if (!topicoAtivoId) return;
+
+                btnEnviarResposta.disabled = true;
+                btnEnviarResposta.textContent = "...";
+
+                const autorFormatado = `@${meuNome.toLowerCase().replace(/\s+/g, '_')}`;
+                const res = await enviarRespostaTopico(topicoAtivoId, meuUID, autorFormatado, texto);
+
+                btnEnviarResposta.disabled = false;
+                btnEnviarResposta.textContent = "Comentar";
+
+                if (res && res.sucesso) {
+                    txtNovaResposta.value = "";
+                } else {
+                    alert("Erro ao enviar comentário: " + (res.erro || "Tente novamente"));
+                }
+            };
+
+            txtNovaResposta.onkeydown = (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    btnEnviarResposta.click();
+                }
+            };
+        }
+
+        // Mural de Stories / Vibes da Tribo é gerenciado de forma dedicada por app-mural-vibes.js
+    });
+
+    return () => {
+        unsubscribeAuth();
+        if (unsubscribeRespostasAtivo) unsubscribeRespostasAtivo();
+    };
+}
+
+function formatarTempo(isoDate) {
+    if (!isoDate) return "recentemente";
+    const diffMs = Date.now() - new Date(isoDate).getTime();
+    const minutos = Math.floor(diffMs / 60000);
+    if (minutos < 1) return "agora mesmo";
+    if (minutos < 60) return `há ${minutos} min`;
+    const horas = Math.floor(minutos / 60);
+    if (horas < 24) return `há ${horas}h`;
+    const dias = Math.floor(horas / 24);
+    return `há ${dias}d`;
+}
+
+function escapeHTML(str) {
+    if (!str) return "";
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeAttr(str) {
+    if (!str) return "";
+    return str.replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => inicializarForum());
+    } else {
+        setTimeout(() => inicializarForum(), 50);
+    }
+}

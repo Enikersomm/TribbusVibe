@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Configurações</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --preto-fundo: #0B0911;   
+            --cinza-card: #151221;    
+            --cinza-input: #1F1C33;   
+            --branco: #FFFFFF;
+            --texto-suave: #A5A2B8;
+            --rosa-choque: #FF1493;
+            --gradient-neon: linear-gradient(135deg, #FF1493 0%, #9400D3 25%, #00BFFF 50%, #00FF00 75%, #FFD700 100%);
+            --gradient-hover: linear-gradient(135deg, #FF69B4 0%, #BA55D3 25%, #00BFFF 50%, #7FFF00 75%, #FFD700 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--preto-fundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-neon) 1;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .nav-logo-img { height: 45px; width: auto; object-fit: contain; }
+        .nav-brand-text { font-size: 1.3rem; font-weight: 900; background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .nav-links { display: flex; align-items: center; gap: 5px; }
+        .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--rosa-choque); }
+
+        .btn-nav-sair {
+            background: rgba(255, 20, 147, 0.15);
+            border: 1px solid rgba(255, 20, 147, 0.3);
+            color: #FF69B4;
+            padding: 6px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-nav-sair:hover {
+            background: var(--rosa-choque);
+            color: #fff;
+        }
+
+        .config-container { max-width: 700px; width: 100%; margin-top: 30px; padding: 0 20px; }
+        
+        .card-config {
+            background: var(--cinza-card);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-config h2 { font-size: 1.4rem; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .card-config h2 i { background: var(--gradient-neon); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .form-secao { margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
+        .form-secao h3 { font-size: 0.9rem; color: var(--texto-suave); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .grupo-campo { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        label { font-size: 0.9rem; font-weight: 700; color: var(--texto-suave); }
+
+        .input-config { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; font-size: 0.95rem; background: var(--cinza-input); color: var(--branco); transition: border-color 0.2s; }
+        .input-config:focus { outline: none; border-color: #00BFFF; }
+
+        .range-container { display: flex; align-items: center; gap: 15px; }
+        .range-input { flex: 1; accent-color: #9400D3; cursor: pointer; height: 6px; }
+        .range-valor { font-size: 0.9rem; font-weight: bold; color: #00BFFF; width: 40px; text-align: right; }
+
+        .btn-salvar-config {
+            width: 100%; padding: 14px; background: var(--gradient-neon); color: var(--branco); border: none; border-radius: 50px; font-size: 1.05rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2); transition: all 0.3s ease;
+        }
+        .btn-salvar-config:hover { background: var(--gradient-hover); transform: translateY(-2px); }
+        .btn-salvar-config:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 15px; flex-direction: column; gap: 12px; align-items: stretch; }
+            .nav-logo-container { justify-content: center; }
+            .nav-links {
+                display: flex;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 8px;
+                padding-bottom: 4px;
+                justify-content: flex-start;
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links a {
+                margin-right: 0;
+                padding: 6px 14px;
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 50px;
+                font-size: 0.85rem;
+                flex-shrink: 0;
+                white-space: nowrap;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .nav-links a.active {
+                background: rgba(255, 0, 127, 0.15);
+                border-color: var(--rosa-choque);
+            }
+            .card-config { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🪐 NAVBAR SUPREMA CYBERPUNK COM SCROLL HORIZONTAl DESLIZANTE PARA CELULAR -->
+<header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: auto; min-height: 55px; flex-wrap: wrap; gap: 10px;">
+    
+    <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
+    <div class="nav-logo-container" style="flex-shrink: 0;">
+        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+    </div>
+
+    <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
+    <div class="nav-scroll-central" style="display: flex; align-items: center; gap: 15px; overflow-x: auto; max-width: 100%; padding: 5px 0; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+        
+        <!-- Componente do Sininho de Alertas -->
+        <div class="nav-notificacoes-wrapper" style="position: relative; display: flex; align-items: center; cursor: pointer; flex-shrink: 0;">
+            <i class="fas fa-bell id-icone-sininho" style="color: var(--texto-suave, #9AA0A6); font-size: 1.15rem; transition: color 0.2s, filter 0.2s;"></i>
+            <span id="badge-notificacoes-num" style="display: none; position: absolute; top: -6px; right: -6px; background: var(--pink-magenta, #FF007F); color: #FFF; font-size: 0.6rem; font-weight: 900; padding: 2px 5px; border-radius: 50%;">0</span>
+            
+            <!-- 📂 GAVETA DE NOTIFICAÇÕES ESCONDIDA (Abre ao clicar no sininho) -->
+            <div id="gaveta-sininho-lista" style="display: none; position: absolute; top: 35px; right: -10px; width: 280px; background: var(--cinza-card, #121214); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); padding: 12px; z-index: 200; max-height: 350px; overflow-y: auto;">
+                <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Últimas Interações</h5>
+                <div id="sininho-itens-acumulados" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; padding: 10px 0;">Nenhum alerta por enquanto... ✨</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links de Navegação (Ficam todos na mesma linha sem quebrar ou sumir!) -->
+        <nav class="nav-links" style="display: flex; gap: 18px; align-items: center; flex-shrink: 0;">
+            <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Feed</a>
+            <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Tribos</a>
+            <a href="chat.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Messenger</a>
+            <a href="perfil.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Meu Perfil</a>
+            <a href="configuracoes.html" class="active" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Configurações</a>
+            <a href="#" onclick="executarSaidaSuprema(event)" id="btn-sair-vibe" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: bold; font-size: 0.88rem; white-space: nowrap; filter: drop-shadow(0 0 3px var(--pink-magenta));">Sair</a>
+        </nav>
+
+        <!-- Botão de Fundar Nova Tribu -->
+        <button onclick="window.location.href='./criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
+            <i class="fas fa-plus-circle"></i> Fundar Tribu
+        </button>
+    </div>
+</header>
+
+<style>
+    /* 🚫 Esconde totalmente a barra de rolagem cinza feia do navegador para manter o visual limpo */
+    .nav-scroll-central::-webkit-scrollbar {
+        display: none;
+    }
+    .nav-notificacoes-wrapper:hover .id-icone-sininho {
+        color: var(--ciano-neon, #00F0FF);
+        filter: drop-shadow(0 0 5px var(--ciano-neon));
+    }
+</style>
+
+    <div class="config-container">
+        <main class="card-config">
+            <h2><i class="fas fa-sliders-h"></i> Configurações da Minha Vibe</h2>
+            <!-- 🪐 FORMULÁRIO DE CONFIGURAÇÕES CADASTRAIS (SEM SLIDERS DE REPUTAÇÃO) -->
+            <form id="form-configuracoes-vibe" style="display: flex; flex-direction: column; gap: 16px;">
+                
+                <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 0; font-weight: bold; letter-spacing: 0.5px;">🖼️ Identidade Visual</h4>
+
+                <!-- 🪐 MÓDULO DE PRÉVIA DE CAPA DE PURA PERFORMANCE (SEM BOTÕES INTRUSOS) -->
+                <div class="input-grupo" style="margin-bottom: 24px; width: 100%;">
+                    <label style="color: #FFF; font-size: 0.85rem; display: block; margin-bottom: 8px; font-weight: bold;">Subir Nova Foto de Capa</label>
+                    
+                    <!-- Janela Espelho de Visualização -->
+                    <div id="container-previa-capa" style="width: 100%; height: 140px; background: #18181b; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; overflow: hidden; position: relative; margin-bottom: 10px;">
+                        <div id="img-previa-capa-dinamica" style="width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80') center 0% / cover no-repeat; opacity: 0.65; transition: background-position 0.05s ease;"></div>
+                        <span id="txt-legenda-previa-capa" style="position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 0.72rem; color: var(--texto-suave, #9AA0A6); pointer-events: none; letter-spacing: 0.3px;">Arraste o controle abaixo para alinhar verticalmente 📐</span>
+                    </div>
+
+                    <!-- CONTROLADOR NEON LIMPO (O % virou apenas indicador textual) -->
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; width: 100%; box-sizing: border-box;">
+                        <i class="fas fa-arrows-alt-v" style="color: var(--ciano-neon, #00F0FF); font-size: 0.85rem; flex-shrink: 0;"></i>
+                        <input type="range" id="range-posicao-capa" min="0" max="100" value="0" style="flex: 1; accent-color: var(--ciano-neon, #00F0FF); cursor: pointer; margin: 0; padding: 0;">
+                        <span id="txt-posicao-porcentagem" style="font-size: 0.75rem; color: var(--ciano-neon, #00F0FF); min-width: 35px; text-align: right; font-weight: bold; flex-shrink: 0;">0%</span>
+                    </div>
+
+                    <!-- Seletor de Arquivos nativo oculto elegante -->
+                    <input type="file" id="input-upload-capa" accept="image/*" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 0.82rem;">
+                </div>
+
+                <h4 style="color: var(--ciano-neon, #00F0FF); font-size: 0.95rem; margin: 20px 0 0 0; font-weight: bold; letter-spacing: 0.5px;">👤 Dados Pessoais do Perfil</h4>
+
+                <!-- Nome do Fundador -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">📛 Nome do Fundador</label>
+                    <input type="text" id="input-nome" placeholder="Seu nome na Tribu" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
+
+                <!-- Frase de Status -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">💬 Frase de Status (Aparece no Feed)</label>
+                    <input type="text" id="input-status" placeholder="Qual é a sua vibe de hoje?" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
+
+                <!-- Cidade Atual -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">📍 Cidade onde mora atual</label>
+                    <input type="text" id="input-cidade-atual" placeholder="Ex: Palmas - TO" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
+
+                <!-- Cidade de Nascimento -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">👶 Cidade de nascimento</label>
+                    <input type="text" id="input-cidade-natal" placeholder="Ex: Goiânia - GO" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                </div>
+
+                <!-- Data de Nascimento (Garante o bloqueio de menores de 13 anos) -->
+                <div class="input-grupo">
+                    <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">📅 Data de nascimento</label>
+                    <input type="date" id="input-data-nascimento" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem; color-scheme: dark; transition: border-color 0.3s ease, box-shadow 0.3s ease;">
+                    <!-- 🚫 Alerta Visual Customizado de Idade Mínima -->
+                    <div id="alerta-idade-vibe" style="display: none; margin-top: 8px; padding: 10px 14px; border-radius: 8px; background: rgba(255, 0, 127, 0.12); border: 1px solid var(--pink-magenta, #FF007F); box-shadow: 0 0 12px rgba(255, 0, 127, 0.2); animation: pulsarAlerta 1.5s infinite alternate;">
+                        <div style="display: flex; align-items: flex-start; gap: 8px;">
+                            <span style="font-size: 1.1rem; line-height: 1;">🚫</span>
+                            <div style="font-size: 0.8rem; color: #FFF; line-height: 1.4;">
+                                <strong style="color: var(--pink-magenta, #FF007F); display: block; margin-bottom: 2px;">Acesso Não Permitido (Menor de 13 Anos)</strong>
+                                Para participar da rede social Tribbu'sVibe, é obrigatório ter no mínimo <strong>13 anos de idade completos</strong>. Por favor, ajuste a sua data de nascimento.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <!-- Estado Civil -->
+                    <div class="input-grupo" style="flex: 1;">
+                        <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">❤️ Estado civil</label>
+                        <select id="select-estado-civil" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                            <option value="Solteiro(a)">Solteiro(a)</option>
+                            <option value="Namorando">Namorando</option>
+                            <option value="Noivo(a)">Noivo(a)</option>
+                            <option value="Casado(a)">Casado(a)</option>
+                            <option value="Na vibe da Tribu 🪐">Na vibe da Tribu 🪐</option>
+                        </select>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div class="input-grupo" style="flex: 1;">
+                        <label style="color: #FFF; font-size: 0.8rem; display: block; margin-bottom: 4px;">🧬 Sexo</label>
+                        <select id="select-sexo" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 8px; width: 100%; font-size: 0.85rem;">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Não informado">Não informado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Botão de Salvar -->
+                <button type="submit" class="btn-salvar-config" style="background: var(--gradient-supremo); color: #FFF; border: none; padding: 12px; border-radius: 50px; font-weight: bold; font-size: 0.9rem; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,0,127,0.3);">Salvar Configurações</button>
+            </form>
+
+            <!-- 🚨 SEÇÃO DE SEGURANÇA: EXCLUSÃO PERMANENTE DA CONTA -->
+            <div class="modulo-config-perigo" style="margin-top: 35px; padding-top: 25px; border-top: 2px dashed rgba(255, 0, 127, 0.2); text-align: center;">
+                <h4 style="color: var(--pink-magenta, #FF007F); font-size: 0.95rem; margin: 0 0 8px 0; font-weight: bold; filter: drop-shadow(0 0 5px var(--pink-magenta));">⚠️ Zona de Perigo</h4>
+                <p style="font-size: 0.8rem; color: var(--texto-suave, #9AA0A6); margin-bottom: 15px; font-style: italic;">Se você decidir sair da nossa sociedade digital, todos os seus dados, mídias e conexões serão apagados para sempre.</p>
+                
+                <!-- Botão de Gatilho de Exclusão -->
+                <button type="button" id="btn-excluir-conta-vibe" style="background: rgba(255, 0, 127, 0.1); color: var(--pink-magenta, #FF007F); border: 1px solid var(--pink-magenta, #FF007F); padding: 10px 22px; border-radius: 50px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 8px rgba(255, 0, 127, 0.15);">
+                    <i class="fas fa-exclamation-triangle"></i> Excluir Meu Cadastro Permanentemente
+                </button>
+            </div>
+
+            <style>
+                /* 🔥 Efeito hover agressivo de perigo no CSS */
+                #btn-excluir-conta-vibe:hover {
+                    background: var(--pink-magenta, #FF007F) !important;
+                    color: #FFFFFF !important;
+                    box-shadow: 0 0 20px var(--pink-magenta) !important;
+                    transform: translateY(-2px);
+                }
+            </style>
+        </main>
+    </div>
+
+    <!-- Encanamento com Firebase Firestore e Auth e Navegação Global -->
+    <script type="module" src="./src/services/app-sininho.js"></script>
+    <script type="module" src="./src/services/global-nav.js"></script>
+    <script type="module" src="./src/services/app-configuracoes.js"></script>
+    <script type="module">
+        import { realizarLogout } from "./src/services/firebase-auth-login.js";
+
+        const btnSair = document.getElementById("btn-sair-config");
+        if (btnSair) {
+            btnSair.addEventListener("click", async () => {
+                const confirmar = confirm("Deseja desconectar da sua Tribo por hoje e descansar a mente? ☕");
+                if (confirmar) {
+                    console.log("Encerrando sessão com segurança...");
+                    await realizarLogout();
+                    window.location.href = "/";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

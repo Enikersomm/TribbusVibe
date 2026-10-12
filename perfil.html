@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tribbu'sVibe - Perfil</title>
+    <script>
+        // 🚀 REDIRECIONADOR INSTANTÂNEO: Se vier ?tab=chat ou hash de chat, pula na hora para chat.html
+        if (window.location.search.includes("tab=chat") || window.location.hash.includes("chat")) {
+            window.location.replace("chat.html");
+        }
+    </script>
+    <meta name="theme-color" content="#0B0C10">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TribbusVibe">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --preto-profundo: #0B0C10;   
+            --cinza-card: #121214;       
+            --cinza-input: #1E1E24;      
+            --branco: #FFFFFF;
+            --texto-suave: #9AA0A6;
+            --ciano-neon: #00F0FF;
+            --pink-magenta: #FF007F;
+            --gradient-supremo: linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--preto-profundo);
+            color: var(--branco);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: var(--cinza-card);
+            padding: 10px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid transparent;
+            border-image: var(--gradient-supremo) 1;
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo-img { height: 45px; width: auto; }
+        .nav-links a { text-decoration: none; color: var(--texto-suave); margin-right: 20px; font-weight: 600; font-size: 0.95rem; }
+        .nav-links a:hover, .nav-links a.active { color: var(--pink-magenta); }
+
+        .perfil-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            max-width: 1100px;
+            width: 100%;
+            gap: 25px;
+            margin-top: 30px;
+            padding: 0 20px;
+        }
+
+        .card-vibe {
+            background: var(--cinza-card);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* BANDEIRA ESQUERDA - DADOS REAIS */
+        .perfil-esquerda { align-items: center; text-align: center; }
+        .avatar-container { position: relative; width: 124px; height: 124px; margin: 0 auto; cursor: pointer; }
+        .avatar-g { width: 120px; height: 120px; background: var(--cinza-input); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; border: 3px solid var(--ciano-neon); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); overflow: hidden; position: relative; transition: all 0.3s ease; }
+        .avatar-g img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar-container:hover .avatar-g { border-color: var(--pink-magenta); box-shadow: 0 0 20px rgba(255, 0, 127, 0.4); transform: scale(1.02); }
+        .badge-camera { position: absolute; bottom: 2px; right: 2px; background: var(--gradient-supremo); width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #FFF; font-size: 0.9rem; border: 2px solid var(--cinza-card); box-shadow: 0 2px 8px rgba(0,0,0,0.5); pointer-events: none; transition: transform 0.2s ease; }
+        .avatar-container:hover .badge-camera { transform: scale(1.15); }
+        
+        .termometros-container { width: 100%; text-align: left; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .barra-base { width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+        .barra-preenchida { height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; }
+
+        /* DIREITA - BIO E MURAL DE VIBES DE HOJE */
+        .perfil-direita { gap: 25px; }
+        .perfil-header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .status-tag { color: var(--pink-magenta); font-size: 0.9rem; font-style: italic; }
+        
+        .bio-box { color: var(--texto-suave); line-height: 1.6; font-size: 0.95rem; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.03); }
+
+        /* MURAL ATUALIZADO (NOSSA MARCA AUTORAL) */
+        .vibes-box h3 { font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .vibes-box h3 i { color: var(--ciano-neon); }
+        
+        .caixa-enviar-vibe { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .caixa-enviar-vibe textarea { width: 100%; height: 65px; background: var(--cinza-input); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; color: var(--branco); resize: none; font-size: 0.95rem; }
+        .caixa-enviar-vibe textarea:focus { outline: none; border-color: var(--ciano-neon); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+        
+        .btn-enviar-vibe { align-self: flex-end; background: var(--gradient-supremo); color: var(--branco); border: none; padding: 9px 24px; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.25); }
+        .btn-enviar-vibe:hover { filter: brightness(1.1); }
+
+        .vibes-lista { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .vibe-item { background: var(--cinza-input); padding: 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); border-left: 3px solid var(--ciano-neon); }
+        .vibe-topo { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 6px; }
+        .vibe-texto { font-size: 0.95rem; line-height: 1.4; color: var(--branco); }
+
+        /* GRADE LATERAL DE FAVORITOS ILIMITADOS */
+        .membros-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 15px; }
+        .membro-avatar-mini { width: 100%; aspect-ratio: 1; background: var(--cinza-input); border-radius: 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.05); padding: 5px; }
+
+        @media (max-width: 768px) { 
+            .perfil-layout { grid-template-columns: 1fr; }
+            .navbar { padding: 10px 15px; flex-direction: column; gap: 12px; align-items: stretch; }
+            .nav-logo-container { justify-content: center; }
+            .nav-links {
+                display: flex;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 8px;
+                padding-bottom: 4px;
+                justify-content: flex-start;
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links a {
+                margin-right: 0;
+                padding: 6px 14px;
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 50px;
+                font-size: 0.85rem;
+                flex-shrink: 0;
+                white-space: nowrap;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .nav-links a.active {
+                background: rgba(255, 0, 127, 0.15);
+                border-color: var(--pink-magenta);
+            }
+        }
+
+        /* 🔥 Efeito hover interativo nos botões de voto no CSS */
+        .btn-voto-neon:hover {
+            transform: translateY(-2px);
+        }
+        .btn-voto-neon[data-termometro="medidor_confiavel"]:hover {
+            background: rgba(0, 240, 255, 0.1) !important;
+            box-shadow: 0 0 15px var(--ciano-neon) !important;
+        }
+        .btn-voto-neon[data-termometro="medidor_legal"]:hover {
+            background: rgba(255, 0, 127, 0.1) !important;
+            box-shadow: 0 0 15px var(--pink-magenta) !important;
+        }
+        .btn-voto-neon[data-termometro="medidor_vibe"]:hover {
+            background: rgba(255, 215, 0, 0.1) !important;
+            box-shadow: 0 0 15px #FFD700 !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🪐 NAVBAR SUPREMA CYBERPUNK COM SCROLL HORIZONTAl DESLIZANTE PARA CELULAR -->
+<header class="navbar" style="background-color: var(--cinza-card, #121214); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid transparent; border-image: var(--gradient-supremo, linear-gradient(135deg, #FF007F 0%, #9400D3 50%, #00F0FF 100%)) 1; position: sticky; top: 0; z-index: 100; height: auto; min-height: 55px; flex-wrap: wrap; gap: 10px;">
+    
+    <!-- Lado Esquerdo: Nossa Logo Oficial em Gel 3D -->
+    <div class="nav-logo-container" style="flex-shrink: 0;">
+        <img class="nav-logo-img" src="/logo.png" alt="Tribbu'sVibe Logo" style="height: 40px; width: auto; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.25)); cursor: pointer;" onclick="window.location.href='feed.html'">
+    </div>
+
+    <!-- 🔥 O CANO DO SCROLL: Contêiner com rolagem macia e invisível para telas pequenas -->
+    <div class="nav-scroll-central" style="display: flex; align-items: center; gap: 15px; overflow-x: auto; max-width: 100%; padding: 5px 0; scrollbar-width: none; -ms-overflow-style: none; -webkit-overflow-scrolling: touch;">
+        
+        <!-- Componente do Sininho de Alertas -->
+        <div class="nav-notificacoes-wrapper" style="position: relative; display: flex; align-items: center; cursor: pointer; flex-shrink: 0;">
+            <i class="fas fa-bell id-icone-sininho" style="color: var(--texto-suave, #9AA0A6); font-size: 1.15rem; transition: color 0.2s, filter 0.2s;"></i>
+            <span id="badge-notificacoes-num" style="display: none; position: absolute; top: -6px; right: -6px; background: var(--pink-magenta, #FF007F); color: #FFF; font-size: 0.6rem; font-weight: 900; padding: 2px 5px; border-radius: 50%;">0</span>
+            
+            <!-- 📂 GAVETA DE NOTIFICAÇÕES ESCONDIDA (Abre ao clicar no sininho) -->
+            <div id="gaveta-sininho-lista" style="display: none; position: absolute; top: 35px; right: -10px; width: 280px; background: var(--cinza-card, #121214); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); padding: 12px; z-index: 200; max-height: 350px; overflow-y: auto;">
+                <h5 style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Últimas Interações</h5>
+                <div id="sininho-itens-acumulados" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 0.75rem; color: var(--texto-suave); font-style: italic; text-align: center; padding: 10px 0;">Nenhum alerta por enquanto... ✨</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links de Navegação (Ficam todos na mesma linha sem quebrar ou sumir!) -->
+        <nav class="nav-links" style="display: flex; gap: 18px; align-items: center; flex-shrink: 0;">
+            <a href="feed.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Feed</a>
+            <a href="tribos.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Tribos</a>
+            <a href="chat.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Messenger</a>
+            <a href="perfil.html" style="text-decoration: none; color: var(--branco, #FFFFFF); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Meu Perfil</a>
+            <a href="configuracoes.html" style="text-decoration: none; color: var(--texto-suave, #9AA0A6); font-weight: 600; font-size: 0.88rem; white-space: nowrap;">Configurações</a>
+            <a href="#" onclick="executarSaidaSuprema(event)" id="btn-sair-vibe" class="btn-logout-global" style="text-decoration: none; color: var(--pink-magenta, #FF007F); font-weight: bold; font-size: 0.88rem; white-space: nowrap; filter: drop-shadow(0 0 3px var(--pink-magenta));">Sair</a>
+        </nav>
+
+        <!-- Botão de Fundar Nova Tribu -->
+        <button onclick="window.location.href='./criar-tribo.html'" class="btn-criar-nav" style="background: var(--gradient-supremo); color: #FFFFFF; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; cursor: pointer; white-space: nowrap;">
+            <i class="fas fa-plus-circle"></i> Fundar Tribu
+        </button>
+    </div>
+</header>
+
+<style>
+    /* 🚫 Esconde totalmente a barra de rolagem cinza feia do navegador para manter o visual limpo */
+    .nav-scroll-central::-webkit-scrollbar {
+        display: none;
+    }
+    .nav-notificacoes-wrapper:hover .id-icone-sininho {
+        color: var(--ciano-neon, #00F0FF);
+        filter: drop-shadow(0 0 5px var(--ciano-neon));
+    }
+</style>
+
+    <!-- 🪐 CONTAINER SUPREMO: SOBREPOSIÇÃO DE FOTO DE CAPA E AVATAR CYBERPUNK -->
+    <div class="perfil-header-container" style="position: relative; width: 100%; display: flex; flex-direction: column; margin-bottom: 50px; background: var(--preto-profundo, #0B0C10);">
+        
+        <!-- 🖼️ 1. FOTO DE CAPA RETANGULAR (outdoor do topo) -->
+        <div id="bloco-foto-capa" style="width: 100%; height: 260px; background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%); position: relative; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <!-- Imagem de Fundo Real (O JavaScript injeta o link do Firestore aqui) -->
+            <div id="img-capa-dinamica" style="width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&auto=format&fit=crop&q=80') center/cover no-repeat; opacity: 0.85;"></div>
+            
+            <!-- Botão discreto de Editar Capa (Alinhado na direita igual ao seu print) -->
+            <button onclick="window.location.href='configuracoes.html'" style="position: absolute; bottom: 15px; right: 20px; background: rgba(18, 18, 20, 0.85); color: #FFF; border: 1px solid rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; z-index: 10;"><i class="fas fa-camera"></i> Editar foto de capa</button>
+        </div>
+
+        <!-- 👤 2. IDENTIDADE FLUTUANTE (Avatar cortando a borda da capa + Textos ao lado) -->
+        <div class="identidade-perfil-bloco" style="padding: 0 30px; display: flex; align-items: flex-end; gap: 20px; position: relative; margin-top: -55px; z-index: 5; flex-wrap: wrap;">
+            
+            <!-- 🔴 O Pequeno Círculo Flutuante com Anel Luminoso de LED Ciano -->
+            <div id="btn-tirar-selfie" title="Clique para trocar sua foto ou tirar uma selfie! 📸" style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--ciano-neon, #00F0FF); box-shadow: 0 0 15px var(--ciano-neon, #00F0FF); overflow: hidden; background: #0B0C10; flex-shrink: 0; position: relative; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <img id="img-avatar-perfil" src="" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;" onerror="this.style.display='none'; document.getElementById('lbl-perfil-avatar').style.display='block';">
+                <span id="lbl-perfil-avatar" style="font-size: 3.2rem; display: block; user-select: none;">👤</span>
+                <input type="file" id="input-camera-perfil" accept="image/*" style="display: none;">
+            </div>
+
+            <!-- 💬 Dados do Dono (Ficam alinhados ao lado da foto redonda) -->
+            <div style="display: flex; flex-direction: column; padding-bottom: 8px; gap: 4px; min-width: 200px; flex: 1;">
+                <h2 id="lbl-perfil-nome" style="font-size: 1.45rem; font-weight: 800; color: #FFFFFF; margin: 0; letter-spacing: 0.5px;">Carregando...</h2>
+                <span id="lbl-perfil-status" style="font-size: 0.85rem; color: var(--ciano-neon, #00F0FF); font-weight: 600; font-style: italic;">🪐 "Qual é a sua vibe de hoje?"</span>
+            </div>
+
+            <!-- 🎛️ Botões de Ação Direta na Direita (Seguindo a usabilidade do print) -->
+            <div style="display: flex; gap: 10px; padding-bottom: 8px; margin-left: auto;">
+                <button id="btn-adicionar-favorito" style="background: var(--gradient-supremo, linear-gradient(135deg, #FF007F, #00F0FF)); color: #FFF; border: none; padding: 10px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 0, 127, 0.3); display: flex; align-items: center; gap: 6px;"><i class="fas fa-plus"></i> Adicionar à Vitrine</button>
+                <button onclick="window.location.href='configuracoes.html'" style="background: var(--cinza-card, #121214); color: #FFF; border: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; border-radius: 50px; font-size: 0.82rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;"><i class="fas fa-pen"></i> Editar Perfil</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="perfil-layout" style="margin-top: 20px;">
+        <!-- ESQUERDA: REPUTAÇÃO E FAVORITOS ILIMITADOS -->
+        <aside style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="card-vibe perfil-esquerda" style="padding: 15px;">
+                <!-- 🪐 COMPONENTE ATUALIZADO: TERMÔMETROS DE REPUTAÇÃO COM BOTÕES DE VOTAÇÃO MÚTUA -->
+                <div class="card-vibe reputacao-votos-box" style="background: var(--cinza-card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 15px;">
+                    
+                    <h3 style="font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-medal" style="color: var(--ciano-neon);"></i> Reputação da Tribo
+                    </h3>
+                    
+                    <!-- 1. EXIBIÇÃO DAS BARRAS DE PROGRESSO NEON -->
+                    <div class="termometros-container" style="width: 100%; display: flex; flex-direction: column; gap: 12px;">
+                        
+                        <!--🧊 CONFIÁVEL -->
+                        <div class="termometro-item">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                                <span>🧊 Confiabilidade</span>
+                                <span id="txt-val-confiavel" style="color: var(--ciano-neon);">0%</span>
+                            </div>
+                            <div class="barra-base" style="width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden;">
+                                <div class="barra-preenchida id-barra-confiavel" style="height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--ciano-neon);"></div>
+                            </div>
+                        </div>
+
+                        <!--❤️ LEGAL -->
+                        <div class="termometro-item">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                                <span>❤️ Nível Legal</span>
+                                <span id="txt-val-legal" style="color: var(--pink-magenta);">0%</span>
+                            </div>
+                            <div class="barra-base" style="width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden;">
+                                <div class="barra-preenchida id-barra-legal" style="height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px var(--pink-magenta);"></div>
+                            </div>
+                        </div>
+
+                        <!--🌟 VIBE -->
+                        <div class="termometro-item">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">
+                                <span>🌟 Energia Vibe</span>
+                                <span id="txt-val-vibe" style="color: #FFD700;">0%</span>
+                            </div>
+                            <div class="barra-base" style="width: 100%; height: 8px; background: var(--cinza-input); border-radius: 10px; overflow: hidden;">
+                                <div class="barra-preenchida id-barra-vibe" style="height: 100%; background: var(--gradient-supremo); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px #FFD700;"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 2. GRADE DE BOTÕES DE VOTAÇÃO (PARA OS AMIGOS CLICAREM) -->
+                    <!-- 🪐 CONTAINER DOS BOTÕES DE VOTO: Envelopado para o JavaScript controlar a privacidade -->
+                    <div id="bloco-votacao-privado" style="margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); display: none; flex-direction: column; gap: 8px; width: 100%;">
+                        <p style="font-size: 0.72rem; color: var(--texto-suave, #9AA0A6); font-style: italic; text-align: center; margin: 0 0 4px 0;">Avalie a vibe deste amigo:</p>
+                        <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; width: 100%;">
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_confiavel" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--ciano-neon, #00F0FF); padding: 5px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: bold; cursor: pointer;">+1 🧊</button>
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_legal" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid var(--pink-magenta, #FF007F); padding: 5px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: bold; cursor: pointer;">+1 ❤️</button>
+                            <button type="button" class="btn-voto-neon" data-termometro="medidor_vibe" style="background: var(--cinza-input, #18181b); color: #FFF; border: 1px solid #FFD700; padding: 5px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: bold; cursor: pointer;">+1 🌟</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🪐 CARTÃO CYBERPUNK: DADOS PESSOAIS DO FUNDADOR -->
+            <div class="card-vibe dados-pessoais-box" style="background: var(--cinza-card, #121214); padding: 25px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px;">
+                
+                <h3 style="font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-id-card" style="color: var(--ciano-neon, #00F0FF);"></i> Ficha do Membro
+                </h3>
+
+                <!-- Grade de informações limpa e direta -->
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem;">
+                    
+                    <!-- Estado Civil -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-heart" style="color: var(--pink-magenta, #FF007F); width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Relacionamento:</span>
+                        <strong id="lbl-estado-civil" style="color: #FFF;">Solteiro(a)</strong>
+                    </div>
+
+                    <!-- Cidade Atual -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--ciano-neon, #00F0FF); width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Mora em:</span>
+                        <strong id="lbl-cidade-atual" style="color: #FFF;">Não informado</strong>
+                    </div>
+
+                    <!-- Cidade Natal -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-baby" style="color: #FFD700; width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Natural de:</span>
+                        <strong id="lbl-cidade-natal" style="color: #FFF;">Não informado</strong>
+                    </div>
+
+                    <!-- Idade / Nascimento -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-birthday-cake" style="color: #9400D3; width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Nascimento:</span>
+                        <strong id="lbl-data-nascimento" style="color: #FFF;">--/--/----</strong>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-dna" style="color: #00FF00; width: 16px; text-align: center;"></i>
+                        <span style="color: var(--texto-suave, #9AA0A6);">Sexo:</span>
+                        <strong id="lbl-sexo" style="color: #FFF;">Não informado</strong>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- VITRINE DE FAVORITOS ILIMITADOS DO FUNDADOR -->
+            <div class="card-vibe">
+                <!-- 🌟 CABEÇALHO DA VITRINE COM O BOTÃO DE ADICIONAR AMIGO DE VOLTA -->
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 12px; padding: 0 5px;">
+                    <h4 style="font-size: 0.95rem; color: #FFF; margin: 0; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-users" style="color: var(--pink-magenta);"></i> Vitrine de Amigos <span id="lbl-total-favoritos" style="color: var(--pink-magenta); font-size: 0.8rem;">(0)</span>
+                    </h4>
+                    <!-- 🔥 BOTÃO COMPACTO E NEON DE ADICIONAR AMIGO NA VITRINE -->
+                    <button id="btn-adicionar-favorito" style="background: rgba(0, 240, 255, 0.1); color: var(--ciano-neon); border: 1px solid var(--ciano-neon); padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 5px rgba(0,240,255,0.2);">
+                        <i class="fas fa-plus"></i> Adicionar
+                    </button>
+                </div>
+                <div class="membros-grade" id="grade-favoritos-lateral">
+                    <!-- Preenchido automaticamente via Firebase -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- DIREITA: DADOS DO PERFIL E O NOVO MURAL DE VIBES DE HOJE -->
+        <main class="card-vibe perfil-direita">
+            <div class="perfil-header">
+                <h1>Quem sou eu</h1>
+            </div>
+
+            <div class="bio-box">
+                <p id="lbl-perfil-bio">Buscando informações da órbita do usuário...</p>
+            </div>
+
+            <!-- MURAL ATUALIZADO: "QUAL É A SUA VIBE DE HOJE?" -->
+            <div class="vibes-box">
+                <h3><i class="fas fa-bolt"></i> Qual é a sua vibe de hoje?</h3>
+                
+                <div class="caixa-enviar-vibe">
+                    <textarea placeholder="Deixe um recado na vibe de hoje do seu amigo... ✍️" id="txt-vibe-mural"></textarea>
+                    <button class="btn-enviar-vibe" id="btn-postar-vibe">Enviar Vibe</button>
+                </div>
+
+                <!-- Lista dinâmica vinda do Firebase Firestore -->
+                <div class="vibes-lista" id="container-vibes-mural">
+                    <p style="font-size:0.85rem; color:var(--texto-suave); font-style:italic; text-align: center; margin-top: 15px;">Nenhuma vibe registrada neste mural por enquanto.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Encanamento Real do Perfil em Tempo Real e Navegação Global -->
+    <script type="module" src="./src/services/app-sininho.js"></script>
+    <script type="module" src="./src/services/global-nav.js"></script>
+    <script type="module" src="./src/services/app-perfil.js"></script>
+    <script type="module" src="./src/services/app-reputacao-clique.js"></script>
+</body>
+</html>
